@@ -14,23 +14,23 @@
     ]
   },
   "Building": {
-    "dataSource": "memory",
+    "dataSource": "mongo",
     "public": true
   },
   "Bridge": {
-    "dataSource": "memory",
+    "dataSource": "mongo",
     "public": true
   },
   "Sensor": {
-    "dataSource": "memory",
+    "dataSource": "mongo",
     "public": true
   },
   "Reading": {
-    "dataSource": "memory",
+    "dataSource": "mongo",
     "public": true
   },
   "People": {
-    "dataSource": "memory",
+    "dataSource": "mongo",
     "public": true
   }
 }

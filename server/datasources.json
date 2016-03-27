@@ -1,4 +1,10 @@
 {
+  "mongo": {
+  	"name": "mongo",
+  	"connector": "mongodb",
+  	"database" : "offgridmonitoring",
+  	"host" : "localhost"
+  },
   "memory": {
     "name": "memory",
     "localStorage": "",
