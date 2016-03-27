@@ -1,0 +1,36 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "Building": {
+    "dataSource": "memory",
+    "public": true
+  },
+  "Bridge": {
+    "dataSource": "memory",
+    "public": true
+  },
+  "Sensor": {
+    "dataSource": "memory",
+    "public": true
+  },
+  "Reading": {
+    "dataSource": "memory",
+    "public": true
+  },
+  "People": {
+    "dataSource": "memory",
+    "public": true
+  }
+}

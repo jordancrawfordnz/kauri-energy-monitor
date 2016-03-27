@@ -1,0 +1,24 @@
+{
+  "name": "Reading",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "timestamp": {
+      "type": "date",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "sensor": {
+      "type": "belongsTo",
+      "model": "Sensor",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

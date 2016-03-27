@@ -1,0 +1,29 @@
+{
+  "name": "Sensor",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "bridge": {
+      "type": "belongsTo",
+      "model": "Bridge",
+      "foreignKey": ""
+    },
+    "readings": {
+      "type": "hasMany",
+      "model": "Reading",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

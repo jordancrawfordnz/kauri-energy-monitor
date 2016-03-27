@@ -1,0 +1,29 @@
+{
+  "name": "Building",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "bridges": {
+      "type": "hasMany",
+      "model": "Bridge",
+      "foreignKey": ""
+    },
+    "people": {
+      "type": "hasAndBelongsToMany",
+      "model": "People",
+      "foreignKey": ""
+    }
+  },
+  "acls": [],
+  "methods": {}
+}

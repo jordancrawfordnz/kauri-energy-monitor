@@ -1,0 +1,8 @@
+{
+  "memory": {
+    "name": "memory",
+    "localStorage": "",
+    "file": "data.json",
+    "connector": "memory"
+  }
+}
