@@ -13,24 +13,40 @@
       "./mixins"
     ]
   },
+  "AccessToken": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "db",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "db",
+    "public": false
+  },
+  "Role": {
+    "dataSource": "db",
+    "public": false
+  },
   "Building": {
-    "dataSource": "mongo",
+    "dataSource": "db",
     "public": true
   },
   "Bridge": {
-    "dataSource": "mongo",
+    "dataSource": "db",
     "public": true
   },
   "Sensor": {
-    "dataSource": "mongo",
+    "dataSource": "db",
     "public": true
   },
   "Reading": {
-    "dataSource": "mongo",
+    "dataSource": "db",
     "public": true
   },
   "People": {
-    "dataSource": "mongo",
+    "dataSource": "db",
     "public": true
   }
 }

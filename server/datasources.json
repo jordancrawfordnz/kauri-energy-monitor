@@ -1,14 +1,7 @@
 {
-  "mongo": {
-  	"name": "mongo",
-  	"connector": "mongodb",
-  	"database" : "offgridmonitoring",
-  	"host" : "localhost"
-  },
-  "memory": {
-    "name": "memory",
-    "localStorage": "",
-    "file": "data.json",
-    "connector": "memory"
+  "db": {
+  	"name": "db",
+  	"connector": "memory",
+  	"file" : "db.json"
   }
 }

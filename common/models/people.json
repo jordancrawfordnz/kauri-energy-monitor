@@ -1,15 +1,9 @@
 {
   "name": "People",
-  "base": "PersistedModel",
+  "base": "User",
   "idInjection": true,
   "options": {
     "validateUpsert": true
-  },
-  "properties": {
-    "name": {
-      "type": "string",
-      "required": true
-    }
   },
   "validations": [],
   "relations": {
