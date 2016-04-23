@@ -9,6 +9,10 @@
     "timestamp": {
       "type": "date",
       "required": true
+    },
+    "value":{
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
