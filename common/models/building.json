@@ -36,6 +36,12 @@
       "principalType": "ROLE",
       "principalId": "buildingOwner",
       "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "admin",
+      "permission": "ALLOW"
     }
   ],
   "methods": {}
