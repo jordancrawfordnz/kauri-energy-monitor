@@ -10,7 +10,7 @@
       "type": "number",
       "required": true
     },
-    "value":{
+    "values":{
       "type": "object",
       "required": true
     }
