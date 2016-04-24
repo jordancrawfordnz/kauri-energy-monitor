@@ -77,6 +77,20 @@
       "principalId": "$everyone",
       "permission": "DENY",
       "property": "__create__readings"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "authenticatedBridge",
+      "permission": "ALLOW",
+      "property": "__create__readings"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "authenticatedBridge",
+      "permission": "ALLOW",
+      "property": "findById"
     }
   ],
   "methods": {}

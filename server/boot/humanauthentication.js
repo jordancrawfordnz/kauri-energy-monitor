@@ -1,4 +1,4 @@
-module.exports = function enableAuthentication(server) {
+module.exports = function enableHumanAuthentication(server) {
     // enable authentication
     server.enableAuth();
 
@@ -57,7 +57,6 @@ module.exports = function enableAuthentication(server) {
                 bridge = bridge.toJSON();
                 
                 // If the bridge has an associated building.
-                console.log(bridge);
                 if (bridge.building && bridge.building.people) {
                     if (isPersonBuildingOwner(bridge.building.people, userId)) {
                         return callback(null, true); // allow the user access.
