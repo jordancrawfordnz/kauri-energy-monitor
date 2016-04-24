@@ -3,6 +3,7 @@ module.exports = function setupAdmin(server) {
   	var Role = server.models.Role;
   	var People = server.models.People;
 
+  		// TODO: Don't do this in production.
   	// Check if there are any people.
   	People.count(function(err, count) {
   		if (err) {

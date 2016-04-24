@@ -1,8 +1,19 @@
 module.exports = function enableAuthentication(server) {
-  // enable authentication
-  server.enableAuth();
+    // enable authentication
+    server.enableAuth();
 
-  var Role = server.models.Role;
+    // Returns true if the person is a building owner.
+    function isPersonBuildingOwner(buildingOwners, userId) {
+        // Check if the current user is one of the people allowed in the building.
+        for (var i = 0; i < buildingOwners.length; i++) {
+            if (buildingOwners[i].id === userId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    var Role = server.models.Role;
 	Role.registerResolver('buildingOwner', function(role, context, callback) {
     // Reject's a person who is not a buildingOwner.
     function reject(err) {
@@ -29,14 +40,11 @@ module.exports = function enableAuthentication(server) {
     	Building.findById(context.modelId, {include : 'people'}, function(error, building) {
   			if (!error && building) {
                 building = building.toJSON();
-                var peopleAllowedInBuilding = building.people;
                 
-                // Check if the current user is one of the people allowed in the building.
-                for (var i = 0; i < peopleAllowedInBuilding.length; i++) {
-                    if (peopleAllowedInBuilding[i].id === userId) {
-                        callback(null, true); // allow the user access.
-                        return;
-                    }
+                if (building.people) {
+                    if (isPersonBuildingOwner(building.people, userId)) {
+                        return callback(null, true); // allow the user access.
+                    }   
                 }
     		}
             return reject();
@@ -47,22 +55,49 @@ module.exports = function enableAuthentication(server) {
         Bridge.findById(context.modelId, {include : {building : ['people']} }, function(error, bridge) {
             if (!error && bridge) {
                 bridge = bridge.toJSON();
+                
+                // If the bridge has an associated building.
                 console.log(bridge);
-
-                console.log(bridge.building.people);
+                if (bridge.building && bridge.building.people) {
+                    if (isPersonBuildingOwner(bridge.building.people, userId)) {
+                        return callback(null, true); // allow the user access.
+                    }
+                }
             }
             return reject();
         });
-        // Get the building for the bridge.
-
-
-    	// Check access to the building is allowed.
-
     } else if (context.modelName === 'Sensor') {
-    	// Get the bridge for the sensor.
+    	var Bridge = context.model;
 
-    	// Check access to the bridge is allowed.
-        return reject();
+        Bridge.findById(context.modelId, {include : {bridge : {building : ['people']} } }, function(error, sensor) {
+            if (!error && sensor) {
+                sensor = sensor.toJSON();
+                
+                // If the sensor has an associated bridge, building and people.
+                if (sensor.bridge && sensor.bridge.building && sensor.bridge.building.people) {
+                    if (isPersonBuildingOwner(sensor.bridge.building.people, userId)) {
+                        return callback(null, true); // allow the user access.
+                    }
+                }
+            }
+            return reject();
+        });
+    } else if (context.modelName === 'Reading') {
+        var Reading = context.model;
+
+        Reading.findById(context.modelId, {include : {bridge : {building : ['people']} } }, function(error, reading) {
+            if (!error && reading) {
+                reading = reading.toJSON();
+
+                // If the reading has an associated bridge, building and people.
+                if (reading.bridge && reading.bridge.building && reading.bridge.building.people) {
+                    if (isPersonBuildingOwner(reading.bridge.building.people, userId)) {
+                        return callback(null, true); // allow the user access.
+                    }
+                }
+            }
+            return reject();
+        });
     } else {
         // The person must not be a building owner.
         return reject();

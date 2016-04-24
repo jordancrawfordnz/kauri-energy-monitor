@@ -24,6 +24,11 @@
     "building": {
       "type": "belongsTo",
       "model": "Building"
+    },
+    "readings": {
+      "type": "hasMany",
+      "model": "Reading",
+      "foreignKey": ""
     }
   },
   "acls": [
@@ -44,6 +49,34 @@
       "principalType": "ROLE",
       "principalId": "admin",
       "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY",
+      "property": "__delete__readings"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY",
+      "property": "__destroyById__readings"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY",
+      "property": "__updateById__readings"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY",
+      "property": "__create__readings"
     }
   ],
   "methods": {}
