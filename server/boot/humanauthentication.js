@@ -6,7 +6,7 @@ module.exports = function enableHumanAuthentication(server) {
     function isPersonBuildingOwner(buildingOwners, userId) {
         // Check if the current user is one of the people allowed in the building.
         for (var i = 0; i < buildingOwners.length; i++) {
-            if (buildingOwners[i].id === userId) {
+            if (JSON.stringify(buildingOwners[i].id) === JSON.stringify(userId)) {
                 return true;
             }
         }
@@ -34,11 +34,9 @@ module.exports = function enableHumanAuthentication(server) {
 
     // Check the current user is an owner of the building.
     if (context.modelName === 'Building') {
-    	// TODO: May need to make a query for this person to see if they have this building.
     	var Building = context.model;
-
-    	Building.findById(context.modelId, {include : 'people'}, function(error, building) {
-  			if (!error && building) {
+        Building.findById(context.modelId, {include : 'people'}, function(error, building) {
+            if (!error && building) {
                 building = building.toJSON();
                 
                 if (building.people) {
