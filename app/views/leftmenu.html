@@ -1,19 +1,25 @@
 <!-- Left side column. contains the logo and sidebar -->
-<aside class="main-sidebar">
+<aside class="main-sidebar" ng-controller="LeftMenuCtrl as leftMenu">
 
   <!-- sidebar: style can be found in sidebar.less -->
   <section class="sidebar">
 
     <!-- Sidebar Menu -->
     <ul class="sidebar-menu">
-      <li class="header">HEADER</li>
-      <!-- Optionally, you can add icons to the links -->
-      <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
-      <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
+      <li ng-repeat="building in leftMenu.buildings">
+        <a href="#"><i class="fa fa-building"></i> <span>{{building.name}}</span></a>
+      </li>  
+      <li class="active"><a href="#"><i class="fa fa-area-chart"></i> <span>Summary</span></a></li>
+        <!-- TODO: move to top bar? -->
+      <li><a href="#"><i class="fa fa-building"></i> <span>Buildings</span></a></li>
+      <li><a href="#"><i class="fa fa-laptop"></i> <span>Bridges</span></a></li>
+      <li><a href="#"><i class="fa fa-table"></i> <span>Readings</span></a></li>
+
       <li class="treeview">
         <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
         <ul class="treeview-menu">
-          <li><a href="#">Link in level 2</a></li>
+          <!-- <li><a href="#">Link in level 2</a></li> -->
+          <li><a href="#"><i class="fa fa-building"></i> <span>Buildings</span></a></li>
           <li><a href="#">Link in level 2</a></li>
         </ul>
       </li>

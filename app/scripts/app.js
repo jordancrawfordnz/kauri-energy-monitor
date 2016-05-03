@@ -32,7 +32,7 @@ angular
       });
 
     // TODO: Get grunt to provide config variables.
-    LoopBackResourceProvider.setUrlBase('http://localhost:3000/api');
+    LoopBackResourceProvider.setUrlBase('https://engmon.cms.waikato.ac.nz/api');
 
     // From https://docs.strongloop.com/display/public/LB/AngularJS+JavaScript+SDK
     $httpProvider.interceptors.push(function($q, $location, LoopBackAuth) {
