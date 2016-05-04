@@ -6,23 +6,13 @@
 
     <!-- Sidebar Menu -->
     <ul class="sidebar-menu">
-      <li ng-repeat="building in leftMenu.buildings">
-        <a href="#"><i class="fa fa-building"></i> <span>{{building.name}}</span></a>
-      </li>  
+      <li><a href="#"><i class="fa fa-building"></i> <span>My Buildings</span></a></li>
+    </ul>
+    <ul ng-repeat="building in leftMenu.buildings" class="sidebar-menu">
+      <li class="header"><span>{{building.name}}</span></li>
       <li class="active"><a href="#"><i class="fa fa-area-chart"></i> <span>Summary</span></a></li>
-        <!-- TODO: move to top bar? -->
-      <li><a href="#"><i class="fa fa-building"></i> <span>Buildings</span></a></li>
       <li><a href="#"><i class="fa fa-laptop"></i> <span>Bridges</span></a></li>
       <li><a href="#"><i class="fa fa-table"></i> <span>Readings</span></a></li>
-
-      <li class="treeview">
-        <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
-        <ul class="treeview-menu">
-          <!-- <li><a href="#">Link in level 2</a></li> -->
-          <li><a href="#"><i class="fa fa-building"></i> <span>Buildings</span></a></li>
-          <li><a href="#">Link in level 2</a></li>
-        </ul>
-      </li>
     </ul>
     <!-- /.sidebar-menu -->
   </section>

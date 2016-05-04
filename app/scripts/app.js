@@ -49,4 +49,15 @@ angular
         }
       };
     });
+  })
+  .run(function($rootScope, LoopBackAuth, $location) {
+    $rootScope.logout = function() {
+      LoopBackAuth.clearUser();
+      LoopBackAuth.clearStorage();
+      $location.path('/#/login');
+    };
+
+    $rootScope.editProfile = function() {
+
+    };
   });
