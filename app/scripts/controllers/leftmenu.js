@@ -8,10 +8,15 @@
  * Controller for the left navigation menu.
  */
 angular.module('offgridmonitoringApp')
-  .controller('LeftMenuCtrl', function (People, $location) {
-    this.buildings = People.buildings({
-      id : People.getCurrentId()
-    });
+  .controller('LeftMenuCtrl', function (People, $location, $scope) {
+    var _this = this;
+    function initialiseBuildings() {
+        _this.buildings = People.buildings({
+        id : People.getCurrentId()
+      });
+    };
+    initialiseBuildings();
+    $scope.$on('login', initialiseBuildings);
 
     this.generalNavigation = [
       {

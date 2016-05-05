@@ -9,11 +9,5 @@
  */
 angular.module('offgridmonitoringApp')
   .controller('MainCtrl', function (People) {
-    this.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
-
     this.people = People.find();
   });

@@ -39,6 +39,10 @@ angular
         templateUrl: 'views/readings.html',
         controller: 'ReadingsCtrl'
       })
+      .when('/profile', {
+        templateUrl: 'views/profile.html',
+        controller: 'ProfileCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
@@ -65,14 +69,29 @@ angular
       };
     });
   })
-  .run(function($rootScope, LoopBackAuth, $location) {
+  .run(function($rootScope, LoopBackAuth, $location, People) {
     $rootScope.logout = function() {
       LoopBackAuth.clearUser();
       LoopBackAuth.clearStorage();
-      $location.path('/#/login');
+      $location.path('/login');
     };
+
+    $rootScope.people = People;
 
     $rootScope.editProfile = function() {
-
+      $location.path('/profile');
     };
+
+    var getUserDetails = function() {
+      var currentId = People.getCurrentId();
+      if (currentId) {
+        People.findById({id : currentId}).$promise.then(function(user) {
+          $rootScope.user = user;
+        });
+      }
+    };
+  
+    // Try get the user's details.    
+    getUserDetails();
+    $rootScope.$on('login', getUserDetails);
   });

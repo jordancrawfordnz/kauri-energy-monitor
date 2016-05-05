@@ -8,18 +8,29 @@
  * Allows a user to login.
  */
 angular.module('offgridmonitoringApp')
-  .controller('LoginCtrl', function ($scope, People, $location) {
+  .controller('LoginCtrl', function ($scope, People, $rootScope, $location) {
+    if (People.isAuthenticated()) {
+      $location.path('/');
+    }
+
     $scope.login = function() {
     	People.login({
         email : this.emailAddress,
         password : this.password
       }, function(auth) {
-        console.log(auth);
+        var next;
+        if ($location.nextAfterLogin === '/login') {
+          next = '/';
+        } else {
+          next = $location.nextAfterLogin || '/';
+        }
 
-        // From https://docs.strongloop.com/display/public/LB/AngularJS+JavaScript+SDK
-        var next = $location.nextAfterLogin || '/';
         $location.nextAfterLogin = null;
         $location.path(next);
+
+        $rootScope.$broadcast('login', auth);
+      }, function(err) {
+        $scope.hasFailedLogin = true;
       });
     };
 
