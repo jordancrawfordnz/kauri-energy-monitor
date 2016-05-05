@@ -12,6 +12,8 @@ module.exports = function (grunt) {
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
+  var modRewrite = require('connect-modrewrite');
+
   // Automatically load required Grunt tasks
   require('jit-grunt')(grunt, {
     useminPrepare: 'grunt-usemin',
@@ -80,6 +82,8 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect) {
             return [
+              // support Angular's HTML5 URL's by sending anything that doesn't have a proper extension to the index.
+              modRewrite (['!\\.html|\\.js|\\.svg|\\.css|\\.png|\\.jpg|\\.woff2|\\.woff|\\.woff2$ /index.html [L]']),
               connect.static('.tmp'),
               connect().use(
                 '/bower_components',

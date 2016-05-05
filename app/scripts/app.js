@@ -16,7 +16,7 @@ angular
     'ngTouch',
     'lbServices'
   ])
-  .config(function ($routeProvider, $httpProvider, LoopBackResourceProvider) {
+  .config(function ($routeProvider, $httpProvider, LoopBackResourceProvider, $locationProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
@@ -27,9 +27,24 @@ angular
         templateUrl: 'views/login.html',
         controller: 'LoginCtrl',
       })
+      .when('/:buildingId/summary', {
+        templateUrl: 'views/summary.html',
+        controller: 'SummaryCtrl'
+      })
+      .when('/:buildingId/bridge', {
+        templateUrl: 'views/bridges.html',
+        controller: 'BridgesCtrl'
+      })
+      .when('/:buildingId/reading', {
+        templateUrl: 'views/readings.html',
+        controller: 'ReadingsCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
+
+    // use the HTML5 History API
+    $locationProvider.html5Mode(true);
 
     // TODO: Get grunt to provide config variables.
     LoopBackResourceProvider.setUrlBase('https://engmon.cms.waikato.ac.nz/api');

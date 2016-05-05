@@ -1,20 +1,21 @@
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="main-sidebar" ng-controller="LeftMenuCtrl as leftMenu">
 
-  <!-- sidebar: style can be found in sidebar.less -->
   <section class="sidebar">
 
-    <!-- Sidebar Menu -->
+    <!-- General navigation -->
     <ul class="sidebar-menu">
-      <li><a href="#"><i class="fa fa-building"></i> <span>My Buildings</span></a></li>
+      <li ng-repeat="item in leftMenu.generalNavigation" ng-class="{'active' : leftMenu.isGeneralNavigationSelected(item)}">
+        <a href="#" ng-href="/{{item.path}}"><i class="fa" ng-class="'fa-' + item.icon"></i> <span>{{item.name}}</span></a>
+      </li>
     </ul>
+
+    <!-- Per building navigation -->
     <ul ng-repeat="building in leftMenu.buildings" class="sidebar-menu">
       <li class="header"><span>{{building.name}}</span></li>
-      <li class="active"><a href="#"><i class="fa fa-area-chart"></i> <span>Summary</span></a></li>
-      <li><a href="#"><i class="fa fa-laptop"></i> <span>Bridges</span></a></li>
-      <li><a href="#"><i class="fa fa-table"></i> <span>Readings</span></a></li>
+      <li ng-repeat="item in leftMenu.perBuildingNavigation" ng-class="{'active' : leftMenu.isPerBuildingNavigationSelected(item, building)}">
+        <a href="#" ng-href="{{building.id}}/{{item.path}}"><i class="fa" ng-class="'fa-' + item.icon"></i> <span>{{item.name}}</span></a>
+      </li>
     </ul>
-    <!-- /.sidebar-menu -->
   </section>
-  <!-- /.sidebar -->
 </aside>
