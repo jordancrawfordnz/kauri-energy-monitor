@@ -27,7 +27,9 @@ Setup Bower (via npm), then run ``bower install``.
 ### NGINX configuration
 The following NGINX configuration is required so all unknown requests get forwarded to the application (as it is a single page web-app).
 
-TODO:
+```
+try_files $uri /index.html;
+```
 
 ## Template
 The base template is called [AdminLTE](https://almsaeedstudio.com/preview).
