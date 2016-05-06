@@ -14,9 +14,10 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'lbServices'
+    'lbServices',
+    'environmentConstants'
   ])
-  .config(function ($routeProvider, $httpProvider, LoopBackResourceProvider, $locationProvider) {
+  .config(function ($routeProvider, $httpProvider, LoopBackResourceProvider, $locationProvider, Environment) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/main.html',
@@ -50,8 +51,7 @@ angular
     // use the HTML5 History API
     $locationProvider.html5Mode(true);
 
-    // TODO: Get grunt to provide config variables.
-    LoopBackResourceProvider.setUrlBase('https://engmon.cms.waikato.ac.nz/api');
+    LoopBackResourceProvider.setUrlBase(Environment.baseUrl);
 
     // From https://docs.strongloop.com/display/public/LB/AngularJS+JavaScript+SDK
     $httpProvider.interceptors.push(function($q, $location, LoopBackAuth) {

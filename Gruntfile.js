@@ -12,6 +12,8 @@ module.exports = function (grunt) {
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
 
+  grunt.loadNpmTasks('grunt-ng-constant');
+
   var modRewrite = require('connect-modrewrite');
 
   // Automatically load required Grunt tasks
@@ -27,11 +29,35 @@ module.exports = function (grunt) {
     dist: 'dist'
   };
 
+   // Sets up the constants for a given target.
+  function getConstants(target)
+  {
+    var environments = grunt.file.readJSON('environments.json');
+    var constants = environments[target];
+    
+    return {
+      Environment : constants
+    };
+  }
+
   // Define the configuration for all the tasks
   grunt.initConfig({
 
     // Project settings
     yeoman: appConfig,
+
+    // Setup configuration for the different deployment environments
+    ngconstant: {
+      // Options for all targets
+      options: {
+        space: '  ',
+        wrap: '\'use strict\';\n\n {%= __ngModule %}',
+        name: 'environmentConstants',
+        dest: '<%= yeoman.app %>/scripts/constants.js',
+      },
+      local : { constants: getConstants('local') },
+      production : { constants: getConstants('production') }
+    },
 
     // Watches files for changes and runs tasks based on the changed files
     watch: {
@@ -429,6 +455,12 @@ module.exports = function (grunt) {
           cwd: '.',
           src: 'bower_components/bootstrap-sass-official/assets/fonts/bootstrap/*',
           dest: '<%= yeoman.dist %>'
+        },
+        { // include font-awesome fonts
+          expand: true,
+          cwd: 'bower_components/font-awesome',
+          src: 'fonts/*',
+          dest: '<%= yeoman.dist %>'
         }]
       },
       styles: {
@@ -463,14 +495,32 @@ module.exports = function (grunt) {
     }
   });
 
+  grunt.registerTask('serve', ['serveLocal']);
 
-  grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
+  grunt.registerTask('serveLocal', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
       return grunt.task.run(['build', 'connect:dist:keepalive']);
     }
 
     grunt.task.run([
       'clean:server',
+      'ngconstant:local',
+      'wiredep',
+      'concurrent:server',
+      'postcss:server',
+      'connect:livereload',
+      'watch'
+    ]);
+  });
+
+  grunt.registerTask('serveProduction', 'Compile then start a connect web server', function (target) {
+    if (target === 'dist') {
+      return grunt.task.run(['build', 'connect:dist:keepalive']);
+    }
+
+    grunt.task.run([
+      'clean:server',
+      'ngconstant:production',
       'wiredep',
       'concurrent:server',
       'postcss:server',
@@ -493,8 +543,9 @@ module.exports = function (grunt) {
     'karma'
   ]);
 
-  grunt.registerTask('build', [
+  grunt.registerTask('buildLocal', [
     'clean:dist',
+    'ngconstant:local',
     'wiredep',
     'useminPrepare',
     'concurrent:dist',
@@ -511,10 +562,33 @@ module.exports = function (grunt) {
     'htmlmin'
   ]);
 
+  grunt.registerTask('buildProduction', [
+    'clean:dist',
+    'ngconstant:production',
+    'wiredep',
+    'useminPrepare',
+    'concurrent:dist',
+    'postcss',
+    'ngtemplates',
+    'concat',
+    'ngAnnotate',
+    'copy:dist',
+    'cdnify',
+    'cssmin',
+    'uglify',
+    'filerev',
+    'usemin',
+    'htmlmin'
+  ]);
+
+  grunt.registerTask('build', ['buildProduction']);
+
   grunt.registerTask('default', [
+    'ngconstant:local',
     'newer:jshint',
     'newer:jscs',
     'test',
     'build'
   ]);
+
 };

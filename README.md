@@ -1,12 +1,33 @@
-# offgridmonitoring
+# Web App
+The web-app is an Angular app which connects to the backend using the API.
+Grunt is used as a task runner.
 
-This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
-version 0.15.1.
+## Setting up local development environment
+### NPM
+Setup npm then run ``npm install``.
 
-## Build & development
 
-Run `grunt` for building and `grunt serve` for preview.
+### Bower
+Setup Bower (via npm), then run ``bower install``.
 
-## Testing
+## Running
+### Local API
+``grunt serveLocal`` (or ``grunt serve``).
 
-Running `grunt test` will run the unit tests with karma.
+### Production API
+``grunt serveProduction``
+
+## Building
+### Local API
+``grunt buildLocal``
+
+### Production API
+``grunt buildProduction``
+
+### NGINX configuration
+The following NGINX configuration is required so all unknown requests get forwarded to the application (as it is a single page web-app).
+
+TODO:
+
+## Template
+The base template is called [AdminLTE](https://almsaeedstudio.com/preview).
