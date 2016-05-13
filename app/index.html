@@ -41,19 +41,18 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
           <h1>
-            Page Header
-            <small>Optional description</small>
+            {{Breadcrumbs.crumbs[Breadcrumbs.crumbs.length-1].name}}
+            <small ng-if="Breadcrumbs.crumbs[Breadcrumbs.crumbs.length-1].description">{{Breadcrumbs.crumbs[Breadcrumbs.crumbs.length-1].description}}</small>
           </h1>
-          <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-            <li class="active">Here</li>
+          <ol class="breadcrumb" ng-if="Breadcrumbs.crumbs.length > 0">
+            <li ng-class="{active : $last}" ng-repeat="breadcrumb in Breadcrumbs.crumbs"><a ng-href="{{breadcrumb.path}}"><i ng-if="$first" class="fa fa-dashboard"></i> {{breadcrumb.name}}</a></li>
           </ol>
         </section>
 
         <!-- Main content -->
         <section class="content">
 
-          <!-- Your Page Content Here -->
+          <!-- Page content -->
           <div ng-view=""></div>
 
         </section>
@@ -77,10 +76,12 @@
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
-    <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/controllers/buildings.js"></script>
     <script src="scripts/controllers/login.js"></script>
     <script src="scripts/controllers/leftmenu.js"></script>
     <script src="scripts/services/loopback.js"></script>
+    <script src="scripts/services/breadcrumbs.js"></script>
+    <script src="scripts/services/breadcrumb.js"></script>
     <script src="scripts/constants.js"></script>
     <!-- endbuild -->
 </body>

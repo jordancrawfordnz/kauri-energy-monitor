@@ -19,10 +19,8 @@ angular
   ])
   .config(function ($routeProvider, $httpProvider, LoopBackResourceProvider, $locationProvider, Environment) {
     $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl',
-        controllerAs: 'main'
+      .when('/buildings', {
+        templateUrl: 'views/buildings.html'
       })
       .when('/login', {
         templateUrl: 'views/login.html',
@@ -69,7 +67,7 @@ angular
       };
     });
   })
-  .run(function($rootScope, LoopBackAuth, $location, People) {
+  .run(function($rootScope, LoopBackAuth, $location, People, Breadcrumbs) {
     $rootScope.logout = function() {
       LoopBackAuth.clearUser();
       LoopBackAuth.clearStorage();
@@ -94,4 +92,6 @@ angular
     // Try get the user's details.    
     getUserDetails();
     $rootScope.$on('login', getUserDetails);
+
+    $rootScope.Breadcrumbs = Breadcrumbs;
   });

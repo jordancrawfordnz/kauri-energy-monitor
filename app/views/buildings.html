@@ -1,0 +1,16 @@
+<div ng-controller="BuildingsCtrl as buildings">
+	<div class="row">
+	  <div ng-repeat="building in buildings.buildings" class="col-sm-6 col-md-4">
+	    <div class="thumbnail">
+	      <div class="caption">
+	        <h3>{{building.name}}</h3>
+
+	        Building owners:
+	        <ul>
+	        	<li ng-repeat="owner in building.people">{{owner.name}}</li>
+	        </ul>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
