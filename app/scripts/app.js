@@ -19,7 +19,7 @@ angular
   ])
   .config(function ($routeProvider, $httpProvider, LoopBackResourceProvider, $locationProvider, Environment) {
     $routeProvider
-      .when('/buildings', {
+      .when('/', {
         templateUrl: 'views/buildings.html'
       })
       .when('/login', {

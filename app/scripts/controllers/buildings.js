@@ -9,7 +9,7 @@
  */
 angular.module('offgridmonitoringApp')
   .controller('BuildingsCtrl', function (Breadcrumb, Breadcrumbs, People) {
-  	console.log('BuildingCtrl');
+  	Breadcrumbs.add(new Breadcrumb('Buildings', '/', 'Manage your existing buildings or add a new building.'));
 
   	// Get buildings for this person.
   	this.buildings = People.buildings({
@@ -19,9 +19,4 @@ angular.module('offgridmonitoringApp')
         }
     });
 
-  	var buildings = new Breadcrumb('Buildings', '/');
-  	Breadcrumbs.add(buildings);
-
-  	var buildings2 = new Breadcrumb('Second entry', '/', 'desc');
-  	Breadcrumbs.add(buildings2);
   });
