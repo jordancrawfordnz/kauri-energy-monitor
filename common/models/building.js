@@ -10,7 +10,16 @@ module.exports = function(Building) {
 		var Reading = app.models.Reading;
 		var Bridge = app.models.Bridge;
 
-		Building.csv = function(id, cb) {
+		/* Generates a CSV.
+			ID is the ID of the building.
+			after (optional) is the Unix time to get data after.
+			until (optional) is the Unix time to get data until.
+		*/
+		Building.csv = function(id, after, until, cb) {
+			if (after && until && after > until) {
+				cb('The after date must come before the until date.');
+				return;
+			}
 			Building.findById(id, {include : {bridges : 'sensors'} },
 			 function(error, building) {
 			 	if (error || !building) {
@@ -54,9 +63,21 @@ module.exports = function(Building) {
 						// Make the CSV write wait for this task.
 						var promise = new Promise(function(resolve, reject) {
 							// Find all the readings for this bridge.
-							Reading.find({
-								where: {bridgeId : bridge.id}
-							}, function(error, readings) {
+							var filter = {
+								where: {bridgeId : bridge.id, timestamp : {}}
+							};
+
+							// If an after date is defined, get only values greater than this date.
+							if (after) {
+								filter.where.timestamp.gt = after;
+							}
+
+							// If a until date is defined, get only values before this date.
+							if (until) {
+								filter.where.timestamp.lt = until;
+							}
+
+							Reading.find(filter, function(error, readings) {
 								if (!error) {
 									readings.forEach(function(reading) {
 										var csvEntry = {};
@@ -96,7 +117,9 @@ module.exports = function(Building) {
 	Building.remoteMethod('csv', {
 		http: {verb: 'get', path: '/:id/csv'},
 		accepts: [
-			{ arg: 'id', type: 'string', required: true }
+			{ arg: 'id', type: 'string', required: true },
+			{ arg: 'after', type: 'number'},
+			{ arg: 'until', type: 'number'}
 		],
 		returns: {root: true, type: 'object'}
 	});
