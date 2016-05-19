@@ -2,11 +2,14 @@ var csvWriter = require('csv-write-stream');
 var fs = require('fs');
 var app = require('../../server/server');
 var Promise = require('promise');
+var moment = require('moment');
 
 module.exports = function(Building) {
 	
 	Building.observe('loaded', function(ctx, next) {
 		var Reading = app.models.Reading;
+		var Bridge = app.models.Bridge;
+
 		Building.csv = function(id, cb) {
 			Building.findById(id, {include : {bridges : 'sensors'} },
 			 function(error, building) {
@@ -45,22 +48,24 @@ module.exports = function(Building) {
 
 					// Get all the readings for each bridge.
 						// TODO: Paginate to reduce overall memory load?
-						// TODO: How to know when finished, need a giant list of promises!
 					building.bridges.forEach(function(bridge) {
 						var sensors = bridge.sensors;
 						
 						// Make the CSV write wait for this task.
 						var promise = new Promise(function(resolve, reject) {
-							Reading.find(function(error, readings) {
+							// Find all the readings for this bridge.
+							Reading.find({
+								where: {bridgeId : bridge.id}
+							}, function(error, readings) {
 								if (!error) {
 									readings.forEach(function(reading) {
 										var csvEntry = {};
-										csvEntry[headers.date] = reading.timestamp;
+										csvEntry[headers.date] = moment.unix(reading.timestamp).format('YYYY-MM-DD HH:mm:ss');
 										csvEntry[headers.bridgeId] = reading.bridgeId;
 										
 										Object.keys(reading.values).forEach(function(key) {
 											var value = reading.values[key];
-											// write the value to the CSV under the heading for this sensor.
+											// Write the value to the CSV under the heading for this sensor.
 											csvEntry[headers[key]] = value;
 										});
 										writer.write(csvEntry); // write the entry.
