@@ -48,5 +48,9 @@
   "People": {
     "dataSource": "db",
     "public": true
+  },
+  "Export": {
+    "dataSource": "db",
+    "public": true
   }
 }

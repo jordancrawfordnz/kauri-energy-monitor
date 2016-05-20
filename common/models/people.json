@@ -61,10 +61,10 @@
       "property": "create"
     },
     {
+      "accessType": "READ",
       "principalType": "ROLE",
       "principalId": "$authenticated",
-      "permission": "ALLOW",
-      "accessType": "READ"
+      "permission": "ALLOW"
     },
     {
       "accessType": "*",

@@ -22,6 +22,11 @@
       "type": "hasAndBelongsToMany",
       "model": "People",
       "foreignKey": ""
+    },
+    "exports": {
+      "type": "hasMany",
+      "model": "Export",
+      "foreignKey": ""
     }
   },
   "acls": [
