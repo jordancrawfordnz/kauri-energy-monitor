@@ -16,13 +16,12 @@ CSVExport.generateCSV = function(exportJob) {
 	Building.findById(exportJob.buildingId, {include : {bridges : 'sensors'} },
 	 function(error, building) {
 	 	if (error || !building) {
-			// TODO: update status with error.
-	 		// cb('Building not found.');
+	 		exportJob.updateAttribute('status', 'error');
 	 	} else {
 	 		building = building.toJSON();
 	 		
-	 		// TODO: update status.
-
+	 		exportJob.updateAttribute('status', 'inprogress');
+	 		
 	 		// Discover all sensors.
 	 		var sensors = [];
 	 		building.bridges.forEach(function(bridge) {
@@ -72,7 +71,7 @@ CSVExport.generateCSV = function(exportJob) {
 					if (until) {
 						filter.where.timestamp.lt = until;
 					}
-
+					
 					Reading.find(filter, function(error, readings) {
 						if (!error) {
 							readings.forEach(function(reading) {
@@ -99,13 +98,10 @@ CSVExport.generateCSV = function(exportJob) {
 			Promise.all(allPromises).then(function() {
 				// On successful end.
 				writer.end();
-				// TODO: update status with success.
-				// cb(null, {test:'something'});
+				exportJob.updateAttributes({status: 'finished', finished: Math.round(new Date().getTime()/1000)});
 			}, function(errors) {
 				writer.end();
-				// TODO: update status with error.
-
-				// cb('Error occured while fetching data.');
+				exportJob.updateAttribute('status', 'error');
 			});
 	 	}
 	});

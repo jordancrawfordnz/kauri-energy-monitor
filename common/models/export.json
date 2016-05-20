@@ -6,9 +6,12 @@
     "validateUpsert": true
   },
   "properties": {
-    "generated": {
+    "started": {
       "type": "number",
       "required": true
+    },
+    "finished": {
+      "type": "number"
     },
     "status": {
       "type": "string",

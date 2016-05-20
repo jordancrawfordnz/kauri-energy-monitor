@@ -30,8 +30,8 @@ module.exports = function(Export) {
 					var fileName = 'Export_' + building.name + '_Generated' +
 						moment.unix(currentTime).format('DD-MM-YY') + '.csv';
 
-					// Set the generated timestamp.
-					context.instance.generated = currentTime;
+					// Set the started timestamp.
+					context.instance.started = currentTime;
 
 					// Set the filename.
 					context.instance.filename = fileName;
