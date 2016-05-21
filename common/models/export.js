@@ -20,7 +20,7 @@ module.exports = function(Export) {
 		});
 	  };
 	 
-	  Export.remoteMethod('download', {
+	Export.remoteMethod('download', {
 	    isStatic: true,
 	    http: {path: '/:id/download/:fileName', verb: 'get'},
 	    accepts: [
@@ -30,7 +30,34 @@ module.exports = function(Export) {
 	      { arg: 'body', type: 'file', root: true },
 	      { arg: 'Content-Type', type: 'string', http: { target: 'header' } },
 	    ],
-	  });
+	});
+
+	// Processes a delete of an export by deleting the exported file (if it exists).
+	Export.processDelete = function(exportInstance) {
+		var fileToDelete = CSVExport.getFullFilename(exportInstance);
+		if (fs.existsSync(fileToDelete)) {
+			fs.unlinkSync(fileToDelete);
+		}
+	};
+
+	Export.observe('before delete', function(context, callback) {
+		if (context.instance) {
+			// If deleting a single Export.
+			Export.processDelete(context.instance);
+			callback();
+		} else { // If deleting many Export's.
+			// Get all of the items being deleted.
+			Export.find({where : context.where}, function(error, exports) {
+				if (error || !exports) {
+					callback('Could not get exports that need deleting.');
+				} else {
+					// Delete all the files.
+					exports.forEach(Export.processDelete);
+					callback();
+				}
+			});
+		}
+	});
 
 	// Start CSV generation after save and when the status is pending.
 	Export.observe('after save', function(context, callback) {
