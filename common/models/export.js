@@ -3,6 +3,8 @@ var CSVExport = require('../../services/csvexport.js');
 var fs = require('fs');
 
 module.exports = function(Export) {
+	Export.disableRemoteMethod('updateById');
+
 	// Setup a remote method to access CSV files.
 	Export.download = function(id, cb) {
 		// Get details about the Export provided.

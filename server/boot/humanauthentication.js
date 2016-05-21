@@ -47,6 +47,20 @@ module.exports = function enableHumanAuthentication(server) {
     		}
             return reject();
     	});
+    } else if (context.modelName === 'Export') { // Check the current user is an owner of the Building for the Export.
+        var Export = context.model;
+        Export.findById(context.modelId, {include : {building : 'people'} }, function(error, exportInstance) {
+            if (!error && exportInstance) {
+                exportInstance = exportInstance.toJSON();
+                
+                if (exportInstance.building.people) {
+                    if (isPersonBuildingOwner(exportInstance.building.people, userId)) {
+                        return callback(null, true); // allow the user access.
+                    }   
+                }
+            }
+            return reject();
+        });
     } else if (context.modelName === 'Bridge') { // Check the current user is an owner of the Bridge's building.
     	var Bridge = context.model;
 
