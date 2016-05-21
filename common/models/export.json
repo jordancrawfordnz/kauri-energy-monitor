@@ -17,10 +17,6 @@
       "type": "string",
       "required": true
     },
-    "filename": {
-      "type": "string",
-      "required": true
-    },
     "until": {
       "type": "number"
     },

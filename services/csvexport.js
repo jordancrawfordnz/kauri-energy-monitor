@@ -1,11 +1,15 @@
 var csvWriter = require('csv-write-stream');
-var fs = require('fs');
 var app = require('../server/server');
 var Promise = require('promise');
+var fs = require('fs');
 var moment = require('moment');
 
 var CSVExport = {};
 module.exports = CSVExport;
+
+CSVExport.getFullFilename = function(exportJob) {
+	return 'exports/' + exportJob.id;
+};
 
 CSVExport.generateCSV = function(exportJob) {
 	var Reading = app.models.Reading;
@@ -46,7 +50,8 @@ CSVExport.generateCSV = function(exportJob) {
 	 		});
 
 	 		// Setup the CSV file.
-	 		writer.pipe(fs.createWriteStream(exportJob.filename))
+	 		var fileName = CSVExport.getFullFilename(exportJob);
+	 		writer.pipe(fs.createWriteStream(fileName));
 			
 	 		var allPromises = []; // stores all the promises we need to wait for.
 
@@ -59,8 +64,12 @@ CSVExport.generateCSV = function(exportJob) {
 				var promise = new Promise(function(resolve, reject) {
 					// Find all the readings for this bridge.
 					var filter = {
-						where: {bridgeId : bridge.id, timestamp : {}}
+						where: {bridgeId : bridge.id}
 					};
+
+					if (after || until) {
+						filter.where.timestamp = {};
+					}
 
 					// If an after date is defined, get only values greater than this date.
 					if (after) {
@@ -71,7 +80,7 @@ CSVExport.generateCSV = function(exportJob) {
 					if (until) {
 						filter.where.timestamp.lt = until;
 					}
-					
+
 					Reading.find(filter, function(error, readings) {
 						if (!error) {
 							readings.forEach(function(reading) {

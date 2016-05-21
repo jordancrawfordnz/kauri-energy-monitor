@@ -1,8 +1,0 @@
-{
-  "db": {
-  	"name": "db",
-  	"connector": "mongodb",
-  	"database" : "offgridmonitoring",
-  	"host" : "localhost"
-  }
-}

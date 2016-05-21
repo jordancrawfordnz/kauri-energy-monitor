@@ -1,7 +1,8 @@
 {
   "db": {
-    "name": "db",
-    "connector": "memory",
-    "file": "db.json"
+  	"name": "db",
+  	"connector": "mongodb",
+  	"database" : "offgridmonitoring",
+  	"host" : "localhost"
   }
 }
