@@ -38,6 +38,10 @@ angular
         templateUrl: 'views/readings.html',
         controller: 'ReadingsCtrl'
       })
+      .when('/:buildingId/export', {
+        templateUrl: 'views/export.html',
+        controller: 'ExportCtrl'
+      })
       .when('/profile', {
         templateUrl: 'views/profile.html',
         controller: 'ProfileCtrl'

@@ -41,6 +41,11 @@ angular.module('offgridmonitoringApp')
         name : 'Readings',
         icon : 'table',
         path : 'reading'
+      },
+      {
+        name : 'Export',
+        icon : 'file-o',
+        path : 'export'
       }
     ];
 
