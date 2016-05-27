@@ -15,7 +15,9 @@ angular
     'ngSanitize',
     'ngTouch',
     'lbServices',
-    'environmentConstants'
+    'environmentConstants',
+    'datetimepicker',
+    'angularMoment'
   ])
   .config(function ($routeProvider, $httpProvider, LoopBackResourceProvider, $locationProvider, Environment) {
     $routeProvider

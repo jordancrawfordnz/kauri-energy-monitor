@@ -1,41 +1,82 @@
+<!-- general form elements -->
 <div class="box">
+  <div class="callout callout-danger" ng-if="hasFailedExportSetup">
+    <h4>An error occured while setting up the export job.</h4>
+    <p>Please try again.</p>
+  </div>
+
+  <div class="box-header with-border">
+    <h3 class="box-title">New Export Job</h3>
+  </div>
+
+  <form role="form">
+    <div class="box-body">
+      <p>
+        Generate a CSV file of data collected for this building. To reduce the size of the export, set a from or until filter.
+      </p>
+      <div class="form-group">
+        <label for="from">From</label>
+        <input type="text" class="form-control"
+         datetimepicker
+         datetimepicker-options="{{datePickerOptions}}"
+        placeholder="The start of collection."
+         name="from"
+         ng-model="from">
+      </div>
+
+      <div class="form-group">
+        <label for="until">Until</label>
+        <input type="text" class="form-control"
+         datetimepicker
+         datetimepicker-options="{{datePickerOptions}}"
+        placeholder="The request was submitted."
+         name="until"
+         ng-model="until">
+      </div>
+
+      <div class="box-footer">
+        <button type="submit" class="btn btn-primary" ng-click="startExport()">Start Exporting</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="box">
+  <div class="box-header with-border">
+    <h3 class="box-title">Previous Exports</h3>
+  </div>
   <div class="box-body table-responsive no-padding">
     <table class="table table-hover">
       <tbody><tr>
+        <th>Time Submitted</th>
+        <th>Generated</th>
         <th>From Date</th>
         <th>Until Date</th>
-        <th>Date Generated</th>
-        <th>Generation Time</th>
         <th>Status</th>
-        <th>Download</th>
       </tr>
-      <tr>
-        <td>183</td>
-        <td>John Doe</td>
-        <td>11-7-2014</td>
-        <td><span class="label label-success">Approved</span></td>
-        <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-      </tr>
-      <tr>
-        <td>219</td>
-        <td>Alexander Pierce</td>
-        <td>11-7-2014</td>
-        <td><span class="label label-warning">Pending</span></td>
-        <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-      </tr>
-      <tr>
-        <td>657</td>
-        <td>Bob Doe</td>
-        <td>11-7-2014</td>
-        <td><span class="label label-primary">Approved</span></td>
-        <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
-      </tr>
-      <tr>
-        <td>175</td>
-        <td>Mike Doe</td>
-        <td>11-7-2014</td>
-        <td><span class="label label-danger">Denied</span></td>
-        <td>Bacon ipsum dolor sit amet salami venison chicken flank fatback doner.</td>
+      <tr ng-repeat="export in exports">
+        <td>{{export.started | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+        <td>{{export.finished | amFromUnix |amDateFormat:dateTimeFormat}}</td>
+        <td ng-if="export.from">{{export.from | amFromUnix |amDateFormat:dateTimeFormat}}</td>
+        <td ng-if="!export.from">The start of collection.</td>
+        <td ng-if="export.until">{{export.until | amFromUnix |amDateFormat:dateTimeFormat}}</td>
+        <td ng-if="!export.until">The request was submitted.</td>
+        <td ng-if="export.status === 'pending'">
+          <span class="label label-primary">Pending</span>
+        </td>
+        <td ng-if="export.status === 'inprogress'">
+          <span class="label label-primary">In Progress</span>
+        </td>
+        <td ng-if="export.status === 'finished'">
+          <span class="label label-success">Finished</span>
+        </td>
+        <td ng-if="export.status === 'error'">
+          <span class="label label-danger">Error</span>
+        </td>
+        <td ng-if="export.status === 'finished'"><a target="_blank" ng-href="{{baseUrl}}/exports/{{export.id}}/download/{{building.name}}_export_{{export.started | amFromUnix |amDateFormat:'D-M-Y'}}.csv?access_token={{authToken}}" class="label label-primary label-disabled">Download</a></td>
+        <td>
+          <a class="label label-danger" ng-click="delete(export)">Delete</a>
+        </td>
       </tr>
     </tbody></table>
   </div>
