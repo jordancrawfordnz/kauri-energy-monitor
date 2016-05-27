@@ -8,7 +8,7 @@
  * Allows building data to be exported.
  */
 angular.module('offgridmonitoringApp')
-  .controller('ExportCtrl', function ($scope, Breadcrumb, Breadcrumbs, $routeParams, Building, Environment, People, LoopBackAuth) {
+  .controller('ExportCtrl', function ($interval, $scope, Breadcrumb, Breadcrumbs, $routeParams, Building, Environment, People, LoopBackAuth, $rootScope) {
   	$scope.dateTimeFormat = 'D/M/Y LTS';
 
     $scope.baseUrl = Environment.baseUrl; // the base token to use in an export URL.
@@ -22,13 +22,27 @@ angular.module('offgridmonitoringApp')
     });
     Breadcrumbs.add(new Breadcrumb('Export', '/' + $routeParams.buildingId + '/export', 'Export data for a building.'));
 
-    // Get the current set of exports for $scope building.
-    $scope.exports = Building.exports({
-      id : $routeParams.buildingId
+    $scope.exports = [];
+
+    $scope.refreshPreviousExports = function() {
+      // Get the current set of exports for $scope building.
+      Building.exports({
+        id : $routeParams.buildingId
+      }).$promise.then(function(exports) {
+        // On successful get, set the exports.
+        $scope.exports = exports;
+      });
+    };
+
+    $scope.refreshPreviousExports(); // do an initial refresh.
+    $scope.autoRefreshSeconds = 10;
+    $scope.autoRefreshInterval = $interval($scope.refreshPreviousExports, $scope.autoRefreshSeconds*1000); // auto-refresh every autoRefreshSeconds seconds.
+    
+    // Cancel the interval when leaving the page.
+    $rootScope.$on('$routeChangeStart', function() {
+      $interval.cancel($scope.autoRefreshInterval);
     });
 
-    // TODO: Automatically refresh the exports list.
-    
     $scope.datePickerOptions = {
       icons : {
         next: 'glyphicon glyphicon-arrow-right',

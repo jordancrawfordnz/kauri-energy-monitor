@@ -44,6 +44,8 @@
 <div class="box">
   <div class="box-header with-border">
     <h3 class="box-title">Previous Exports</h3>
+    <br>
+    Auto-refreshes every {{autoRefreshSeconds}} seconds.
   </div>
   <div class="box-body table-responsive no-padding">
     <table class="table table-hover">
@@ -53,13 +55,14 @@
         <th>From Date</th>
         <th>Until Date</th>
         <th>Status</th>
+        <th><th>
       </tr>
       <tr ng-repeat="export in exports">
         <td>{{export.started | amFromUnix | amDateFormat:dateTimeFormat}}</td>
-        <td>{{export.finished | amFromUnix |amDateFormat:dateTimeFormat}}</td>
-        <td ng-if="export.from">{{export.from | amFromUnix |amDateFormat:dateTimeFormat}}</td>
-        <td ng-if="!export.from">The start of collection.</td>
-        <td ng-if="export.until">{{export.until | amFromUnix |amDateFormat:dateTimeFormat}}</td>
+        <td>{{export.finished | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+        <td ng-if="export.after">{{export.after | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+        <td ng-if="!export.after">The start of collection.</td>
+        <td ng-if="export.until">{{export.until | amFromUnix | amDateFormat:dateTimeFormat}}</td>
         <td ng-if="!export.until">The request was submitted.</td>
         <td ng-if="export.status === 'pending'">
           <span class="label label-primary">Pending</span>
@@ -73,7 +76,9 @@
         <td ng-if="export.status === 'error'">
           <span class="label label-danger">Error</span>
         </td>
-        <td ng-if="export.status === 'finished'"><a target="_blank" ng-href="{{baseUrl}}/exports/{{export.id}}/download/{{building.name}}_export_{{export.started | amFromUnix |amDateFormat:'D-M-Y'}}.csv?access_token={{authToken}}" class="label label-primary label-disabled">Download</a></td>
+        <td>
+          <a ng-if="export.status === 'finished'" target="_blank" ng-href="{{baseUrl}}/exports/{{export.id}}/download/{{building.name}}_export_{{export.started | amFromUnix |amDateFormat:'D-M-Y'}}.csv?access_token={{authToken}}" class="label label-primary label-disabled">Download</a>
+        </td>
         <td>
           <a class="label label-danger" ng-click="delete(export)">Delete</a>
         </td>
