@@ -1,0 +1,20 @@
+<div class="row">
+  <div ng-repeat="bridge in bridges.bridges" class="col-sm-6 col-md-4">
+    <div class="thumbnail">
+      <div class="caption">
+        <h3>{{bridge.name}}</h3>
+
+        Sensors:
+        <ul>
+        	<li ng-repeat="sensor in bridge.sensors">
+        		{{sensor.name}}
+        		<span class="label label-primary">{{bridges.sensorTypes[sensor.type].electricity}}</span>
+        		<span class="label label-primary">{{bridges.sensorTypes[sensor.type].type}}</span>
+        	</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TODO: Add edit, delete, add functunality. -->

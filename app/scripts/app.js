@@ -28,13 +28,15 @@ angular
         templateUrl: 'views/login.html',
         controller: 'LoginCtrl',
       })
-      .when('/:buildingId/summary', {
-        templateUrl: 'views/summary.html',
-        controller: 'SummaryCtrl'
+      .when('/:buildingId', {
+        templateUrl: 'views/buildingsummary.html',
+        controller: 'BuildingSummaryCtrl',
+        controllerAs: 'summary'
       })
-      .when('/:buildingId/bridge', {
+      .when('/:buildingId/bridges', {
         templateUrl: 'views/bridges.html',
-        controller: 'BridgesCtrl'
+        controller: 'BridgesCtrl',
+        controllerAs: 'bridges'
       })
       .when('/:buildingId/reading', {
         templateUrl: 'views/readings.html',

@@ -30,12 +30,12 @@ angular.module('offgridmonitoringApp')
       {
         name : 'Summary',
         icon : 'area-chart',
-        path : 'summary'
+        path : ''
       },
       {
         name : 'Bridges',
         icon : 'laptop',
-        path : 'bridge'
+        path : 'bridges'
       },
       {
         name : 'Readings',
