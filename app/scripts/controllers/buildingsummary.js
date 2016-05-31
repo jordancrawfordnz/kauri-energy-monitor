@@ -8,7 +8,7 @@
  * Displays a summary of key indicators about a building.
  */
 angular.module('offgridmonitoringApp')
-  .controller('BuildingSummaryCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, Reading, SensorTypes) {
+  .controller('BuildingSummaryCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes) {
   	var _this = this;
 
     this.building = Building.findById({
@@ -36,22 +36,13 @@ angular.module('offgridmonitoringApp')
       var bridge = building.bridges[0];
 
       // Fetch the count of readings.
-      _this.readingCount = Reading.count({
-        filter : {
-          where : {
-            bridgeId : bridge.id
-          }
-        }
+      _this.readingCount = Bridge.readings.count({
+        id : bridge.id
       });
 
       // Get the latest reading for the bridge.
-      Reading.findOne({
-        filter : {
-          where : {
-            bridgeId : bridge.id
-          },
-          order : 'timestamp DESC'
-        }
+      Bridge.latestReading({
+        id : bridge.id
       }).$promise.then(function(reading) {
         _this.sensorReadings = [];
         // Pair up the reading and its metadata.

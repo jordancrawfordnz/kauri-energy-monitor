@@ -2426,6 +2426,41 @@ module.factory(
           method: "POST"
         },
 
+        /**
+         * @ngdoc method
+         * @name lbServices.Bridge#latestReading
+         * @methodOf lbServices.Bridge
+         *
+         * @description
+         *
+         * <em>
+         * (The remote method definition does not provide any description.)
+         * </em>
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{string}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Bridge` object.)
+         * </em>
+         */
+        "latestReading": {
+          url: urlBase + "/Bridges/:id/latestreading",
+          method: "GET"
+        },
+
         // INTERNAL. Use Building.bridges.findById() instead.
         "::findById::Building::bridges": {
           params: {
