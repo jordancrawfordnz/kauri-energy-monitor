@@ -43,5 +43,8 @@
       "permission": "ALLOW"
     }
   ],
+  "indexes" : {
+    "timestamp_index" : {"timestamp": -1}
+  },
   "methods": {}
 }
