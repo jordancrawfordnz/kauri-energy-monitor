@@ -8,27 +8,9 @@
  * Displays bridges.
  */
 angular.module('offgridmonitoringApp')
-  .controller('BridgesCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building) {
-  	// Metadata on the types of sensors.
-    this.sensorTypes = {
-      "acvoltage" : {
-        electricity : "AC",
-        type : "Voltage"
-      },
-      "dcvoltage" : {
-        electricity : "DC",
-        type : "Voltage"
-      },
-      "accurrent" : {
-        electricity : "AC",
-        type : "Current"
-      },
-      "dccurrent" : {
-        electricity : "DC",
-        type : "Current"
-      }
-    };
-
+  .controller('BridgesCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, SensorTypes) {
+  	this.sensorTypes = SensorTypes;
+    
     this.building = Building.findById({id : $routeParams.buildingId});
     // Setup breadcrumbs.
     Breadcrumbs.addPlaceholder('Building', this.building.$promise, function(building) {

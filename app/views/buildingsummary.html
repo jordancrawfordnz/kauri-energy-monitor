@@ -1,20 +1,41 @@
 <div class="row">
-  <div ng-repeat="bridge in bridges.bridges" class="col-sm-6 col-md-4">
-    <div class="thumbnail">
-      <div class="caption">
-        <h3>{{bridge.name}}</h3>
+	<div ng-if="summary.latestReadingTimestamp" class="col-lg-3 col-xs-6">
+        <!-- Latest reading section -->
+        <div class="small-box bg-yellow">
+        	<div class="inner">
+				<p>Last reading</p>
+            	<h3 am-time-ago="summary.latestReadingTimestamp | amFromUnix"></h3>
+            </div>
+            <div class="icon">
+            	<i class="fa fa-calendar"></i>
+            </div>
+    	</div>
+	</div>
 
-        Sensors:
-        <ul>
-        	<li ng-repeat="sensor in bridge.sensors">
-        		{{sensor.name}}
-        		<span class="label label-primary">{{bridges.sensorTypes[sensor.type].electricity}}</span>
-        		<span class="label label-primary">{{bridges.sensorTypes[sensor.type].type}}</span>
-        	</li>
-        </ul>
-      </div>
+	<div ng-if="summary.readingCount" class="col-lg-3 col-xs-6">
+        <!--  -->
+        <div class="small-box bg-red">
+        	<div class="inner">
+				<p>Readings recorded</p>
+            	<h3>{{summary.readingCount.count | number}}</h3>
+            </div>
+            <div class="icon">
+            	<i class="fa fa-database"></i>
+            </div>
+    	</div>
+	</div>
+
+	<!-- For each reading -->
+  	<div ng-repeat="sensor in summary.sensorReadings" class="col-lg-3 col-xs-6">
+    	<div ng-if="summary.latestReadingTimestamp" class="small-box" ng-class="{'bg-blue' : sensor.typedata.isAC, 'bg-green' : !sensor.typedata.isAC}">
+        	<div class="inner">
+				<p>{{sensor.metadata.name}}</p>
+            	<h3>{{sensor.value}} {{sensor.typedata.unitFull}}</h3>
+            </div>
+            <div class="icon">
+            	<i class="fa" ng-class="{'fa-plug' : sensor.typedata.isAC, 'fa-battery-three-quarters' : !sensor.typedata.isAC}"></i>
+            </div>
+    	</div>
     </div>
   </div>
 </div>
-
-<!-- TODO: Add edit, delete, add functunality. -->

@@ -54,7 +54,12 @@ angular.module('offgridmonitoringApp')
     };
 
     this.isPerBuildingNavigationSelected = function(navItem, building) {
-      return $location.$$path === '/' + building.id + '/' + navItem.path;
+      if (navItem.path === '') {
+        return $location.$$path === '/' + building.id; 
+      }
+      else {
+        return $location.$$path === '/' + building.id + '/' + navItem.path;
+      }
     };
 
   });
