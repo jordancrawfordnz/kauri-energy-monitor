@@ -50,7 +50,7 @@ angular.module('offgridmonitoringApp')
           var sensorValue = reading.values[sensor.id];
           
           // If there is a value for this sensor ID, add the reading and metadata.
-          if (sensorValue) {
+          if (sensorValue !== undefined) {
             _this.sensorReadings.push({
               value : sensorValue,
               metadata : sensor,
