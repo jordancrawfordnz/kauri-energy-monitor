@@ -64,7 +64,8 @@ CSVExport.generateCSV = function(exportJob) {
 				var promise = new Promise(function(resolve, reject) {
 					// Find all the readings for this bridge.
 					var filter = {
-						where: {bridgeId : bridge.id}
+						where: {bridgeId : bridge.id},
+						order: 'timestamp asc'
 					};
 
 					if (after || until) {
