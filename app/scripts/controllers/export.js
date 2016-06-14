@@ -54,11 +54,6 @@ angular.module('offgridmonitoringApp')
       format : $scope.dateTimeFormat
     };
 
-    $scope.datePickerConfig = {
-      startView : 'day',
-      modelType : 'moment'
-    };
-
     $scope.$watch('date', function(newData) {
       if (newData) {
        $rootScope.currentDate = newData;
