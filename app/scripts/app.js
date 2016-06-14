@@ -28,6 +28,10 @@ angular
         templateUrl: 'views/login.html',
         controller: 'LoginCtrl',
       })
+      .when('/profile', {
+        templateUrl: 'views/profile.html',
+        controller: 'ProfileCtrl'
+      })
       .when('/:buildingId', {
         templateUrl: 'views/buildingsummary.html',
         controller: 'BuildingSummaryCtrl',
@@ -45,10 +49,6 @@ angular
       .when('/:buildingId/export', {
         templateUrl: 'views/export.html',
         controller: 'ExportCtrl'
-      })
-      .when('/profile', {
-        templateUrl: 'views/profile.html',
-        controller: 'ProfileCtrl'
       })
       .otherwise({
         redirectTo: '/'
