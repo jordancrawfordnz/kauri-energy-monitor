@@ -16,7 +16,7 @@ module.exports = function setupAdmin(server) {
 			// Create admin user.
 		  		// TODO: Support changing user passwords / add here in encrypted form.
 			People.create([
-			    { email: 'jordan.crawford@me.com', password: '8nyW6p6LTzQ7WahAj8Tk', name: 'Jordan Crawford'}
+			    { email: 'jordan@crawford.kiwi', password: '8nyW6p6LTzQ7WahAj8Tk', name: 'Jordan Crawford'}
 			], function(err, users) {
 				if (err) {
 					console.log('An error occured adding default people.');
