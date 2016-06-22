@@ -9,6 +9,18 @@
     "name": {
       "type": "string",
       "required": true
+    },
+    "lvsdTime": {
+      "type": "number",
+      "required": true
+    },
+    "lvsdVoltage": {
+      "type": "number",
+      "required": true
+    },
+    "highPowerThreshold": {
+      "type": "number",
+      "required": true
     }
   },
   "validations": [],
@@ -36,6 +48,21 @@
     "recalibrations": {
       "type": "hasMany",
       "model": "Recalibration",
+      "foreignKey": ""
+    },
+    "batteryVoltageSensor": {
+      "type": "hasOne",
+      "model": "Sensor",
+      "foreignKey": ""
+    },
+    "batteryCurrentSensor": {
+      "type": "hasOne",
+      "model": "Sensor",
+      "foreignKey": ""
+    },
+    "buildingPowerSensor": {
+      "type": "hasOne",
+      "model": "Sensor",
       "foreignKey": ""
     }
   },
