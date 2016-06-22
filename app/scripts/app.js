@@ -37,10 +37,10 @@ angular
         controller: 'BuildingSummaryCtrl',
         controllerAs: 'summary'
       })
-      .when('/:buildingId/bridges', {
-        templateUrl: 'views/bridges.html',
-        controller: 'BridgesCtrl',
-        controllerAs: 'bridges'
+      .when('/:buildingId/configuration', {
+        templateUrl: 'views/buildingconfiguration.html',
+        controller: 'BuildingConfigCtrl',
+        controllerAs: 'buildingConfig'
       })
       .when('/:buildingId/reading', {
         templateUrl: 'views/readings.html',

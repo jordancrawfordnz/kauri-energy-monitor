@@ -1,0 +1,91 @@
+<!-- Building error messages -->
+<div class="callout callout-danger" ng-if="buildingConfig.buildingSaveError">
+  <h4>Building save failed</h4>
+  <p>There was a problem while saving the building. Please try again.</p>
+</div>
+
+<div class="callout callout-success" ng-if="buildingConfig.buildingSaveSuccess">
+  <h4>Building saved successfully</h4>
+  <p>The building has been saved successfully.</p>
+</div>
+
+<!-- Building parameters -->
+<div class="box box-primary">
+  <div class="box-header with-border">
+    <h3 class="box-title">Parameters</h3>
+  </div>
+  <form role="form" name="editBuildingForm" novalidate>
+      <div class="box-body">
+        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lvsdVoltage.$dirty && editBuildingForm.lvsdVoltage.$invalid}">
+          <label for="lvsdVoltage">Voltage that triggers LVSD event</label>
+          <p>The voltage that will trigger an LVSD shutdown when the battery voltage is below this level for the LVSD event trigger time. Used to predict when an LVSD will occur and represents a low battery if no high power devices are in use.</p>
+          <div class="input-group">
+            <input class="form-control" type="number" ng-model="buildingConfig.building.lvsdVoltage" name="lvsdVoltage" id="lvsdVoltage" required>
+            <span class="input-group-addon">Volts</span>
+          </div>
+        </div>
+
+        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lvsdTime.$dirty && editBuildingForm.lvsdTime.$invalid}">
+          <label for="lvsdTime">Time until LVSD event triggered</label>
+          <p>The time the battery voltage must be below the LVSD trigger voltage before an LVSD shutdown occurs. Used to avoid this situation happening through generator automation.</p>
+          <div class="input-group">
+            <input class="form-control" type="number" ng-model="buildingConfig.building.lvsdTime" name="lvsdTime" id="lvsdTime" required>
+            <span class="input-group-addon">seconds</span>
+          </div>
+        </div>
+
+        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.highPowerThreshold.$dirty && editBuildingForm.highPowerThreshold.$invalid}">
+          <label for="highPowerThreshold">High power threshold</label>
+          <p>This is the power in watts that is considered high and out of the ordinary. LVSD events caused by high power loads don't represent low battery levels so do not contribute to the state of the system. Can be used for generator automation.</p>
+          <div class="input-group">
+            <input class="form-control" type="number" ng-model="buildingConfig.building.highPowerThreshold" name="highPowerThreshold" id="highPowerThreshold" required>
+            <span class="input-group-addon">Watts</span>
+          </div>
+        </div>
+
+        <!-- TODO: Set sensors. -->
+          <!-- Make a 'sensor chooser' directive. Will come in handy later. How to set ng-model? -->
+      </div>
+      <div class="box-footer">
+        <button ng-disabled="editBuildingForm.$invalid" type="submit" ng-click="buildingConfig.saveBuilding()" class="btn btn-primary">Save</button>
+      </div>
+  </form>
+</div>
+
+<!-- Bridges -->
+  <!-- TODO: Add edit, delete, add functunality. -->
+<div class="box box-primary">
+  <div class="box-header with-border">
+    <h3 class="box-title">Bridges</h3>
+  </div>
+  <div class="box-body">
+    <div class="row">
+      <div ng-repeat="bridge in buildingConfig.bridges" class="col-md-6">
+        <div class="thumbnail">
+          <div class="caption">
+            <h3>{{bridge.name}}</h3>
+
+            <h4>Sensors:</h4>
+            <div class="box-body table-responsive no-padding">
+              <table class="table table-hover">
+                <tbody>
+                  <tr>
+                    <th>Name</th>
+                    <th>Power type</th>
+                    <th>Reading type</th>
+                  </tr>
+                  <tr ng-repeat="sensor in bridge.sensors">
+                    <td>{{sensor.name}}</td>
+                    <td>{{buildingConfig.sensorTypes[sensor.type].electricity}}</td>
+                    <td>{{buildingConfig.sensorTypes[sensor.type].type}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>    
+  </div>
+</div>

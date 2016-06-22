@@ -33,9 +33,9 @@ angular.module('offgridmonitoringApp')
         path : ''
       },
       {
-        name : 'Bridges',
-        icon : 'laptop',
-        path : 'bridges'
+        name : 'Configuration',
+        icon : 'cogs',
+        path : 'configuration'
       },
       {
         name : 'Readings',

@@ -18,11 +18,11 @@ angular.module('offgridmonitoringApp')
 
       The page starts at 1 which will map to page 0 in API calls.
     */
-    $scope.amountPerPage = "100";
+    $scope.amountPerPage = "10";
     $scope.debounceTime = 500;
     $scope.dateTimeFormat = 'D/M/Y LTS';
     $scope.currentPage = 1;
-    $scope.sortOrder = 'asc';
+    $scope.sortOrder = 'desc';
     
     $scope.datePickerOptions = {
       icons : {
@@ -31,7 +31,6 @@ angular.module('offgridmonitoringApp')
         up: 'glyphicon glyphicon-arrow-up',
         down: 'glyphicon glyphicon-arrow-down'
       },
-      locale : 'en-NZ',
       format : $scope.dateTimeFormat
     };
 
