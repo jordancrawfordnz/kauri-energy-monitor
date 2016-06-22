@@ -61,6 +61,34 @@ module.exports = function enableHumanAuthentication(server) {
             }
             return reject();
         });
+    } else if (context.modelName === 'Recalibration') { // Check the current user is an owner of the Building for the Recalibration.
+        var Recalibration = context.model;
+        Recalibration.findById(context.modelId, {include : {building : 'people'} }, function(error, recalibrationInstance) {
+            if (!error && recalibrationInstance) {
+                recalibrationInstance = recalibrationInstance.toJSON();
+                
+                if (recalibrationInstance.building.people) {
+                    if (isPersonBuildingOwner(recalibrationInstance.building.people, userId)) {
+                        return callback(null, true); // allow the user access.
+                    }   
+                }
+            }
+            return reject();
+        });
+    } else if (context.modelName === 'State') { // Check the current user is an owner of the Building for the State.
+        var State = context.model;
+        State.findById(context.modelId, {include : {building : 'people'} }, function(error, stateInstance) {
+            if (!error && stateInstance) {
+                stateInstance = stateInstance.toJSON();
+                
+                if (stateInstance.building.people) {
+                    if (isPersonBuildingOwner(stateInstance.building.people, userId)) {
+                        return callback(null, true); // allow the user access.
+                    }   
+                }
+            }
+            return reject();
+        });
     } else if (context.modelName === 'Bridge') { // Check the current user is an owner of the Bridge's building.
     	var Bridge = context.model;
 

@@ -52,5 +52,13 @@
   "Export": {
     "dataSource": "db",
     "public": true
+  },
+  "State": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Recalibration": {
+    "dataSource": "db",
+    "public": true
   }
 }

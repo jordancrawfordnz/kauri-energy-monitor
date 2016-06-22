@@ -1,12 +1,7 @@
 {
-  "name": "Reading",
+  "name": "State",
   "base": "PersistedModel",
   "idInjection": true,
-  "indexes": {
-    "timestamp_index": {
-      "timestamp": -1
-    }
-  },
   "options": {
     "validateUpsert": true
   },
@@ -15,16 +10,32 @@
       "type": "number",
       "required": true
     },
-    "values": {
-      "type": "object",
+    "ein": {
+      "type": "number",
+      "required": true
+    },
+    "eout": {
+      "type": "number",
+      "required": true
+    },
+    "c100": {
+      "type": "number",
+      "required": true
+    },
+    "et": {
+      "type": "number",
+      "required": true
+    },
+    "ceff": {
+      "type": "number",
       "required": true
     }
   },
   "validations": [],
   "relations": {
-    "bridge": {
+    "building": {
       "type": "belongsTo",
-      "model": "Bridge",
+      "model": "Building",
       "foreignKey": ""
     }
   },
@@ -36,7 +47,7 @@
       "permission": "DENY"
     },
     {
-      "accessType": "READ",
+      "accessType": "*",
       "principalType": "ROLE",
       "principalId": "buildingOwner",
       "permission": "ALLOW"

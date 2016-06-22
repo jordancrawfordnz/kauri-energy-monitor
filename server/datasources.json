@@ -1,8 +1,8 @@
 {
   "db": {
-  	"name": "db",
-  	"connector": "mongodb",
-  	"database" : "offgridmonitoring",
-  	"host" : "localhost"
+    "host": "localhost",
+    "database": "offgridmonitoring",
+    "name": "db",
+    "connector": "mongodb"
   }
 }
