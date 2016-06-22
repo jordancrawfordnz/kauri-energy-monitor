@@ -51,17 +51,17 @@
       "foreignKey": ""
     },
     "batteryVoltageSensor": {
-      "type": "hasOne",
+      "type": "belongsTo",
       "model": "Sensor",
       "foreignKey": ""
     },
     "batteryCurrentSensor": {
-      "type": "hasOne",
+      "type": "belongsTo",
       "model": "Sensor",
       "foreignKey": ""
     },
     "buildingPowerSensor": {
-      "type": "hasOne",
+      "type": "belongsTo",
       "model": "Sensor",
       "foreignKey": ""
     }
