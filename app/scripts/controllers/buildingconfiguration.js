@@ -12,8 +12,19 @@ angular.module('offgridmonitoringApp')
   	var _this = this;
     this.sensorTypes = SensorTypes;
     
-    this.building = Building.findById({id : $routeParams.buildingId});
-    
+    function getBuilding() {
+      _this.building = Building.findById({
+        id : $routeParams.buildingId,
+        filter : {
+          include : [
+            {'bridges' : 'sensors'},
+            'batteryCurrentSensor'
+          ]
+        }
+      });
+    }
+    getBuilding();
+
     // Setup breadcrumbs.
     Breadcrumbs.addPlaceholder('Building', this.building.$promise, function(building) {
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
@@ -21,17 +32,14 @@ angular.module('offgridmonitoringApp')
 
     Breadcrumbs.add(new Breadcrumb('Configuration', '/' + $routeParams.buildingId + '/configuration', 'Configure the building parameters and bridges.'));
 
-    // Get bridges for this building.
-  	this.bridges = Building.bridges({
-        id : $routeParams.buildingId,
-        filter : {
-        	include : ['sensors']
-        }
-    });
-
     this.saveBuilding = function() {
       // Save the building. Show a message on error.
-      this.building.$save(function(data) {
+      this.building.$prototype$updateAttributes({
+        lvsdVoltage : this.building.lvsdVoltage,
+        lvsdTime : this.building.lvsdTime,
+        highPowerThreshold : this.building.highPowerThreshold,
+        batteryCurrentSensor : this.building.batteryCurrentSensor
+      }, function(data) {
         if (!data) {
           // Display error message.
           _this.buildingSaveError = true;
@@ -43,6 +51,7 @@ angular.module('offgridmonitoringApp')
             _this.buildingSaveSuccess = false;
           }, 5*1000);
         }
+        getBuilding();
       });
     };
 

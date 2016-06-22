@@ -43,8 +43,24 @@
           </div>
         </div>
 
-        <!-- TODO: Set sensors. -->
-          <!-- Make a 'sensor chooser' directive. Will come in handy later. How to set ng-model? -->
+        <div class="form-group">
+          <label for="batteryCurrentSensor">Battery current sensor</label>
+          <p>This is the sensor that is used to measure the battery current used in state of charge calculations. Assumes positive means charging.</p>
+          <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.batteryCurrentSensorId"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="batteryVoltageSensor">Battery voltage sensor</label>
+          <p>This is the sensor that is used to measure the battery voltage used in state of charge calculations. This is also used to detect a likey LVSD state with te LVSD voltage.</p>
+          <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.batteryVoltageSensorId"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="buildingPowerSensor">Building power sensor</label>
+          <p>This is the sensor for the building's total power usage. This is used with the high power threshold to detect situations where LVSD may occur but not due to low battery level.</p>
+          <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.buildingPowerSensorId"></div>
+        </div>
+
       </div>
       <div class="box-footer">
         <button ng-disabled="editBuildingForm.$invalid" type="submit" ng-click="buildingConfig.saveBuilding()" class="btn btn-primary">Save</button>
@@ -60,7 +76,7 @@
   </div>
   <div class="box-body">
     <div class="row">
-      <div ng-repeat="bridge in buildingConfig.bridges" class="col-md-6">
+      <div ng-repeat="bridge in buildingConfig.building.bridges" class="col-md-6">
         <div class="thumbnail">
           <div class="caption">
             <h3>{{bridge.name}}</h3>
