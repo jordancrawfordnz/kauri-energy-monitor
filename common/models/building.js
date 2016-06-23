@@ -1,6 +1,36 @@
 module.exports = function(Building) {
 	Building.disableRemoteMethod('__updateById__exports');
 
+	var produceStateEvery = 10*60; // ten minutes
+
+	function shouldRecordState(timeSinceLastReading, timestamp) {
+		var outBy = timestamp % produceStateEvery;
+
+		// Either the timestamp is perfectly on a record state time or the record state
+		return outBy === 0 || outBy < timeSinceLastReading;
+	};
+	
+	// Require that the state production will be the same times each day.
+	if (3600*24 % produceStateEvery !== 0) {
+		console.log('Building States should be computed by a number that divides the number of seconds in a day.')
+		process.exit();
+	}
+
+	Building.latestState = function(id, cb) {
+		Building.app.models.State.findOne({
+			where: {
+				buildingId : id
+			},
+			order: 'timestamp DESC'
+		}, function(error, state) {
+			if (error) {
+				cb(error);
+			} else {
+				cb(null, state);
+			}
+		});
+	};
+
 	/*
 		Re-generates the entire state of the system by:
 			- deleting all existing State's for the building
@@ -32,7 +62,6 @@ module.exports = function(Building) {
 					console.log(destroyStateError);
 					return;
 				}
-				console.log('about to find building');
 				// Get the Building with bridge.
 				Building.findById(id, {
 					include : 'bridges'
@@ -49,7 +78,7 @@ module.exports = function(Building) {
 					
 					// TODO: itterate through all pages.
 					var page = 0;
-					var amountPerPage = 10;
+					var amountPerPage = 100000;
 
 					// Fetch readings.
 					Reading.find({
@@ -73,7 +102,8 @@ module.exports = function(Building) {
 							powerOut : 0,
 							batteryCapacity : 0,
 							currentChargeLevel : 0,
-							chargeEfficiency : 0.8
+							chargeEfficiency : 0.8,
+							buildingId : building.id
 						};
 						// For each reading.
 							// TODO: pull out as a seperate function.
@@ -81,12 +111,6 @@ module.exports = function(Building) {
 							var buildingPower = reading.values[building.buildingPowerSensorId];
 							var batteryVoltage = reading.values[building.batteryVoltageSensorId];
 							var batteryCurrent = reading.values[building.batteryCurrentSensorId];
-
-							console.log('Timestamp: ' + reading.timestamp);
-							console.log('Building power: ' + buildingPower + ' W');
-							console.log('Battery voltage: ' + batteryVoltage + ' V');
-							console.log('Battery current: ' + batteryCurrent + ' A');
-
 
 							var secondsSinceLastReading = 0;
 							if (lastReading) {
@@ -108,7 +132,18 @@ module.exports = function(Building) {
 
 								if (state.currentChargeLevel > state.batteryCapacity) { // Expand the capacity to the current charge level.
 									state.batteryCapacity = state.currentChargeLevel;
-										// TODO: Calibration?
+									Recalibration.create({
+										timestamp : reading.timestamp,
+										reason : 'BatteryCapacityHigherThan100',
+										buildingId : building.id
+									}, function(error) {
+										if (error) {
+											console.log('Error creating Recalibration.');
+											console.log(error);
+											return;
+										}
+									});
+									// TODO: Calibration?
 								}
 							} else { // A negative power change represents power leaving the system.
 								state.powerOut -= powerChange; // (double negative so adds to power out)
@@ -123,18 +158,22 @@ module.exports = function(Building) {
 								}
 							}
 
-							// If a State reading point or midnight point has passed since the last reading.
+							// If the state needs to be recorded, then record it.
+							if (shouldRecordState(secondsSinceLastReading, reading.timestamp)) {
 								// Record the State.
-
-							// Update the current State as appropriate.
+								state.timestamp = reading.timestamp;
+								State.create(state, function(error) {
+									if (error) {
+										console.log('Error creating State');
+										console.log(state);
+									}
+								});
+							}
 
 							lastReading = reading;
-
-								// TODO: Be aware of divide by 0!
-							console.log('SoC: ' + ((state.currentChargeLevel / state.batteryCapacity) * 100).toFixed(2) + '%');
-
-							console.log(state);
 						});
+
+						cb('Done');
 					});
 				});
 			});
@@ -150,4 +189,11 @@ module.exports = function(Building) {
 		    ]
 		}
 	);
+
+	Building.remoteMethod('latestState',
+	{
+		accepts: {arg: 'id', type: 'string', required: true},
+		http: {path: '/:id/lateststate', verb: 'get'},
+		returns: {type: 'object', root: true}
+	});
 };

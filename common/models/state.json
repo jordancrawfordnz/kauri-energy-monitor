@@ -10,23 +10,23 @@
       "type": "number",
       "required": true
     },
-    "ein": {
+    "powerIn": {
       "type": "number",
       "required": true
     },
-    "eout": {
+    "powerOut": {
       "type": "number",
       "required": true
     },
-    "c100": {
+    "batteryCapacity": {
       "type": "number",
       "required": true
     },
-    "et": {
+    "currentChargeLevel": {
       "type": "number",
       "required": true
     },
-    "ceff": {
+    "chargeEfficiency": {
       "type": "number",
       "required": true
     }

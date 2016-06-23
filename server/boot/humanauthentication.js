@@ -81,7 +81,7 @@ module.exports = function enableHumanAuthentication(server) {
             if (!error && stateInstance) {
                 stateInstance = stateInstance.toJSON();
                 
-                if (stateInstance.building.people) {
+                if (stateInstance.building && stateInstance.building.people) {
                     if (isPersonBuildingOwner(stateInstance.building.people, userId)) {
                         return callback(null, true); // allow the user access.
                     }   
