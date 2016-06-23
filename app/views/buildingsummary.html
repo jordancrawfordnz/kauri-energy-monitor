@@ -1,5 +1,5 @@
 <div class="row">
-    <div ng-if="summary.state" class="col-lg-3 col-xs-6">
+    <div ng-if="summary.state && summary.state.timestamp" class="col-lg-3 col-xs-6">
         <!-- Current state of charge -->
         <div class="small-box bg-green">
             <div class="inner">
@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <div ng-if="summary.state" class="col-lg-3 col-xs-6">
+    <div ng-if="summary.state && summary.state.timestamp" class="col-lg-3 col-xs-6">
         <!-- Battery capacity -->
         <div class="small-box bg-green">
             <div class="inner">
@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <div ng-if="summary.state" class="col-lg-3 col-xs-6">
+    <div ng-if="summary.state && summary.state.timestamp" class="col-lg-3 col-xs-6">
         <!-- Battery charge efficiency -->
         <div class="small-box bg-green">
             <div class="inner">
@@ -64,11 +64,11 @@
 	</div>
 
 	<!-- For each reading -->
-  	<div ng-repeat="sensor in summary.sensorReadings" class="col-lg-3 col-xs-6">
+  	<div ng-repeat="sensor in summary.sensorReadings | orderBy : 'typedata.isAC'" class="col-lg-3 col-xs-6">
     	<div ng-if="summary.latestReadingTimestamp" class="small-box" ng-class="{'bg-blue' : sensor.typedata.isAC, 'bg-aqua' : !sensor.typedata.isAC}">
         	<div class="inner">
 				<p>{{sensor.metadata.name}}</p>
-            	<h3>{{sensor.value}} {{sensor.typedata.unitFull}}</h3>
+            	<h3>{{sensor.value | number : 1}} {{sensor.typedata.unitFull}}</h3>
             </div>
             <div class="icon">
             	<i class="fa" ng-class="{'fa-plug' : sensor.typedata.isAC, 'fa-bolt' : !sensor.typedata.isAC}"></i>
