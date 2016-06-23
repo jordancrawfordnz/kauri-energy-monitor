@@ -1,7 +1,46 @@
 <div class="row">
+    <div ng-if="summary.state" class="col-lg-3 col-xs-6">
+        <!-- Current state of charge -->
+        <div class="small-box bg-green">
+            <div class="inner">
+                <p>State of Charge</p>
+                <h3>{{(summary.state.currentChargeLevel / summary.state.batteryCapacity) * 100 | number : 0}}%</h3>
+            </div>
+            <div class="icon">
+                <i class="fa fa-battery-three-quarters"></i>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="summary.state" class="col-lg-3 col-xs-6">
+        <!-- Battery capacity -->
+        <div class="small-box bg-green">
+            <div class="inner">
+                <p>Battery Capacity</p>
+                <h3>{{summary.state.batteryCapacity / 1000 | number : 2}} kWh</h3>
+            </div>
+            <div class="icon">
+                <i class="fa fa-battery-full"></i>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="summary.state" class="col-lg-3 col-xs-6">
+        <!-- Battery charge efficiency -->
+        <div class="small-box bg-green">
+            <div class="inner">
+                <p>Battery Charge Efficiency</p>
+                <h3>{{summary.state.chargeEfficiency * 100 | number : 0}}%</h3>
+            </div>
+            <div class="icon">
+                <i class="fa fa-percent"></i>
+            </div>
+        </div>
+    </div>
+
 	<div ng-if="summary.latestReadingTimestamp" class="col-lg-3 col-xs-6">
         <!-- Latest reading section -->
-        <div class="small-box bg-yellow">
+        <div class="small-box bg-red">
         	<div class="inner">
 				<p>Last reading</p>
             	<h3 am-time-ago="summary.latestReadingTimestamp | amFromUnix"></h3>
@@ -26,13 +65,13 @@
 
 	<!-- For each reading -->
   	<div ng-repeat="sensor in summary.sensorReadings" class="col-lg-3 col-xs-6">
-    	<div ng-if="summary.latestReadingTimestamp" class="small-box" ng-class="{'bg-blue' : sensor.typedata.isAC, 'bg-green' : !sensor.typedata.isAC}">
+    	<div ng-if="summary.latestReadingTimestamp" class="small-box" ng-class="{'bg-blue' : sensor.typedata.isAC, 'bg-aqua' : !sensor.typedata.isAC}">
         	<div class="inner">
 				<p>{{sensor.metadata.name}}</p>
             	<h3>{{sensor.value}} {{sensor.typedata.unitFull}}</h3>
             </div>
             <div class="icon">
-            	<i class="fa" ng-class="{'fa-plug' : sensor.typedata.isAC, 'fa-battery-three-quarters' : !sensor.typedata.isAC}"></i>
+            	<i class="fa" ng-class="{'fa-plug' : sensor.typedata.isAC, 'fa-bolt' : !sensor.typedata.isAC}"></i>
             </div>
     	</div>
     </div>

@@ -8,7 +8,7 @@
  * Displays a summary of key indicators about a building.
  */
 angular.module('offgridmonitoringApp')
-  .controller('BuildingSummaryCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes) {
+  .controller('BuildingSummaryCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State) {
   	var _this = this;
 
     this.building = Building.findById({
@@ -23,6 +23,17 @@ angular.module('offgridmonitoringApp')
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
     });
 
+    /* == Fetch down the latest state.
+       Display:
+       - The current state of charge
+       - (maybe) Today's total energy usage
+       - The battery capacity
+       - The charge efficiency.
+    */
+    this.state = Building.latestState({
+      id : $routeParams.buildingId
+    });
+    
     /* == Fetch down the latest sensor reading.
       TODO: Handle multipule bridges per building.
       This will just pull the latest reading which will only be for one of the bridges.
