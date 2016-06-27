@@ -1,7 +1,9 @@
 <div class="row">
-	<page-filter sort-order="sortOrder" number-of-results="totalStates" amount-per-page="amountPerPage" current-page="currentPage" from="from" until="until" display-every="displayEvery" display-every-levels="displayEveryLevels"></page-filter>
+	<div class="col-xs-12 col-md-4 col-lg-3">
+		<page-filter sort-order="sortOrder" number-of-results="totalStates" amount-per-page="amountPerPage" current-page="currentPage" from="from" until="until" display-every="displayEvery" display-every-levels="displayEveryLevels"></page-filter>
+	</div>
 
-	<div class="col-xs-12">
+	<div class="col-xs-12 col-md-8 col-lg-9">
 		<div class="box" ng-if="building">
 			<div class="box-header with-border">
 		    	<h3 class="box-title">Graph</h3>
@@ -11,8 +13,9 @@
 					chart-labels="chartLabels" chart-series="chartSeries" chart-options="chartOptions">
 				</canvas>
 			</div>
-		</div>				
-	
+		</div>
+	</div>	
+	<div class="col-xs-12">
 		<div class="box" ng-if="building">
 		  	<div class="box-header with-border">
 		    	<h3 class="box-title">

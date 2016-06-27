@@ -37,7 +37,10 @@ angular.module('offgridmonitoringApp')
             id: 'y-axis-1',
             type: 'linear',
             display: true,
-            position: 'left'
+            scaleLabel: {
+              display: true,
+              labelString: 'Battery Level (Wh)'
+            },
           }
         ],
         xAxes: [
@@ -55,7 +58,7 @@ angular.module('offgridmonitoringApp')
     $scope.amountPerPage = '50';
     $scope.debounceTime = 500;
     $scope.currentPage = 1;
-    $scope.sortOrder = 'asc';
+    $scope.sortOrder = 'desc';
     $scope.displayEvery = 3*60*60;
     $scope.displayEveryLevels = [
       {

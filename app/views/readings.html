@@ -1,7 +1,9 @@
 <div class="row">
-	<page-filter sort-order="sortOrder" number-of-results="totalReadings" amount-per-page="amountPerPage" current-page="currentPage" from="from" until="until" display-every="displayEvery" display-every-levels="displayEveryLevels"></page-filter>
+	<div class="col-xs-12 col-md-4 col-lg-3">
+		<page-filter sort-order="sortOrder" number-of-results="totalReadings" amount-per-page="amountPerPage" current-page="currentPage" from="from" until="until" display-every="displayEvery" display-every-levels="displayEveryLevels"></page-filter>
+	</div>
 
-	<div class="col-xs-12">
+	<div class="col-xs-12 col-md-8 col-lg-9">
 		<div class="box" ng-if="bridge">
 		  	<div class="box-header with-border">
 		    	<h3 class="box-title">
@@ -11,8 +13,8 @@
 		  	</div>
 		  	<div class="box-body table-responsive no-padding">
 			    <table class="table table-hover">
-			    	<tbody>
-				    	<tr>
+			    	<thead>
+			    		<tr>
 				        	<th>Index</th>
 				        	<th>Time</th>
 				        	<th ng-repeat="sensor in bridge.sensors">
@@ -22,7 +24,9 @@
 			        			<span class="label label-primary">{{SensorTypes[sensor.type].type}}</span>
 				        	</th>
 				      	</tr>
-				      	<!-- Each reading -->
+			    	</thead>
+		    		<tbody>
+			    	  	<!-- Each reading -->
 				      	<tr ng-repeat="reading in readings">
 				      		<td>
 				      			{{(currentPage - 1) * amountPerPage + $index + 1}}
