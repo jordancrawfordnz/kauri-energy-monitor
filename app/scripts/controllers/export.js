@@ -9,7 +9,7 @@
  */
 angular.module('offgridmonitoringApp')
   .controller('ExportCtrl', function ($interval, $scope, Breadcrumb, Breadcrumbs, $routeParams, Building, Environment, People, LoopBackAuth, $rootScope) {
-  	$scope.dateTimeFormat = 'D/M/Y LTS';
+  	$scope.dateTimeFormat = $rootScope.dateTimeFormat;
 
     $scope.baseUrl = Environment.baseUrl; // the base token to use in an export URL.
     $scope.authToken = LoopBackAuth.accessTokenId;

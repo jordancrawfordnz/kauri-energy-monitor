@@ -38,7 +38,12 @@ angular.module('offgridmonitoringApp')
         path : 'configuration'
       },
       {
-        name : 'Readings',
+        name : 'Battery State',
+        icon : 'battery-three-quarters',
+        path : 'states'
+      },
+      {
+        name : 'Sensor Readings',
         icon : 'table',
         path : 'reading'
       },

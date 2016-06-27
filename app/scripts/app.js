@@ -76,6 +76,8 @@ angular
     });
   })
   .run(function($rootScope, LoopBackAuth, $location, People, Breadcrumbs) {
+    $rootScope.dateTimeFormat = 'D/M/Y LTS';
+    
     $rootScope.logout = function() {
       LoopBackAuth.clearUser();
       LoopBackAuth.clearStorage();
