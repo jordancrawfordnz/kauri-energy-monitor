@@ -46,6 +46,10 @@ angular
         templateUrl: 'views/readings.html',
         controller: 'ReadingsCtrl'
       })
+      .when('/:buildingId/states', {
+        templateUrl: 'views/states.html',
+        controller: 'StatesCtrl'
+      })
       .when('/:buildingId/export', {
         templateUrl: 'views/export.html',
         controller: 'ExportCtrl'

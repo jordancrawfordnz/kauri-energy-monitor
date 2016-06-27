@@ -1,0 +1,53 @@
+<div class="row">
+	<page-filter sort-order="sortOrder" number-of-results="totalStates" amount-per-page="amountPerPage" current-page="currentPage" from="from" until="until"></page-filter>
+
+	<div class="col-xs-12">
+		<div class="box" ng-if="building">
+		  	<div class="box-header with-border">
+		    	<h3 class="box-title">
+		    		Results
+		    		<small>{{states.length | number}} states<span ng-if="totalStates"> of {{totalStates | number}}</span></small>
+		    	</h3>
+		  	</div>
+		  	<div class="box-body table-responsive no-padding">
+			    <table class="table table-hover">
+			    	<tbody>
+				    	<tr>
+				        	<th>Index</th>
+				        	<th>Time</th>
+				        	<th>State of Charge</th>
+				        	<th>Current Charge Level</th>
+				        	<th>Battery Capacity</th>
+				        	<th>Total Power In</th>
+				        	<th>Total Power Out</th>
+				        	<th>Charge Efficiency</th>
+				      	</tr>
+				      	<!-- Each reading -->
+				      	<tr ng-repeat="state in states">
+				      		<td>
+				      			{{(currentPage - 1) * amountPerPage + $index + 1}}
+				      		</td>
+				      		<td>
+				      			{{state.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}
+				      		</td>
+				      		<td>{{(state.currentChargeLevel / state.batteryCapacity * 100) | number:2}}%
+				      		<td>{{state.currentChargeLevel | number:2}} Wh</td>
+				      		<td>{{state.batteryCapacity | number:2}} Wh</td>
+				      		<td>{{state.powerIn | number:2}} Wh</td>
+				      		<td>{{state.powerOut | number:2}} Wh</td>
+				      		<td>{{state.chargeEfficiency | number:2}}%</td>
+				      		
+
+				      		<!-- Each sensor -->
+				      		<td ng-repeat="sensor in bridge.sensors">
+				      			<span ng-if="reading.values[sensor.id] !== undefined">
+				      				{{reading.values[sensor.id] | number}} {{SensorTypes[sensor.type].unitShort}}
+				      			</span>
+				      		</td>
+				      	</tr>
+				    </tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
