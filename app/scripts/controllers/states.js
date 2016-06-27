@@ -19,28 +19,46 @@ angular.module('offgridmonitoringApp')
 
       The page starts at 1 which will map to page 0 in API calls.
     */
-    $scope.chartSeries = ['Current Charge Level', 'Battery Capacity'];
     $scope.chartOptions = {
       legend: {
         display: true
       },
       tooltips: {
         callbacks : {
-          afterLabel : function(tooltipItem, data) {
-            return 'Wh';
+          title : function(tooltips, data) {
+            return moment.unix(tooltips[0].xLabel).format($rootScope.dateTimeFormat);
+          },
+          label : function(tooltipItem, data) {
+            var label = data.datasets[tooltipItem.datasetIndex].label;
+            var value
+            if (tooltipItem.datasetIndex === 2) {
+              value = tooltipItem.yLabel.toFixed(0) + '%'; 
+            } else {
+              value = tooltipItem.yLabel.toFixed(0) + 'Wh'; 
+            }
+            return label + ': ' + value;
           }
         }
       },
       scales: {
         yAxes: [
           {
-            id: 'y-axis-1',
             type: 'linear',
             display: true,
             scaleLabel: {
               display: true,
               labelString: 'Battery Level (Wh)'
             },
+          },
+          {
+            type: 'linear',
+            display: true,
+            id: 'percentageAxis',
+            position: 'right',
+            scaleLabel: {
+              display: true,
+              labelString: 'State of Charge (%)'
+            }
           }
         ],
         xAxes: [
@@ -54,6 +72,23 @@ angular.module('offgridmonitoringApp')
         ]
       }
     };
+
+    $scope.chartDatasets = [
+      {
+        label: 'Current Charge Level',
+        fill : true
+      },
+      {
+        label: 'Battery Capacity',
+        fill : true
+      },
+      {
+        color : 'red',
+        label : 'State of Charge',
+        yAxisID : 'percentageAxis',
+        fill : false
+      }
+    ];
 
     $scope.amountPerPage = '50';
     $scope.debounceTime = 500;
@@ -133,12 +168,14 @@ angular.module('offgridmonitoringApp')
           $scope.chartLabels = [];
           var chargeLevelData = [];
           var capacityData = [];
-          $scope.chartData = [chargeLevelData, capacityData];
+          var stateOfCharge = [];
+          $scope.chartData = [chargeLevelData, capacityData, stateOfCharge];
           
           angular.forEach(states, function(state) {
             $scope.chartLabels.push(state.timestamp);
             chargeLevelData.push(state.currentChargeLevel);
             capacityData.push(state.batteryCapacity);
+            stateOfCharge.push(state.currentChargeLevel / state.batteryCapacity * 100);
           });
         });
       });
