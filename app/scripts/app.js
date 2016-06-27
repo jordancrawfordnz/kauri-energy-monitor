@@ -17,7 +17,8 @@ angular
     'lbServices',
     'environmentConstants',
     'datetimepicker',
-    'angularMoment'
+    'angularMoment',
+    'chart.js'
   ])
   .config(function ($routeProvider, $httpProvider, LoopBackResourceProvider, $locationProvider, Environment) {
     $routeProvider

@@ -16,26 +16,21 @@ app.factory('Timestamp', function($rootScope) {
       }
 
       var whereFilter = {};
-
       if (untilTimestamp || fromTimestamp || displayEvery) {
-      	whereFilter.timestamp = {};
-
-        // If until and from defined, use a between filter.
-        if (untilTimestamp && fromTimestamp) {
-          whereFilter.timestamp.between = [fromTimestamp, untilTimestamp];
-        } else { // Otherwise use either less than or greater than filters.
-          if (untilTimestamp) {
-            whereFilter.timestamp.lt = untilTimestamp;
-          }
-          if (fromTimestamp) {
-            whereFilter.timestamp.gt = fromTimestamp;
-          }
-        }
-
+        whereFilter.and = [];
+        
         // If displayEvery is defined, require the timestamp be divisible by some amount.
           // e.g.: displayEvery of 60 will match data every minute.
         if (displayEvery) {
-        	whereFilter.timestamp.mod = [displayEvery, 0];
+          whereFilter.and.push({timestamp : {mod : [displayEvery, 0]}});
+        }
+
+        if (fromTimestamp) {
+          whereFilter.and.push({timestamp : {gt : fromTimestamp}});
+        }
+
+        if (untilTimestamp) {
+          whereFilter.and.push({timestamp : {lt : untilTimestamp}});
         }
       }
 

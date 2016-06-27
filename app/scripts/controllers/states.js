@@ -19,10 +19,44 @@ angular.module('offgridmonitoringApp')
 
       The page starts at 1 which will map to page 0 in API calls.
     */
-    $scope.amountPerPage = "100";
+    $scope.chartSeries = ['Current Charge Level', 'Battery Capacity'];
+    $scope.chartOptions = {
+      legend: {
+        display: true
+      },
+      tooltips: {
+        callbacks : {
+          afterLabel : function(tooltipItem, data) {
+            return 'Wh';
+          }
+        }
+      },
+      scales: {
+        yAxes: [
+          {
+            id: 'y-axis-1',
+            type: 'linear',
+            display: true,
+            position: 'left'
+          }
+        ],
+        xAxes: [
+          {
+            type: 'time',
+            time: {
+              parser: 'X'
+            },
+            display: true
+          }
+        ]
+      }
+    };
+
+    $scope.amountPerPage = '50';
     $scope.debounceTime = 500;
     $scope.currentPage = 1;
     $scope.sortOrder = 'asc';
+    $scope.displayEvery = 3*60*60;
     $scope.displayEveryLevels = [
       {
         name : 'Original'
@@ -34,6 +68,10 @@ angular.module('offgridmonitoringApp')
       {
         name : 'Hour',
         period : 60*60
+      },
+      {
+        name : '3 Hours',
+        period : 3*60*60
       },
       {
         name : '6 Hours',
@@ -85,6 +123,20 @@ angular.module('offgridmonitoringApp')
             order : 'timestamp ' + $scope.sortOrder,
             where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
           }
+        });
+
+        $scope.states.$promise.then(function(states) {
+          // Add data to the chart.
+          $scope.chartLabels = [];
+          var chargeLevelData = [];
+          var capacityData = [];
+          $scope.chartData = [chargeLevelData, capacityData];
+          
+          angular.forEach(states, function(state) {
+            $scope.chartLabels.push(state.timestamp);
+            chargeLevelData.push(state.currentChargeLevel);
+            capacityData.push(state.batteryCapacity);
+          });
         });
       });
     };

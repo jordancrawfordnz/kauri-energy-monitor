@@ -18,7 +18,7 @@ angular.module('offgridmonitoringApp')
 
       The page starts at 1 which will map to page 0 in API calls.
     */
-    $scope.amountPerPage = "10";
+    $scope.amountPerPage = '10';
     $scope.debounceTime = 500;
     $scope.currentPage = 1;
     $scope.sortOrder = 'desc';

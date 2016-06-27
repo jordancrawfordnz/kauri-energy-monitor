@@ -44,14 +44,6 @@ angular.module('offgridmonitoringApp')
 	          	$scope.currentPage = 1;
 		    };
 			$scope.$watchGroup(['numberOfResults', 'amountPerPage', 'displayEvery'], $scope.resetPage);
-
-			$scope.$watch('displayEveryText', function(text) {
-				if (text === 'orig') {
-					$scope.displayEvery = undefined;
-				} else {
-					$scope.displayEvery = parseInt(text);
-				}
-			});
 	    }],
 	    scope: {
 	    	sortOrder : '=sortOrder',
