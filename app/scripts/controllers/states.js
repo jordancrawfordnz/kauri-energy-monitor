@@ -135,7 +135,7 @@ angular.module('offgridmonitoringApp')
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
     });
 
-    Breadcrumbs.add(new Breadcrumb('States', '/' + $routeParams.buildingId + '/states', 'See a paginated view of states for a date range.'));
+    Breadcrumbs.add(new Breadcrumb('Battery State', '/' + $routeParams.buildingId + '/states', 'See a paginated view of states for a date range.'));
 
     // Re-counts the number of results in the search when the filters change.
     $scope.recountSearch = function() {

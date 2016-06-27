@@ -48,6 +48,11 @@ angular.module('offgridmonitoringApp')
         path : 'reading'
       },
       {
+        name : 'Calibration Points',
+        icon : 'table',
+        path : 'calibrations'
+      },
+      {
         name : 'Export',
         icon : 'file-o',
         path : 'export'

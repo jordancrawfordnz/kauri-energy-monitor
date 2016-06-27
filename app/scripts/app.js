@@ -51,6 +51,10 @@ angular
         templateUrl: 'views/states.html',
         controller: 'StatesCtrl'
       })
+      .when('/:buildingId/calibrations', {
+        templateUrl: 'views/calibrations.html',
+        controller: 'CalibrationsCtrl'
+      })
       .when('/:buildingId/export', {
         templateUrl: 'views/export.html',
         controller: 'ExportCtrl'
