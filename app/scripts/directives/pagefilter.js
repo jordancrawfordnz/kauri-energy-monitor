@@ -43,7 +43,15 @@ angular.module('offgridmonitoringApp')
 		    	$scope.numberOfPages = Math.ceil($scope.numberOfResults / $scope.amountPerPage);
 	          	$scope.currentPage = 1;
 		    };
-			$scope.$watchGroup(['numberOfResults', 'amountPerPage'], $scope.resetPage);
+			$scope.$watchGroup(['numberOfResults', 'amountPerPage', 'displayEvery'], $scope.resetPage);
+
+			$scope.$watch('displayEveryText', function(text) {
+				if (text === 'orig') {
+					$scope.displayEvery = undefined;
+				} else {
+					$scope.displayEvery = parseInt(text);
+				}
+			});
 	    }],
 	    scope: {
 	    	sortOrder : '=sortOrder',
@@ -51,7 +59,9 @@ angular.module('offgridmonitoringApp')
 	    	currentPage : '=currentPage',
 	    	amountPerPage : '=amountPerPage',
 	    	from : '=from',
-	    	until : '=until'
+	    	until : '=until',
+	    	displayEveryLevels : '=displayEveryLevels',
+	    	displayEvery : '=displayEvery'
 	    },
 	    templateUrl: 'views/pagefilter.html'
 	  };

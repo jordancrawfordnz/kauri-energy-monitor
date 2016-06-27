@@ -33,6 +33,12 @@
                 	<option value="asc">Oldest first</option>
               	</select>
             </div>
+
+	  		<div class="form-group" ng-if="displayEveryLevels">
+            	<label>Frequency</label>
+              	<select class="form-control" ng-model="$parent.displayEveryText" ng-options="level.period as 
+              	level.name for level in displayEveryLevels"></select>
+            </div>
 		</div>
 	</div>
 </div>

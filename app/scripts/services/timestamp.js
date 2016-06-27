@@ -7,7 +7,7 @@ app.factory('Timestamp', function($rootScope) {
    	var Timestamp = {};
     
    	// Gets the where filter that limits the time period.
-    Timestamp.getRangeWhereFilter = function(from, until) {
+    Timestamp.getRangeWhereFilter = function(from, until, displayEvery) {
       if (from && from.length > 0) {
         var fromTimestamp = moment(from, $rootScope.dateTimeFormat).unix();
       }
@@ -16,11 +16,14 @@ app.factory('Timestamp', function($rootScope) {
       }
 
       var whereFilter = {};
-      if (untilTimestamp || fromTimestamp) {
-        whereFilter.timestamp = {};
+
+      if (untilTimestamp || fromTimestamp || displayEvery) {
+      	whereFilter.timestamp = {};
+
+        // If until and from defined, use a between filter.
         if (untilTimestamp && fromTimestamp) {
           whereFilter.timestamp.between = [fromTimestamp, untilTimestamp];
-        } else {
+        } else { // Otherwise use either less than or greater than filters.
           if (untilTimestamp) {
             whereFilter.timestamp.lt = untilTimestamp;
           }
@@ -28,8 +31,14 @@ app.factory('Timestamp', function($rootScope) {
             whereFilter.timestamp.gt = fromTimestamp;
           }
         }
+
+        // If displayEvery is defined, require the timestamp be divisible by some amount.
+          // e.g.: displayEvery of 60 will match data every minute.
+        if (displayEvery) {
+        	whereFilter.timestamp.mod = [displayEvery, 0];
+        }
       }
-      
+
       return whereFilter;
     };
 
