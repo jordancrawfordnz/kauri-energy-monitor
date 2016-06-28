@@ -16,21 +16,40 @@
   </div>
   <form role="form" name="editBuildingForm" novalidate>
       <div class="box-body">
-        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lvsdVoltage.$dirty && editBuildingForm.lvsdVoltage.$invalid}">
-          <label for="lvsdVoltage">Voltage that triggers LVSD event</label>
-          <p>The voltage that will trigger an LVSD shutdown when the battery voltage is below this level for the LVSD event trigger time. Used to predict when an LVSD will occur and represents a low battery if no high power devices are in use.</p>
+        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lowVoltageLevel.$dirty && editBuildingForm.lowVoltageLevel.$invalid}">
+          <label for="lowVoltageLevel">Critical low voltage level</label>
+          <p>This is the voltage considered low. This is used to adjust the battery state of charge and automatically activate the generator. This is typically the LVSD trigger voltage.</p>
           <div class="input-group">
-            <input class="form-control" type="number" ng-model="buildingConfig.building.lvsdVoltage" name="lvsdVoltage" id="lvsdVoltage" required>
+            <input class="form-control" type="number" ng-model="buildingConfig.building.lowVoltageLevel" name="lowVoltageLevel" id="lowVoltageLevel" required>
             <span class="input-group-addon">Volts</span>
           </div>
         </div>
 
-        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lvsdTime.$dirty && editBuildingForm.lvsdTime.$invalid}">
-          <label for="lvsdTime">Time until LVSD event triggered</label>
-          <p>The time the battery voltage must be below the LVSD trigger voltage before an LVSD shutdown occurs. Used to avoid this situation happening through generator automation.</p>
+        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lowVoltageTriggerTime.$dirty && editBuildingForm.lowVoltageTriggerTime.$invalid}">
+          <label for="lowVoltageTriggerTime">Low voltage trigger time</label>
+          <p>The battery is considered empty once its voltage is at or below the critical low voltage level for this amount of time. Used to adjust the battery state of charge. Typically around half the time until LVSD.</p>
           <div class="input-group">
-            <input class="form-control" type="number" ng-model="buildingConfig.building.lvsdTime" name="lvsdTime" id="lvsdTime" required>
+            <input class="form-control" type="number" ng-model="buildingConfig.building.lowVoltageTriggerTime" name="lowVoltageTriggerTime" id="lowVoltageTriggerTime" required>
             <span class="input-group-addon">seconds</span>
+          </div>
+        </div>
+
+        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.dailyAgingPercentage.$dirty && editBuildingForm.dailyAgingPercentage.$invalid}">
+          <label for="dailyAgingPercentage">Daily Aging Percentage</label>
+          <p>The amount the battery level will decrease by each day. This is used to ensure the battery capacity is correct (the battery capacity will be re-calibrated if set too low). The recommended amount is 2% per day.</p>
+          <div class="input-group">
+            <input class="form-control" type="number" ng-model="buildingConfig.building.dailyAgingPercentage" name="dailyAgingPercentage" id="dailyAgingPercentage" required>
+            <span class="input-group-addon">% per day</span>
+          </div>
+        </div>
+
+        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.tolerancePercentage.$dirty && editBuildingForm.tolerancePercentage.$invalid}">
+          <label for="tolerancePercentage">Tolerance Percentage</label>
+          <p>The tolerance percentage defines when re-calibration events will occur. The recommended amount is &plusmn;5%. This means the battery capacity will be adjusted upwards once it reaches 105%, and state of charge won't be re-calculated until it reaches -5%.</p>
+          <div class="input-group">
+            <span class="input-group-addon">&plusmn;</span>
+            <input class="form-control" type="number" ng-model="buildingConfig.building.tolerancePercentage" name="tolerancePercentage" id="tolerancePercentage" required>
+            <span class="input-group-addon">%</span>
           </div>
         </div>
 
