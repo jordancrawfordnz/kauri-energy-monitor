@@ -10,16 +10,23 @@
       "type": "number",
       "required": true
     },
-    "powerIn": {
+    "energyInSinceLastC0": {
       "type": "number",
       "required": true
     },
-    "powerOut": {
+    "energyOutSinceLastC0": {
       "type": "number",
       "required": true
     },
     "batteryCapacity": {
       "type": "number",
+      "required": true
+    },
+    "voltageLowSince": {
+      "type": "number"
+    },
+    "emptyLevelEstablished": {
+      "type": "boolean",
       "required": true
     },
     "currentChargeLevel": {

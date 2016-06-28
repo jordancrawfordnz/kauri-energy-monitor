@@ -43,9 +43,10 @@ StateOfCharge.recordRecalibration = function(building, timestamp, type) {
 // Returns a template for a blank state object.
 StateOfCharge.getStateTemplate = function(building) {
 	return {
-		powerIn : 0,
-		powerOut : 0,
+		energyInSinceLastC0 : 0,
+		energyOutSinceLastC0 : 0,
 		batteryCapacity : 0,
+		emptyLevelEstablished : false,
 		currentChargeLevel : 0,
 		chargeEfficiency : 0.8,
 		buildingId : building.id
@@ -188,7 +189,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 
 		// Count the power change towards the power in and out.
 		if (powerChange > 0) { // A positive power change represents overall entry of power into the system
-			currentState.powerIn += powerChange;
+			currentState.energyInSinceLastC0 += powerChange;
 			currentState.currentChargeLevel += currentState.chargeEfficiency * powerChange; // the battery charge level has increased
 
 			if (currentState.currentChargeLevel > currentState.batteryCapacity) { // Expand the capacity to the current charge level.
@@ -197,7 +198,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				// TODO: Calibration?
 			}
 		} else { // A negative power change represents power leaving the system.
-			currentState.powerOut -= powerChange; // (double negative so adds to power out)
+			currentState.energyOutSinceLastC0 -= powerChange; // (double negative so adds to power out)
 
 				// TODO: This might be part of the initial calibration phase, need new changes to the algorithm.
 			if (currentState.currentChargeLevel + powerChange < 0) { // Increase the battery capacity when discharging below 0.
