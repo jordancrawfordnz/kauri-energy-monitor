@@ -10,11 +10,19 @@
       "type": "string",
       "required": true
     },
-    "lvsdTime": {
+    "lowVoltageTriggerTime": {
       "type": "number",
       "required": true
     },
-    "lvsdVoltage": {
+    "lowVoltageLevel": {
+      "type": "number",
+      "required": true
+    },
+    "dailyAgingPercentage": {
+      "type": "number",
+      "required": true
+    },
+    "tolerancePercentage": {
       "type": "number",
       "required": true
     },
