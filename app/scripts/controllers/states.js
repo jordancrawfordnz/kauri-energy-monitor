@@ -94,7 +94,7 @@ angular.module('offgridmonitoringApp')
     $scope.debounceTime = 500;
     $scope.currentPage = 1;
     $scope.sortOrder = 'desc';
-    $scope.displayEvery = 3*60*60;
+    $scope.displayEvery = 6*60*60;
     $scope.displayEveryLevels = [
       {
         name : 'Original'

@@ -32,32 +32,25 @@
 				        	<th>State of Charge</th>
 				        	<th>Current Charge Level</th>
 				        	<th>Battery Capacity</th>
-				        	<th>Total Power In</th>
-				        	<th>Total Power Out</th>
+				        	<th>Energy in since last 0%</th>
+				        	<th>Energy out since last 0%</th>
 				        	<th>Charge Efficiency</th>
+				        	<th>Voltage status</th>
+				        	<th>Empty level established</th>
 				      	</tr>
 				      	<!-- Each reading -->
 				      	<tr ng-repeat="state in states">
-				      		<td>
-				      			{{(currentPage - 1) * amountPerPage + $index + 1}}
-				      		</td>
-				      		<td>
-				      			{{state.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}
-				      		</td>
+				      		<td>{{(currentPage - 1) * amountPerPage + $index + 1}}</td>
+				      		<td>{{state.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}</td>
 				      		<td>{{(state.currentChargeLevel / state.batteryCapacity * 100) | number:2}}%
 				      		<td>{{state.currentChargeLevel | number:2}} Wh</td>
 				      		<td>{{state.batteryCapacity | number:2}} Wh</td>
-				      		<td>{{state.powerIn | number:2}} Wh</td>
-				      		<td>{{state.powerOut | number:2}} Wh</td>
+				      		<td>{{state.energyInSinceLastC0 | number:2}} Wh</td>
+				      		<td>{{state.energyOutSinceLastC0 | number:2}} Wh</td>
 				      		<td>{{state.chargeEfficiency * 100 | number:2}}%</td>
-				      		
-
-				      		<!-- Each sensor -->
-				      		<td ng-repeat="sensor in bridge.sensors">
-				      			<span ng-if="reading.values[sensor.id] !== undefined">
-				      				{{reading.values[sensor.id] | number}} {{SensorTypes[sensor.type].unitShort}}
-				      			</span>
-				      		</td>
+				      		<td ng-if="state.voltageLowSince">Low voltage since {{state.voltageLowSince | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+				      		<td ng-if="!state.voltageLowSince">Normal</td>
+				      		<td>{{state.emptyLevelEstablished ? "Yes" : "No"}}</td>
 				      	</tr>
 				    </tbody>
 				</table>
