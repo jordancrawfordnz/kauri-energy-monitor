@@ -57,12 +57,12 @@ StateOfCharge.getStateTemplate = function(building) {
 Processes all readings.
 	building: The building to get readings for.
 	Returns: A Promise which Resolves:
-		{ numberOfRecords : [the count of records] }
+		{ numberOfSuccessfulReadings : [the count of successful records], numberOfFailedReadings : [the count of failed records] }
 */
 StateOfCharge.processAllReadings = function(building) {
 	var amountPerPage = 10000;
 	var Reading = app.models.Reading;
-
+	var startTime = Math.floor(Date.now() / 1000);
 	return new Promise(function(resolve, reject) {
 		// TODO: Use only one bridge for a building.
 		var bridge = building.bridges[0];
@@ -75,7 +75,12 @@ StateOfCharge.processAllReadings = function(building) {
 				reject(error);
 			} else {
 				var totalPages = Math.ceil(count / amountPerPage);
-				processPage(building, bridge, 0, totalPages, null, StateOfCharge.getStateTemplate(building)).then(resolve, reject);
+				
+				processPage(building, bridge, 0, totalPages, null, StateOfCharge.getStateTemplate(building)).then(function(result) {
+					var finishTime = Math.floor(Date.now() / 1000);
+					result.totalTime = finishTime - startTime;
+					resolve(result);
+				}, reject);
 			}
 		});
 	});
@@ -96,13 +101,15 @@ StateOfCharge.processAllReadings = function(building) {
 					// Process the readings.
 					StateOfCharge.processReadingsSerially(building, readings, lastReading, state).then(function(processResult) {
 						var pageResult = {
-							numberOfRecords : readings.length
+							numberOfSuccessfulReadings : readings.length - processResult.numberOfFailedReadings,
+							numberOfFailedReadings: processResult.numberOfFailedReadings
 						};
-						if (page < totalPages) {
+						if (page < totalPages - 1) {
 							// Provide details from this page to the next page.
 							processPage(building, bridge, page + 1, totalPages, processResult.lastReading, processResult.currentState).then(function(recurseResult) {
 								// Add to the result of the next page.
-								pageResult.numberOfRecords += recurseResult.numberOfRecords;
+								pageResult.numberOfSuccessfulReadings += recurseResult.numberOfSuccessfulReadings;
+								pageResult.numberOfFailedReadings += recurseResult.numberOfFailedReadings;
 								resolve(pageResult);
 							}, reject);
 						} else {
@@ -129,34 +136,100 @@ Process an entire array of readings serially.
 StateOfCharge.processReadingsSerially = function(building, readings, initialLastReading, startState) {
 	// Why serially? The state relies on the previous values state.
 		// As processReadings returns a promise, processReading could perform additional async tasks.
-
-	function runProcessReading(readingIndex, currentState) {
+	var numberOfFailedReadings = 0;
+	function runProcessReading(readingIndex, lastReading, currentState) {
 		return new Promise(function(resolve, reject) {
 			// Base case.
 			if (readingIndex >= readings.length) {
 				resolve(currentState);
 			} else {
 				var currentReading = readings[readingIndex];
-				var lastReading = readings[readingIndex - 1];
-
+				
 				// Get this result.
 				StateOfCharge.processReading(building, currentReading, lastReading, currentState).then(function(newState) {
 					// Run the next value with the result.
-					runProcessReading(readingIndex + 1, newState).then(function(newState) {
+					runProcessReading(readingIndex + 1, currentReading, newState).then(function(newState) {
 						// The result from lower levels.
 						resolve(newState);
 					}, reject);
-				}, reject);
+				}, function() {
+					// This process failed. Run the next reading with the same data.
+					numberOfFailedReadings++;
+					runProcessReading(readingIndex + 1, lastReading, currentState).then(function(newState) {
+						// The result from lower levels.
+						resolve(newState);
+					}, reject);
+				});
 			}
 		});
 	}
 
-	return runProcessReading(0, startState).then(function(finishState) {
+	return runProcessReading(0, initialLastReading, startState).then(function(finishState) {
 		return {
 			lastReading: readings[readings.length - 1],
-			currentState: finishState
+			currentState: finishState,
+			numberOfFailedReadings: numberOfFailedReadings
 		};
 	});
+};
+
+/*
+Provides information on the state of the system based on the battery voltage and house load.
+	building: the building the battery is for.
+	currentState: the current state of the system.
+	timestamp: the current reading's timestamp.
+	batteryVoltage: the battery voltage
+	buildingPower: the amount of power consumed by the building
+*/
+StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batteryVoltage, buildingPower) {
+	// TODO: How to determine if inverter output is off?
+		// Need battery in place in field so readings continue.
+		// Power sensor un-reachable, however could be any sort of failure.
+		// Might be best to look at the battery load current?
+
+	/* TODO:
+		Use this to determine load state.
+		e.g.: could tell us:
+			- if experencing low battery level
+			- if experiencing high load
+			- if the low voltage situation has been happening for a while.
+			- provide the time that the situation has been happening for.
+
+		The caller can determine how to use this information.
+
+		How do we treat these situations:
+			- High power could be the cause but the voltage level may not have adjusted, don't want to call this low voltageLowSinc
+				i.e.: could classify event
+			- Could be a low voltage but had one or two readings of high power.
+
+		TODO: Add triggers for low battery level.
+	*/
+	var toReturn = {
+		lowVoltage : false,
+		lowBatteryLevel : false,
+		lowBatteryLevelTrigger : false,
+		highLoad : false
+	};
+
+	toReturn.lowVoltage = batteryVoltage < building.lowVoltageLevel; // Is the battery voltage too low.
+	toReturn.highLoad = buildingPower > building.highPowerThreshold; // If the load excessive?
+
+	if (toReturn.lowVoltage && !toReturn.highLoad) {
+		toReturn.lowBatteryLevel = true;
+		if (!currentState.batteryLevelLowSince) {
+			// If not seen low voltage previously, set the state.
+			currentState.batteryLevelLowSince = timestamp;
+		}
+
+		// Has enough time passed since voltage low to mean the battery is empty.
+		if (timestamp - currentState.batteryLevelLowSince >= building.lowVoltageTriggerTime) {
+			toReturn.lowBatteryLevelTrigger = true;
+		}
+	} else {
+		currentState.batteryLevelLowSince = undefined;
+	}
+
+	return toReturn;
 };
 
 /*
@@ -174,6 +247,20 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		var batteryVoltage = reading.values[building.batteryVoltageSensorId];
 		var batteryCurrent = reading.values[building.batteryCurrentSensorId];
 
+		// TODO: Remove. Fix for lack of building power.
+		if (buildingPower === undefined) {
+			var buildingVoltage = reading.values['572023553916fd9b1ac7ba4d'];
+			var buildingCurrent = reading.values['5720235d3916fd9b1ac7ba4e'];
+			if (buildingVoltage !== undefined && buildingCurrent !== undefined) {
+				buildingPower = batteryVoltage * batteryCurrent;
+			}
+		}
+
+		if (buildingPower === undefined || batteryVoltage === undefined || batteryCurrent === undefined) {
+			reject('Essential value is null.');
+			return;
+		}
+		
 		var secondsSinceLastReading = 0;
 		if (lastReading) {
 			secondsSinceLastReading = reading.timestamp - lastReading.timestamp;
@@ -185,28 +272,37 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				A Watt Hour is 3600J.
 				The power (in Watts, P=IV) multiplied by the time in seconds gets the amount of change in Joules over the time gap.
 				Divide the number of Joules by 3600 to get the amount of change in Watt Hours.
-		*/ 
+		*/
 
-		// Count the power change towards the power in and out.
-		if (powerChange > 0) { // A positive power change represents overall entry of power into the system
-			currentState.energyInSinceLastC0 += powerChange;
-			currentState.currentChargeLevel += currentState.chargeEfficiency * powerChange; // the battery charge level has increased
+		// Check for battery empty.
+		var batteryState = StateOfCharge.analyseVoltage(building, currentState, reading.timestamp, batteryVoltage, buildingPower);	
 
-			if (currentState.currentChargeLevel > currentState.batteryCapacity) { // Expand the capacity to the current charge level.
-				currentState.batteryCapacity = currentState.currentChargeLevel;
-				StateOfCharge.recordRecalibration(building, reading.timestamp, 'BatteryCapacityHigherThan100');
-				// TODO: Calibration?
+
+		if (!currentState.emptyLevelEstablished) { // Empty level not established, in preliminary phase.
+			// If power has entered the battery, the charge efficiency is taken into account.
+			if (powerChange > 0) {
+				powerChange = powerChange * currentState.chargeEfficiency;
 			}
-		} else { // A negative power change represents power leaving the system.
-			currentState.energyOutSinceLastC0 -= powerChange; // (double negative so adds to power out)
 
-				// TODO: This might be part of the initial calibration phase, need new changes to the algorithm.
-			if (currentState.currentChargeLevel + powerChange < 0) { // Increase the battery capacity when discharging below 0.
+			// Update the current charge.
+			currentState.currentChargeLevel += powerChange;
+
+			// If the current charge level drops below zero, increase the battery capacity.
+			if (currentState.currentChargeLevel < 0) {
 				currentState.currentChargeLevel = 0;
-				currentState.batteryCapacity -= powerChange;
-					// TODO: Calibration?
-			} else {
-				currentState.currentChargeLevel += powerChange; // the battery charge level has decreased (double negative so decreases charge level).
+				currentState.batteryCapacity += Math.abs(powerChange);
+			}
+
+			// If the current charge level is over the battery capacity, increase the battery capacity.
+			if (currentState.currentChargeLevel > currentState.batteryCapacity) {
+				currentState.batteryCapacity += Math.abs(powerChange);
+			}
+
+			if (batteryState.lowBatteryLevelTrigger) {
+				currentState.emptyLevelEstablished = true; // The level has been established so can go to the operational phase.
+				currentState.batteryCapacity -= currentState.currentChargeLevel; // Adjust the battery capacity to be less as the charge level is less than expected.
+				currentState.currentChargeLevel = 0; // Make the charge level zero as we know the battery is empty.
+				StateOfCharge.recordRecalibration(building, reading.timestamp, 'PreliminaryPhaseB0Hit');
 			}
 		}
 

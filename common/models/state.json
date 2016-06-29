@@ -22,7 +22,7 @@
       "type": "number",
       "required": true
     },
-    "voltageLowSince": {
+    "batteryLevelLowSince": {
       "type": "number"
     },
     "emptyLevelEstablished": {
