@@ -18,7 +18,17 @@ if (3600*24 % produceStateEvery !== 0) {
 StateOfCharge.shouldRecordState = function(timeSinceLastReading, timestamp) {
 	var outBy = timestamp % produceStateEvery;
 
-	// Either the timestamp is perfectly on a record state time or the record state
+	// Either the timestamp is perfectly on a record state time or the record state time was missed.
+	return outBy === 0 || outBy < timeSinceLastReading;
+};
+
+// Returns a boolean. True if daily aging should be performed.
+	// timeSinceLastReading: The number of seconds since the last reading.
+	// timestamp: The timestamp of the reading being processed.
+StateOfCharge.shouldPerformDailyAging = function(timeSinceLastReading, timestamp) {
+	// TODO: Timezone support?
+	var outBy = (timestamp - 60*60*12) % (60*60*24); // match on midday GMT which is midnight in +12 NZ.
+	// Either the timestamp is perfectly on midnight or midnight was missed.
 	return outBy === 0 || outBy < timeSinceLastReading;
 };
 
@@ -252,7 +262,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			var buildingVoltage = reading.values['572023553916fd9b1ac7ba4d'];
 			var buildingCurrent = reading.values['5720235d3916fd9b1ac7ba4e'];
 			if (buildingVoltage !== undefined && buildingCurrent !== undefined) {
-				buildingPower = batteryVoltage * batteryCurrent;
+				buildingPower = Math.abs(batteryVoltage * batteryCurrent);
 			}
 		}
 
@@ -274,14 +284,13 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				Divide the number of Joules by 3600 to get the amount of change in Watt Hours.
 		*/
 
-		// Check for battery empty.
+		// Get information about the battery state.
 		var batteryState = StateOfCharge.analyseVoltage(building, currentState, reading.timestamp, batteryVoltage, buildingPower);	
-
 
 		if (!currentState.emptyLevelEstablished) { // Empty level not established, in preliminary phase.
 			// If power has entered the battery, the charge efficiency is taken into account.
 			if (powerChange > 0) {
-				powerChange = powerChange * currentState.chargeEfficiency;
+				powerChange *= currentState.chargeEfficiency;
 			}
 
 			// Update the current charge.
@@ -303,6 +312,77 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				currentState.batteryCapacity -= currentState.currentChargeLevel; // Adjust the battery capacity to be less as the charge level is less than expected.
 				currentState.currentChargeLevel = 0; // Make the charge level zero as we know the battery is empty.
 				StateOfCharge.recordRecalibration(building, reading.timestamp, 'PreliminaryPhaseB0Hit');
+			}
+		} else { // Empty level has been established, in operational phase.
+			if (powerChange > 0) { // If power has entered the battery.
+				// Increment the energy in with the raw power change, don't want charge efficiency having an effect.
+				currentState.energyInSinceLastC0 += powerChange;
+
+				// Take the current charge efficiency into account.
+				powerChange *= currentState.chargeEfficiency;
+			} else {
+				// Increement the energy out with the raw power change.
+				currentState.energyOutSinceLastC0 += Math.abs(powerChange);
+			}
+
+			// If the time is correct, reduce the battery capacity by the daily aging percentage.
+			if (StateOfCharge.shouldPerformDailyAging(secondsSinceLastReading, reading.timestamp)) {
+				currentState.batteryCapacity *= 1 - building.dailyAgingPercentage / 100;
+				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalDailyAging');
+			}
+
+			// Update the current charge state.
+			currentState.currentChargeLevel += powerChange;
+
+			var stateOfCharge = currentState.currentChargeLevel / currentState.batteryCapacity;
+			var positiveThreshold = 1 + building.tolerancePercentage / 100;
+			var negativeThreshold = -building.tolerancePercentage / 100;
+
+			/* Check for charge level of 0%.
+				Caused by:
+				- Battery level being empty
+				- Hitting a threshold of negative battery state of charge.
+
+				These situations re-calculate the state of charge.
+			*/
+			var recalculateChargeEfficiency = false;
+			if (batteryState.lowBatteryLevelTrigger) {
+				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEffLowBatteryLevel');
+				recalculateChargeEfficiency = true;
+			}
+			if (stateOfCharge <= negativeThreshold) {
+				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEffBelowZero');
+				recalculateChargeEfficiency = true;
+			}
+			if (recalculateChargeEfficiency) {
+				// TODO: Need to prevent situations of negative and over 100% charge efficiencies, also must be careful of close to 0% or 100%.
+
+				// console.log('recalculateChargeEfficiency');
+				// console.log('existing: ' + currentState.chargeEfficiency);
+				// Re-calculate the charge efficiency.
+				// TODO: Implement the stack based solution to prevent continuous re-calculation.
+				// console.log(currentState.energyInSinceLastC0);
+				// console.log(currentState.energyOutSinceLastC0);
+				// currentState.chargeEfficiency = currentState.energyInSinceLastC0 / currentState.energyOutSinceLastC0;
+				// currentState.currentChargeLevel = 0;
+				// currentState.energyInSinceLastC0 = 0;
+				// currentState.energyOutSinceLastC0 = 0;
+				// // console.log('new: ' + currentState.chargeEfficiency);
+
+				// // TODO: Needed?
+				// if (currentState.chargeEfficiency < 0.1) { // prevent very low and negative charge efficiencies.
+				// 	currentState.chargeEfficiency = 0.1;
+				// }
+			}
+
+			/* 
+				Check for the current charge level rising above the tolerence level. 
+				These situations increase the battery capacity, resulting in 100% SoC.
+			*/
+
+			if (stateOfCharge >= positiveThreshold) {
+				currentState.batteryCapacity = currentState.currentChargeLevel; // set the capacity to the current charge level.
+				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalC100AdjustUp');
 			}
 		}
 
