@@ -48,8 +48,8 @@
 				      		<td>{{state.energyInSinceLastC0 | number:2}} Wh</td>
 				      		<td>{{state.energyOutSinceLastC0 | number:2}} Wh</td>
 				      		<td>{{state.chargeEfficiency * 100 | number:2}}%</td>
-				      		<td ng-if="state.voltageLowSince">Low voltage since {{state.voltageLowSince | amFromUnix | amDateFormat:dateTimeFormat}}</td>
-				      		<td ng-if="!state.voltageLowSince">Normal</td>
+				      		<td ng-if="state.batteryLevelLowSince">Low voltage since {{state.batteryLevelLowSince | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+				      		<td ng-if="!state.batteryLevelLowSince">Normal</td>
 				      		<td>{{state.emptyLevelEstablished ? "Yes" : "No"}}</td>
 				      	</tr>
 				    </tbody>
