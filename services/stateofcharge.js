@@ -347,46 +347,46 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 
 				These situations re-calculate the state of charge.
 			*/
-			var recalculateChargeEfficiency = false;
-			if (batteryState.lowBatteryLevelTrigger) {
-				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEff_LowBatteryLevel');
-				recalculateChargeEfficiency = true;
-			}
-			if (stateOfCharge <= negativeThreshold) {
-				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEff_SoCBelowZero');
-				recalculateChargeEfficiency = true;
-			}
-			if (recalculateChargeEfficiency) {
-				// TODO: Need to prevent situations of negative and over 100% charge efficiencies, also must be careful of close to 0% or 100%.
+			// var recalculateChargeEfficiency = false;
+			// if (batteryState.lowBatteryLevelTrigger) {
+			// 	// StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEff_LowBatteryLevel');
+			// 	recalculateChargeEfficiency = true;
+			// }
+			// if (stateOfCharge <= negativeThreshold) {
+			// 	// StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEff_SoCBelowZero');
+			// 	recalculateChargeEfficiency = true;
+			// }
+			// if (recalculateChargeEfficiency) {
+			// 	// TODO: Need to prevent situations of negative and over 100% charge efficiencies, also must be careful of close to 0% or 100%.
 
-				// Re-calculate the charge efficiency.
-					// TODO: Properly integrate the stack based solution.
-				var einToUse = currentState.energyInSinceLastC0;
-				var eoutToUse = currentState.energyOutSinceLastC0;
+			// 	// Re-calculate the charge efficiency.
+			// 		// TODO: Properly integrate the stack based solution.
+			// 	var einToUse = currentState.energyInSinceLastC0;
+			// 	var eoutToUse = currentState.energyOutSinceLastC0;
 
-				for (var i = 0; i < einEoutStack.length && einToUse > 2 * currentState.batteryCapacity && eoutToUse > 2 * currentState.batteryCapacity; i++) {
-					einToUse += einEoutStack[i].ein;
-					eoutToUse += einEoutStack[i].eout;
-				}
+			// 	for (var i = 0; i < einEoutStack.length && einToUse > 2 * currentState.batteryCapacity && eoutToUse > 2 * currentState.batteryCapacity; i++) {
+			// 		einToUse += einEoutStack[i].ein;
+			// 		eoutToUse += einEoutStack[i].eout;
+			// 	}
 
-				// currentState.chargeEfficiency = einToUse / eoutToUse;
+			// 	// currentState.chargeEfficiency = einToUse / eoutToUse;
 				
-				// // TODO: Need these limits?
-				// if (currentState.chargeEfficiency < 0.1) {
-				// 	currentState.chargeEfficiency = 0.1;
-				// }
-				// if (currentState.chargeEfficiency > 1) {
-				// 	currentState.chargeEfficiency = 1;
-				// }
-				einEoutStack.unshift({
-					ein : currentState.energyInSinceLastC0,
-					eout : currentState.energyOutSinceLastC0
-				});
+			// 	// // TODO: Need these limits?
+			// 	// if (currentState.chargeEfficiency < 0.1) {
+			// 	// 	currentState.chargeEfficiency = 0.1;
+			// 	// }
+			// 	// if (currentState.chargeEfficiency > 1) {
+			// 	// 	currentState.chargeEfficiency = 1;
+			// 	// }
+			// 	einEoutStack.unshift({
+			// 		ein : currentState.energyInSinceLastC0,
+			// 		eout : currentState.energyOutSinceLastC0
+			// 	});
 
-				// currentState.currentChargeLevel = 0;
-				// currentState.energyInSinceLastC0 = 0;
-				// currentState.energyOutSinceLastC0 = 0;
-			}
+			// 	// currentState.currentChargeLevel = 0;
+			// 	// currentState.energyInSinceLastC0 = 0;
+			// 	// currentState.energyOutSinceLastC0 = 0;
+			// }
 
 			/* 
 				Check for the current charge level rising above the tolerence level. 

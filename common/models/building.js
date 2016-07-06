@@ -52,6 +52,7 @@ module.exports = function(Building) {
 					console.log(destroyStateError);
 					return;
 				}
+
 				// Get the Building with bridge.
 				Building.findById(id, {
 					include : 'bridges'
@@ -61,16 +62,30 @@ module.exports = function(Building) {
 						console.log(getBuildingError);
 						return;
 					}
-					var building = building.toJSON(); // make the building a pure JSON object.
 
+					// Set the building state to processing.
+					building.updateAttribute('statesAreRegenerating', true, function(updateBuildingError, updatedBuilding) {
+						if (updateBuildingError) {
+							cb("Failed to update building generation state.");
+							return;
+						}
+						building = updatedBuilding.toJSON(); // make the building a pure JSON object.
+						
+						// Process each page serially in the background.
+						StateOfCharge.processAllReadings(building).then(function(result) {
+							// Set the building state to not processing.
+							updatedBuilding.updateAttribute('statesAreRegenerating', false, function(updateBuildingError, updatedBuilding) {
+								if (updateBuildingError) {
+									console.log('Error updating the building after state re-generation.');
+									console.log(updateBuildingError);
+								}
+							});
+						}, function(error) {
+							console.log('Error while processing state.');
+							console.log(error);
+						});
 
-
-					// Process each page serially.
-					StateOfCharge.processAllReadings(building).then(function(result) {
-						cb(null, result);
-					}, function(error) {
-						console.log(error);
-						cb('An error occured while processing Readings.');
+						cb(null, true); // The job has started, return true.
 					});
 				});
 			});
