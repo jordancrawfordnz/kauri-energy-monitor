@@ -369,23 +369,23 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 					eoutToUse += einEoutStack[i].eout;
 				}
 
-				currentState.chargeEfficiency = einToUse / eoutToUse;
+				// currentState.chargeEfficiency = einToUse / eoutToUse;
 				
-				// TODO: Need these limits?
-				if (currentState.chargeEfficiency < 0.1) {
-					currentState.chargeEfficiency = 0.1;
-				}
-				if (currentState.chargeEfficiency > 1) {
-					currentState.chargeEfficiency = 1;
-				}
+				// // TODO: Need these limits?
+				// if (currentState.chargeEfficiency < 0.1) {
+				// 	currentState.chargeEfficiency = 0.1;
+				// }
+				// if (currentState.chargeEfficiency > 1) {
+				// 	currentState.chargeEfficiency = 1;
+				// }
 				einEoutStack.unshift({
 					ein : currentState.energyInSinceLastC0,
 					eout : currentState.energyOutSinceLastC0
 				});
 
-				currentState.currentChargeLevel = 0;
-				currentState.energyInSinceLastC0 = 0;
-				currentState.energyOutSinceLastC0 = 0;
+				// currentState.currentChargeLevel = 0;
+				// currentState.energyInSinceLastC0 = 0;
+				// currentState.energyOutSinceLastC0 = 0;
 			}
 
 			/* 
