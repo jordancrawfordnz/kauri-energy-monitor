@@ -806,7 +806,10 @@ module.factory(
          *   populated with the actual data once the response is returned
          *   from the server.
          *
-         * This method returns no data.
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Building` object.)
+         * </em>
          */
         "regenerateState": {
           url: urlBase + "/Buildings/:id/regeneratestate",

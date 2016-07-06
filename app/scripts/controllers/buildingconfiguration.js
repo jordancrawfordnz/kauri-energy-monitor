@@ -25,6 +25,19 @@ angular.module('offgridmonitoringApp')
     }
     getBuilding();
 
+    this.refreshBuilding = function() {
+      getBuilding();
+    };
+
+    this.regenerateStates = function() {
+      var _this = this;
+      Building.regenerateState({
+        id : this.building.id
+      }).$promise.then(function() {
+        _this.refreshBuilding();
+      });
+    };
+
     // Setup breadcrumbs.
     Breadcrumbs.addPlaceholder('Building', this.building.$promise, function(building) {
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);

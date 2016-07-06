@@ -87,6 +87,29 @@
   </form>
 </div>
 
+<!-- State generation status. -->
+<div class="box box-primary">
+  <div class="box-header with-border">
+    <h3 class="box-title">State Generation</h3>
+  </div>
+  <div class="box-body">
+    If a key parameter changes, all previous states can be re-generated using the raw data.
+
+    <p>
+      Please note, all re-calibrations and states will be cleared throughout this process and re-generation may take several minutes.
+    </p>
+
+    <p>
+      Current generation state: {{buildingConfig.building.statesAreRegenerating ? 'Regenerating' : 'NOT regenerating'}}
+    </p>
+
+    <!-- Button to refresh the current state. -->
+    <button ng-click="buildingConfig.refreshBuilding()" class="btn btn-primary">Refresh status</button>
+
+    <button ng-disabled="editBuildingForm.building.statesAreRegenerating" ng-click="buildingConfig.regenerateStates()" class="btn btn-primary">Re-generate states</button>
+  </div>
+</div>
+
 <!-- Bridges -->
   <!-- TODO: Add edit, delete, add functunality. -->
 <div class="box box-primary">
