@@ -242,6 +242,8 @@ StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batte
 	return toReturn;
 };
 
+var einEoutStack = [];
+
 /*
 Processes a single reading.
 	building: The building this reading belongs to.
@@ -347,32 +349,43 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			*/
 			var recalculateChargeEfficiency = false;
 			if (batteryState.lowBatteryLevelTrigger) {
-				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEffLowBatteryLevel');
+				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEff_LowBatteryLevel');
 				recalculateChargeEfficiency = true;
 			}
 			if (stateOfCharge <= negativeThreshold) {
-				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEffBelowZero');
+				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEff_SoCBelowZero');
 				recalculateChargeEfficiency = true;
 			}
 			if (recalculateChargeEfficiency) {
 				// TODO: Need to prevent situations of negative and over 100% charge efficiencies, also must be careful of close to 0% or 100%.
 
-				// console.log('recalculateChargeEfficiency');
-				// console.log('existing: ' + currentState.chargeEfficiency);
 				// Re-calculate the charge efficiency.
-				// TODO: Implement the stack based solution to prevent continuous re-calculation.
-				// console.log(currentState.energyInSinceLastC0);
-				// console.log(currentState.energyOutSinceLastC0);
-				// currentState.chargeEfficiency = currentState.energyInSinceLastC0 / currentState.energyOutSinceLastC0;
-				// currentState.currentChargeLevel = 0;
-				// currentState.energyInSinceLastC0 = 0;
-				// currentState.energyOutSinceLastC0 = 0;
-				// // console.log('new: ' + currentState.chargeEfficiency);
+					// TODO: Properly integrate the stack based solution.
+				var einToUse = currentState.energyInSinceLastC0;
+				var eoutToUse = currentState.energyOutSinceLastC0;
 
-				// // TODO: Needed?
-				// if (currentState.chargeEfficiency < 0.1) { // prevent very low and negative charge efficiencies.
-				// 	currentState.chargeEfficiency = 0.1;
-				// }
+				for (var i = 0; i < einEoutStack.length && einToUse > 2 * currentState.batteryCapacity && eoutToUse > 2 * currentState.batteryCapacity; i++) {
+					einToUse += einEoutStack[i].ein;
+					eoutToUse += einEoutStack[i].eout;
+				}
+
+				currentState.chargeEfficiency = einToUse / eoutToUse;
+				
+				// TODO: Need these limits?
+				if (currentState.chargeEfficiency < 0.1) {
+					currentState.chargeEfficiency = 0.1;
+				}
+				if (currentState.chargeEfficiency > 1) {
+					currentState.chargeEfficiency = 1;
+				}
+				einEoutStack.unshift({
+					ein : currentState.energyInSinceLastC0,
+					eout : currentState.energyOutSinceLastC0
+				});
+
+				currentState.currentChargeLevel = 0;
+				currentState.energyInSinceLastC0 = 0;
+				currentState.energyOutSinceLastC0 = 0;
 			}
 
 			/* 
