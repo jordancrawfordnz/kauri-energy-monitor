@@ -105,6 +105,22 @@ module.exports = function enableHumanAuthentication(server) {
             }
             return reject();
         });
+    } else if (context.modelName === 'EnergySource') { // Check the current user is an owner of the EnergySource's building.
+        var EnergySource = context.model;
+
+        EnergySource.findById(context.modelId, {include : {building : ['people']} }, function(error, energySource) {
+            if (!error && energySource) {
+                energySource = energySource.toJSON();
+                
+                // If the energySource has an associated building.
+                if (energySource.building && energySource.building.people) {
+                    if (isPersonBuildingOwner(energySource.building.people, userId)) {
+                        return callback(null, true); // allow the user access.
+                    }
+                }
+            }
+            return reject();
+        });
     } else if (context.modelName === 'Sensor') {
     	var Bridge = context.model;
 

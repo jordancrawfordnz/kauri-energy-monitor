@@ -60,5 +60,9 @@
   "Recalibration": {
     "dataSource": "db",
     "public": true
+  },
+  "EnergySource": {
+    "dataSource": "db",
+    "public": true
   }
 }

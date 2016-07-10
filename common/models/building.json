@@ -14,6 +14,10 @@
       "type": "number",
       "required": true
     },
+    "nominalBatteryVoltage": {
+      "type": "number",
+      "required": true
+    },
     "lowVoltageLevel": {
       "type": "number",
       "required": true
@@ -30,8 +34,15 @@
       "type": "number",
       "required": true
     },
+    "otherEnergySourceName": {
+      "type": "string",
+      "required": true
+    },
     "statesAreRegenerating": {
       "type": "boolean"
+    },
+    "averageHourOfWeekConsumption": {
+      "type": "array"
     }
   },
   "validations": [],
@@ -61,6 +72,11 @@
       "model": "Recalibration",
       "foreignKey": ""
     },
+    "energySources": {
+      "type": "hasMany",
+      "model": "EnergySource",
+      "foreignKey": ""
+    },
     "batteryVoltageSensor": {
       "type": "belongsTo",
       "model": "Sensor",
@@ -72,6 +88,11 @@
       "foreignKey": ""
     },
     "buildingPowerSensor": {
+      "type": "belongsTo",
+      "model": "Sensor",
+      "foreignKey": ""
+    },
+    "loadCurrentSensor": {
       "type": "belongsTo",
       "model": "Sensor",
       "foreignKey": ""
