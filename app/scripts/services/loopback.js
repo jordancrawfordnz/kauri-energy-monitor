@@ -103,6 +103,12 @@ module.factory(
           method: "GET"
         },
 
+        // INTERNAL. Use Building.loadCurrentSensor() instead.
+        "prototype$__get__loadCurrentSensor": {
+          url: urlBase + "/Buildings/:id/loadCurrentSensor",
+          method: "GET"
+        },
+
         // INTERNAL. Use Building.people.findById() instead.
         "prototype$__findById__people": {
           params: {
@@ -229,6 +235,33 @@ module.factory(
           method: "PUT"
         },
 
+        // INTERNAL. Use Building.energySources.findById() instead.
+        "prototype$__findById__energySources": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/energySources/:fk",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.energySources.destroyById() instead.
+        "prototype$__destroyById__energySources": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/energySources/:fk",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Building.energySources.updateById() instead.
+        "prototype$__updateById__energySources": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/energySources/:fk",
+          method: "PUT"
+        },
+
         // INTERNAL. Use Building.bridges() instead.
         "prototype$__get__bridges": {
           isArray: true,
@@ -351,6 +384,31 @@ module.factory(
         // INTERNAL. Use Building.recalibrations.count() instead.
         "prototype$__count__recalibrations": {
           url: urlBase + "/Buildings/:id/recalibrations/count",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.energySources() instead.
+        "prototype$__get__energySources": {
+          isArray: true,
+          url: urlBase + "/Buildings/:id/energySources",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.energySources.create() instead.
+        "prototype$__create__energySources": {
+          url: urlBase + "/Buildings/:id/energySources",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Building.energySources.destroyAll() instead.
+        "prototype$__delete__energySources": {
+          url: urlBase + "/Buildings/:id/energySources",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Building.energySources.count() instead.
+        "prototype$__count__energySources": {
+          url: urlBase + "/Buildings/:id/energySources/count",
           method: "GET"
         },
 
@@ -960,6 +1018,12 @@ module.factory(
           url: urlBase + "/Recalibrations/:id/building",
           method: "GET"
         },
+
+        // INTERNAL. Use EnergySource.building() instead.
+        "::get::EnergySource::building": {
+          url: urlBase + "/EnergySources/:id/building",
+          method: "GET"
+        },
       }
     );
 
@@ -1509,6 +1573,42 @@ module.factory(
         R.buildingPowerSensor = function() {
           var TargetResource = $injector.get("Sensor");
           var action = TargetResource["::get::Building::buildingPowerSensor"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building#loadCurrentSensor
+         * @methodOf lbServices.Building
+         *
+         * @description
+         *
+         * Fetches belongsTo relation loadCurrentSensor.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `refresh` – `{boolean=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Sensor` object.)
+         * </em>
+         */
+        R.loadCurrentSensor = function() {
+          var TargetResource = $injector.get("Sensor");
+          var action = TargetResource["::get::Building::loadCurrentSensor"];
           return action.apply(R, arguments);
         };
     /**
@@ -2782,6 +2882,307 @@ module.factory(
         R.recalibrations.updateById = function() {
           var TargetResource = $injector.get("Recalibration");
           var action = TargetResource["::updateById::Building::recalibrations"];
+          return action.apply(R, arguments);
+        };
+    /**
+     * @ngdoc object
+     * @name lbServices.Building.energySources
+     * @header lbServices.Building.energySources
+     * @object
+     * @description
+     *
+     * The object `Building.energySources` groups methods
+     * manipulating `EnergySource` instances related to `Building`.
+     *
+     * Call {@link lbServices.Building#energySources Building.energySources()}
+     * to query all related instances.
+     */
+
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building#energySources
+         * @methodOf lbServices.Building
+         *
+         * @description
+         *
+         * Queries energySources of Building.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `filter` – `{object=}` - 
+         *
+         * @param {function(Array.<Object>,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Array.<Object>} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        R.energySources = function() {
+          var TargetResource = $injector.get("EnergySource");
+          var action = TargetResource["::get::Building::energySources"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.energySources#count
+         * @methodOf lbServices.Building.energySources
+         *
+         * @description
+         *
+         * Counts energySources of Building.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `where` – `{object=}` - Criteria to match model instances
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `count` – `{number=}` - 
+         */
+        R.energySources.count = function() {
+          var TargetResource = $injector.get("EnergySource");
+          var action = TargetResource["::count::Building::energySources"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.energySources#create
+         * @methodOf lbServices.Building.energySources
+         *
+         * @description
+         *
+         * Creates a new instance in energySources of this model.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        R.energySources.create = function() {
+          var TargetResource = $injector.get("EnergySource");
+          var action = TargetResource["::create::Building::energySources"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.energySources#createMany
+         * @methodOf lbServices.Building.energySources
+         *
+         * @description
+         *
+         * Creates a new instance in energySources of this model.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Array.<Object>,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Array.<Object>} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        R.energySources.createMany = function() {
+          var TargetResource = $injector.get("EnergySource");
+          var action = TargetResource["::createMany::Building::energySources"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.energySources#destroyAll
+         * @methodOf lbServices.Building.energySources
+         *
+         * @description
+         *
+         * Deletes all energySources of this model.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * This method returns no data.
+         */
+        R.energySources.destroyAll = function() {
+          var TargetResource = $injector.get("EnergySource");
+          var action = TargetResource["::delete::Building::energySources"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.energySources#destroyById
+         * @methodOf lbServices.Building.energySources
+         *
+         * @description
+         *
+         * Delete a related item by id for energySources.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `fk` – `{*}` - Foreign key for energySources
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * This method returns no data.
+         */
+        R.energySources.destroyById = function() {
+          var TargetResource = $injector.get("EnergySource");
+          var action = TargetResource["::destroyById::Building::energySources"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.energySources#findById
+         * @methodOf lbServices.Building.energySources
+         *
+         * @description
+         *
+         * Find a related item by id for energySources.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `fk` – `{*}` - Foreign key for energySources
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        R.energySources.findById = function() {
+          var TargetResource = $injector.get("EnergySource");
+          var action = TargetResource["::findById::Building::energySources"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.energySources#updateById
+         * @methodOf lbServices.Building.energySources
+         *
+         * @description
+         *
+         * Update a related item by id for energySources.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `fk` – `{*}` - Foreign key for energySources
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        R.energySources.updateById = function() {
+          var TargetResource = $injector.get("EnergySource");
+          var action = TargetResource["::updateById::Building::energySources"];
           return action.apply(R, arguments);
         };
 
@@ -4705,6 +5106,12 @@ module.factory(
           method: "GET"
         },
 
+        // INTERNAL. Use Building.loadCurrentSensor() instead.
+        "::get::Building::loadCurrentSensor": {
+          url: urlBase + "/Buildings/:id/loadCurrentSensor",
+          method: "GET"
+        },
+
         // INTERNAL. Use Bridge.sensors.findById() instead.
         "::findById::Bridge::sensors": {
           params: {
@@ -4761,6 +5168,12 @@ module.factory(
         // INTERNAL. Use Bridge.sensors.count() instead.
         "::count::Bridge::sensors": {
           url: urlBase + "/Bridges/:id/sensors/count",
+          method: "GET"
+        },
+
+        // INTERNAL. Use EnergySource.currentSensor() instead.
+        "::get::EnergySource::currentSensor": {
+          url: urlBase + "/EnergySources/:id/currentSensor",
           method: "GET"
         },
       }
@@ -9403,6 +9816,741 @@ module.factory(
         R.building = function() {
           var TargetResource = $injector.get("Building");
           var action = TargetResource["::get::Recalibration::building"];
+          return action.apply(R, arguments);
+        };
+
+    return R;
+  }]);
+
+/**
+ * @ngdoc object
+ * @name lbServices.EnergySource
+ * @header lbServices.EnergySource
+ * @object
+ *
+ * @description
+ *
+ * A $resource object for interacting with the `EnergySource` model.
+ *
+ * ## Example
+ *
+ * See
+ * {@link http://docs.angularjs.org/api/ngResource.$resource#example $resource}
+ * for an example of using this object.
+ *
+ */
+module.factory(
+  "EnergySource",
+  ['LoopBackResource', 'LoopBackAuth', '$injector', function(Resource, LoopBackAuth, $injector) {
+    var R = Resource(
+      urlBase + "/EnergySources/:id",
+      { 'id': '@id' },
+      {
+
+        // INTERNAL. Use EnergySource.currentSensor() instead.
+        "prototype$__get__currentSensor": {
+          url: urlBase + "/EnergySources/:id/currentSensor",
+          method: "GET"
+        },
+
+        // INTERNAL. Use EnergySource.building() instead.
+        "prototype$__get__building": {
+          url: urlBase + "/EnergySources/:id/building",
+          method: "GET"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#create
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Create a new instance of the model and persist it into the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *   This method does not accept any parameters.
+         *   Supply an empty object or omit this argument altogether.
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        "create": {
+          url: urlBase + "/EnergySources",
+          method: "POST"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#createMany
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Create a new instance of the model and persist it into the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *   This method does not accept any parameters.
+         *   Supply an empty object or omit this argument altogether.
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Array.<Object>,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Array.<Object>} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        "createMany": {
+          isArray: true,
+          url: urlBase + "/EnergySources",
+          method: "POST"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#upsert
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Update an existing model instance or insert a new one into the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *   This method does not accept any parameters.
+         *   Supply an empty object or omit this argument altogether.
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        "upsert": {
+          url: urlBase + "/EnergySources",
+          method: "PUT"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#exists
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Check whether a model instance exists in the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - Model id
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `exists` – `{boolean=}` - 
+         */
+        "exists": {
+          url: urlBase + "/EnergySources/:id/exists",
+          method: "GET"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#findById
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Find a model instance by id from the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - Model id
+         *
+         *  - `filter` – `{object=}` - Filter defining fields and include
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        "findById": {
+          url: urlBase + "/EnergySources/:id",
+          method: "GET"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#find
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Find all instances of the model matched by filter from the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `filter` – `{object=}` - Filter defining fields, where, include, order, offset, and limit
+         *
+         * @param {function(Array.<Object>,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Array.<Object>} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        "find": {
+          isArray: true,
+          url: urlBase + "/EnergySources",
+          method: "GET"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#findOne
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Find first instance of the model matched by filter from the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `filter` – `{object=}` - Filter defining fields, where, include, order, offset, and limit
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        "findOne": {
+          url: urlBase + "/EnergySources/findOne",
+          method: "GET"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#updateAll
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Update instances of the model matched by where from the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `where` – `{object=}` - Criteria to match model instances
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * The number of instances updated
+         */
+        "updateAll": {
+          url: urlBase + "/EnergySources/update",
+          method: "POST"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#deleteById
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Delete a model instance by id from the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - Model id
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        "deleteById": {
+          url: urlBase + "/EnergySources/:id",
+          method: "DELETE"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#count
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Count instances of the model matched by where from the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `where` – `{object=}` - Criteria to match model instances
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `count` – `{number=}` - 
+         */
+        "count": {
+          url: urlBase + "/EnergySources/count",
+          method: "GET"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#prototype$updateAttributes
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Update attributes for a model instance and persist it into the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        "prototype$updateAttributes": {
+          url: urlBase + "/EnergySources/:id",
+          method: "PUT"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#createChangeStream
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Create a change stream.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *   This method does not accept any parameters.
+         *   Supply an empty object or omit this argument altogether.
+         *
+         * @param {Object} postData Request data.
+         *
+         *  - `options` – `{object=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `changes` – `{ReadableStream=}` - 
+         */
+        "createChangeStream": {
+          url: urlBase + "/EnergySources/change-stream",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Building.energySources.findById() instead.
+        "::findById::Building::energySources": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/energySources/:fk",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.energySources.destroyById() instead.
+        "::destroyById::Building::energySources": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/energySources/:fk",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Building.energySources.updateById() instead.
+        "::updateById::Building::energySources": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/energySources/:fk",
+          method: "PUT"
+        },
+
+        // INTERNAL. Use Building.energySources() instead.
+        "::get::Building::energySources": {
+          isArray: true,
+          url: urlBase + "/Buildings/:id/energySources",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.energySources.create() instead.
+        "::create::Building::energySources": {
+          url: urlBase + "/Buildings/:id/energySources",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Building.energySources.createMany() instead.
+        "::createMany::Building::energySources": {
+          isArray: true,
+          url: urlBase + "/Buildings/:id/energySources",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Building.energySources.destroyAll() instead.
+        "::delete::Building::energySources": {
+          url: urlBase + "/Buildings/:id/energySources",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Building.energySources.count() instead.
+        "::count::Building::energySources": {
+          url: urlBase + "/Buildings/:id/energySources/count",
+          method: "GET"
+        },
+      }
+    );
+
+
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#updateOrCreate
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Update an existing model instance or insert a new one into the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *   This method does not accept any parameters.
+         *   Supply an empty object or omit this argument altogether.
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        R["updateOrCreate"] = R["upsert"];
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#update
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Update instances of the model matched by where from the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `where` – `{object=}` - Criteria to match model instances
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * The number of instances updated
+         */
+        R["update"] = R["updateAll"];
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#destroyById
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Delete a model instance by id from the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - Model id
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        R["destroyById"] = R["deleteById"];
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#removeById
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Delete a model instance by id from the data source.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - Model id
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `EnergySource` object.)
+         * </em>
+         */
+        R["removeById"] = R["deleteById"];
+
+
+    /**
+    * @ngdoc property
+    * @name lbServices.EnergySource#modelName
+    * @propertyOf lbServices.EnergySource
+    * @description
+    * The name of the model represented by this $resource,
+    * i.e. `EnergySource`.
+    */
+    R.modelName = "EnergySource";
+
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#currentSensor
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Fetches belongsTo relation currentSensor.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `refresh` – `{boolean=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Sensor` object.)
+         * </em>
+         */
+        R.currentSensor = function() {
+          var TargetResource = $injector.get("Sensor");
+          var action = TargetResource["::get::EnergySource::currentSensor"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.EnergySource#building
+         * @methodOf lbServices.EnergySource
+         *
+         * @description
+         *
+         * Fetches belongsTo relation building.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `refresh` – `{boolean=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Building` object.)
+         * </em>
+         */
+        R.building = function() {
+          var TargetResource = $injector.get("Building");
+          var action = TargetResource["::get::EnergySource::building"];
           return action.apply(R, arguments);
         };
 

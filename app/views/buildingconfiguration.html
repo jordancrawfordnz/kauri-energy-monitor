@@ -9,141 +9,212 @@
   <p>The building has been saved successfully.</p>
 </div>
 
-<!-- Building parameters -->
-<div class="box box-primary">
-  <div class="box-header with-border">
-    <h3 class="box-title">Parameters</h3>
-  </div>
-  <form role="form" name="editBuildingForm" novalidate>
-      <div class="box-body">
-        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lowVoltageLevel.$dirty && editBuildingForm.lowVoltageLevel.$invalid}">
-          <label for="lowVoltageLevel">Critical low voltage level</label>
-          <p>This is the voltage considered low. This is used to adjust the battery state of charge and automatically activate the generator. This is typically the LVSD trigger voltage.</p>
-          <div class="input-group">
-            <input class="form-control" type="number" ng-model="buildingConfig.building.lowVoltageLevel" name="lowVoltageLevel" id="lowVoltageLevel" required>
-            <span class="input-group-addon">Volts</span>
-          </div>
-        </div>
-
-        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lowVoltageTriggerTime.$dirty && editBuildingForm.lowVoltageTriggerTime.$invalid}">
-          <label for="lowVoltageTriggerTime">Low voltage trigger time</label>
-          <p>The battery is considered empty once its voltage is at or below the critical low voltage level for this amount of time. Used to adjust the battery state of charge. Typically around half the time until LVSD.</p>
-          <div class="input-group">
-            <input class="form-control" type="number" ng-model="buildingConfig.building.lowVoltageTriggerTime" name="lowVoltageTriggerTime" id="lowVoltageTriggerTime" required>
-            <span class="input-group-addon">seconds</span>
-          </div>
-        </div>
-
-        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.dailyAgingPercentage.$dirty && editBuildingForm.dailyAgingPercentage.$invalid}">
-          <label for="dailyAgingPercentage">Daily Aging Percentage</label>
-          <p>The amount the battery level will decrease by each day. This is used to ensure the battery capacity is correct (the battery capacity will be re-calibrated if set too low). The recommended amount is 2% per day.</p>
-          <div class="input-group">
-            <input class="form-control" type="number" ng-model="buildingConfig.building.dailyAgingPercentage" name="dailyAgingPercentage" id="dailyAgingPercentage" required>
-            <span class="input-group-addon">% per day</span>
-          </div>
-        </div>
-
-        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.tolerancePercentage.$dirty && editBuildingForm.tolerancePercentage.$invalid}">
-          <label for="tolerancePercentage">Tolerance Percentage</label>
-          <p>The tolerance percentage defines when re-calibration events will occur. The recommended amount is &plusmn;5%. This means the battery capacity will be adjusted upwards once it reaches 105%, and state of charge won't be re-calculated until it reaches -5%.</p>
-          <div class="input-group">
-            <span class="input-group-addon">&plusmn;</span>
-            <input class="form-control" type="number" ng-model="buildingConfig.building.tolerancePercentage" name="tolerancePercentage" id="tolerancePercentage" required>
-            <span class="input-group-addon">%</span>
-          </div>
-        </div>
-
-        <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.highPowerThreshold.$dirty && editBuildingForm.highPowerThreshold.$invalid}">
-          <label for="highPowerThreshold">High power threshold</label>
-          <p>This is the power in watts that is considered high and out of the ordinary. LVSD events caused by high power loads don't represent low battery levels so do not contribute to the state of the system. Can be used for generator automation.</p>
-          <div class="input-group">
-            <input class="form-control" type="number" ng-model="buildingConfig.building.highPowerThreshold" name="highPowerThreshold" id="highPowerThreshold" required>
-            <span class="input-group-addon">Watts</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="batteryCurrentSensor">Battery current sensor</label>
-          <p>This is the sensor that is used to measure the battery current used in state of charge calculations. Assumes positive means charging.</p>
-          <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.batteryCurrentSensorId"></div>
-        </div>
-
-        <div class="form-group">
-          <label for="batteryVoltageSensor">Battery voltage sensor</label>
-          <p>This is the sensor that is used to measure the battery voltage used in state of charge calculations. This is also used to detect a likey LVSD state with te LVSD voltage.</p>
-          <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.batteryVoltageSensorId"></div>
-        </div>
-
-        <div class="form-group">
-          <label for="buildingPowerSensor">Building power sensor</label>
-          <p>This is the sensor for the building's total power usage. This is used with the high power threshold to detect situations where LVSD may occur but not due to low battery level.</p>
-          <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.buildingPowerSensorId"></div>
-        </div>
-
+<div class="row">
+  <div class="col-md-6">
+    <!-- Building parameters -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Parameters</h3>
       </div>
-      <div class="box-footer">
-        <button ng-disabled="editBuildingForm.$invalid" type="submit" ng-click="buildingConfig.saveBuilding()" class="btn btn-primary">Save</button>
-      </div>
-  </form>
-</div>
+      <form role="form" name="editBuildingForm" novalidate>
+          <div class="box-body">
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.nominalBatteryVoltage.$dirty && editBuildingForm.nominalBatteryVoltage.$invalid}">
+              <label for="nominalBatteryVoltage">Nominal battery voltage</label>
+              <p>This is the nominal battery voltage of the entire system. This is used as the voltage for all charging sources.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.nominalBatteryVoltage" name="nominalBatteryVoltage" id="nominalBatteryVoltage" required>
+                <span class="input-group-addon">Volts</span>
+              </div>
+            </div>
 
-<!-- State generation status. -->
-<div class="box box-primary">
-  <div class="box-header with-border">
-    <h3 class="box-title">State Generation</h3>
-  </div>
-  <div class="box-body">
-    If a key parameter changes, all previous states can be re-generated using the raw data.
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lowVoltageLevel.$dirty && editBuildingForm.lowVoltageLevel.$invalid}">
+              <label for="lowVoltageLevel">Critical low voltage level</label>
+              <p>This is the voltage considered low. This is used to adjust the battery state of charge and automatically activate the generator. This is typically the LVSD trigger voltage.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.lowVoltageLevel" name="lowVoltageLevel" id="lowVoltageLevel" required>
+                <span class="input-group-addon">Volts</span>
+              </div>
+            </div>
 
-    <p>
-      Please note, all re-calibrations and states will be cleared throughout this process and re-generation may take several minutes.
-    </p>
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lowVoltageTriggerTime.$dirty && editBuildingForm.lowVoltageTriggerTime.$invalid}">
+              <label for="lowVoltageTriggerTime">Low voltage trigger time</label>
+              <p>The battery is considered empty once its voltage is at or below the critical low voltage level for this amount of time. Used to adjust the battery state of charge. Typically around half the time until LVSD.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.lowVoltageTriggerTime" name="lowVoltageTriggerTime" id="lowVoltageTriggerTime" required>
+                <span class="input-group-addon">seconds</span>
+              </div>
+            </div>
 
-    <p>
-      Current generation state: {{buildingConfig.building.statesAreRegenerating ? 'Regenerating' : 'NOT regenerating'}}
-    </p>
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.dailyAgingPercentage.$dirty && editBuildingForm.dailyAgingPercentage.$invalid}">
+              <label for="dailyAgingPercentage">Daily Aging Percentage</label>
+              <p>The amount the battery level will decrease by each day. This is used to ensure the battery capacity is correct (the battery capacity will be re-calibrated if set too low). The recommended amount is 2% per day.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.dailyAgingPercentage" name="dailyAgingPercentage" id="dailyAgingPercentage" required>
+                <span class="input-group-addon">% per day</span>
+              </div>
+            </div>
 
-    <!-- Button to refresh the current state. -->
-    <button ng-click="buildingConfig.refreshBuilding()" class="btn btn-primary">Refresh status</button>
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.tolerancePercentage.$dirty && editBuildingForm.tolerancePercentage.$invalid}">
+              <label for="tolerancePercentage">Tolerance Percentage</label>
+              <p>The tolerance percentage defines when re-calibration events will occur. The recommended amount is &plusmn;5%. This means the battery capacity will be adjusted upwards once it reaches 105%, and state of charge won't be re-calculated until it reaches -5%.</p>
+              <div class="input-group">
+                <span class="input-group-addon">&plusmn;</span>
+                <input class="form-control" type="number" ng-model="buildingConfig.building.tolerancePercentage" name="tolerancePercentage" id="tolerancePercentage" required>
+                <span class="input-group-addon">%</span>
+              </div>
+            </div>
 
-    <button ng-disabled="editBuildingForm.building.statesAreRegenerating" ng-click="buildingConfig.regenerateStates()" class="btn btn-primary">Re-generate states</button>
-  </div>
-</div>
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.highPowerThreshold.$dirty && editBuildingForm.highPowerThreshold.$invalid}">
+              <label for="highPowerThreshold">High power threshold</label>
+              <p>This is the power in watts that is considered high and out of the ordinary. LVSD events caused by high power loads don't represent low battery levels so do not contribute to the state of the system. Can be used for generator automation.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.highPowerThreshold" name="highPowerThreshold" id="highPowerThreshold" required>
+                <span class="input-group-addon">Watts</span>
+              </div>
+            </div>
 
-<!-- Bridges -->
-  <!-- TODO: Add edit, delete, add functunality. -->
-<div class="box box-primary">
-  <div class="box-header with-border">
-    <h3 class="box-title">Bridges</h3>
-  </div>
-  <div class="box-body">
-    <div class="row">
-      <div ng-repeat="bridge in buildingConfig.building.bridges" class="col-md-6">
-        <div class="thumbnail">
-          <div class="caption">
-            <h3>{{bridge.name}}</h3>
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.otherEnergySourceName.$dirty && editBuildingForm.otherEnergySourceName.$invalid}">
+              <label for="otherEnergySourceName">Other energy source name</label>
+              <p>This is the name that is given to all sources of energy without individual current sensors. Depending on the system, this may represent all the sources of energy, so "All" may be an appropriate name, or it could represent a single source, for example, "Wind".</p>
+              <input class="form-control" ng-model="buildingConfig.building.otherEnergySourceName" name="otherEnergySourceName" id="otherEnergySourceName" required>
+            </div>
 
-            <h4>Sensors:</h4>
-            <div class="box-body table-responsive no-padding">
-              <table class="table table-hover">
-                <tbody>
-                  <tr>
-                    <th>Name</th>
-                    <th>Power type</th>
-                    <th>Reading type</th>
-                  </tr>
-                  <tr ng-repeat="sensor in bridge.sensors">
-                    <td>{{sensor.name}}</td>
-                    <td>{{buildingConfig.sensorTypes[sensor.type].electricity}}</td>
-                    <td>{{buildingConfig.sensorTypes[sensor.type].type}}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="form-group">
+              <label for="batteryCurrentSensor">Battery current sensor</label>
+              <p>This is the sensor that is used to measure the battery current used in state of charge calculations. Assumes positive means charging.</p>
+              <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.batteryCurrentSensorId"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="batteryVoltageSensor">Battery voltage sensor</label>
+              <p>This is the sensor that is used to measure the battery voltage used in state of charge calculations. This is also used to detect a likey LVSD state with te LVSD voltage.</p>
+              <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.batteryVoltageSensorId"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="buildingPowerSensor">Building power sensor</label>
+              <p>This is the sensor for the building's total power usage. This is used with the high power threshold to detect situations where LVSD may occur but not due to low battery level.</p>
+              <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.buildingPowerSensorId"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="loadCurrentSensor">Load current sensor</label>
+              <p>This is the sensor that records the current through the inverter/charger. If this is above zero, then the system is being charged by an external source. This allows the incoming charge to be measured.</p>
+              <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.loadCurrentSensorId"></div>
             </div>
 
           </div>
+          <div class="box-footer">
+            <button ng-disabled="editBuildingForm.$invalid" type="submit" ng-click="buildingConfig.saveBuilding()" class="btn btn-primary">Save</button>
+          </div>
+      </form>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <!-- State generation status. -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">State Generation</h3>
+      </div>
+      <div class="box-body">
+        If a key parameter changes, all previous states can be re-generated using the raw data.
+
+        <p>
+          Please note, all re-calibrations and states will be cleared throughout this process and re-generation may take several minutes.
+        </p>
+
+        <p>
+          Current generation state: {{buildingConfig.building.statesAreRegenerating ? 'Regenerating' : 'NOT regenerating'}}
+        </p>
+
+        <!-- Button to refresh the current state. -->
+        <button ng-click="buildingConfig.refreshBuilding()" class="btn btn-primary">Refresh status</button>
+
+        <button ng-disabled="editBuildingForm.building.statesAreRegenerating" ng-click="buildingConfig.regenerateStates()" class="btn btn-primary">Re-generate states</button>
+      </div>
+    </div>
+
+    <!-- Energy sources -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Energy Sources</h3>
+      </div>
+      <div class="box-body">
+        <!-- Button to create a new energy source -->
+        <p>
+          <button ng-click="buildingConfig.newEnergySource()" class="btn btn-primary">New energy source</button>
+        </p>
+                
+        <div class="thumbnail" ng-repeat="energySource in buildingConfig.energySources | orderBy: 'hasBeenSaved'">
+          <div class="caption">
+            <form role="form" name="energySourceForm" novalidate>
+              <div class="callout callout-danger" ng-if="energySource.saveError">
+                <h4>Energy source save failed</h4>
+                <p>There was a problem while saving the energy source. Please try again.</p>
+              </div>
+
+              <div class="callout callout-success" ng-if="energySource.saveSuccess">
+                <h4>Energy source saved successfully</h4>
+                <p>The energy source has been saved successfully.</p>
+              </div>
+
+              <div class="form-group" ng-class="{ 'has-error' : energySourceForm.name.$dirty && energySourceForm.name.$invalid}">
+                <label for="name">Name</label>
+                <p>The name given to the energy source. Used to identify the source in charts or tables.</p>
+                <input class="form-control" ng-model="energySource.data.name" name="name" id="name" required>
+              </div>
+
+              <div class="form-group">
+                <label for="currentSensor">Source Current Sensor</label>
+                <p>This is the current sensor that provides the current for this source. Expects values above zero mean charging, and any value below zero is ignored. The voltage of the source is assumed to be the nominal battery voltage.</p>
+                <div sensor-selector building="buildingConfig.building" model="energySource.data.currentSensorId"></div>
+
+                <br>
+                <button ng-if="energySource.hasBeenSaved" ng-disabled="energySourceForm.$invalid" type="submit" ng-click="buildingConfig.saveEnergySource(energySource)" class="btn btn-primary">Save</button>
+
+                <button ng-if="!energySource.hasBeenSaved" ng-disabled="energySourceForm.$invalid" type="submit" ng-click="buildingConfig.createEnergySource(energySource)" class="btn btn-primary">Create</button>
+
+                <button ng-click="buildingConfig.deleteEnergySource(energySource)" class="btn btn-danger">Delete</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>    
+    </div>
+
+    <!-- Bridges -->
+    <!-- TODO: Add edit, delete, add functunality. -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Bridges</h3>
+      </div>
+      <div class="box-body">
+        <div ng-repeat="bridge in buildingConfig.building.bridges">
+          <div class="thumbnail">
+            <div class="caption">
+              <h3>{{bridge.name}}</h3>
+
+              <h4>Sensors:</h4>
+              <div class="box-body table-responsive no-padding">
+                <table class="table table-hover">
+                  <tbody>
+                    <tr>
+                      <th>Name</th>
+                      <th>Power type</th>
+                      <th>Reading type</th>
+                    </tr>
+                    <tr ng-repeat="sensor in bridge.sensors">
+                      <td>{{sensor.name}}</td>
+                      <td>{{buildingConfig.sensorTypes[sensor.type].electricity}}</td>
+                      <td>{{buildingConfig.sensorTypes[sensor.type].type}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>    
+      </div>
+    </div>
   </div>
 </div>
