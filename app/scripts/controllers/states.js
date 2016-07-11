@@ -19,7 +19,13 @@ angular.module('offgridmonitoringApp')
 
       The page starts at 1 which will map to page 0 in API calls.
     */
-    $scope.chartOptions = {
+    $scope.detailTabs = {
+      'socgraph' : 'State of Charge',
+      'energysourcegraph' : 'Energy Sources'
+    };
+    $scope.activeDetailTab = 'socgraph';
+
+    $scope.socChartOptions = {
       legend: {
         display: true
       },
@@ -73,7 +79,47 @@ angular.module('offgridmonitoringApp')
       }
     };
 
-    $scope.chartDatasets = [
+    $scope.energySourceChartOptions = {
+      legend: {
+        display: true
+      },
+      tooltips: {
+        callbacks : {
+          title : function(tooltips, data) {
+            return moment.unix(tooltips[0].xLabel).format($rootScope.dateTimeFormat);
+          },
+          label : function(tooltipItem, data) {
+            var label = data.datasets[tooltipItem.datasetIndex].label;
+            var value = tooltipItem.yLabel.toFixed(0) + 'Wh'; 
+            return label + ': ' + value;
+          }
+        }
+      },
+      scales: {
+        yAxes: [
+          {
+            type: 'linear',
+            display: true,
+            stacked: true,
+            scaleLabel: {
+              display: true,
+              labelString: 'Daily energy provided (Wh)'
+            },
+          }
+        ],
+        xAxes: [
+          {
+            type: 'time',
+            time: {
+              parser: 'X'
+            },
+            display: true
+          }
+        ]
+      }
+    };
+
+    $scope.socChartDatasets = [
       {
         label: 'Current Charge Level',
         fill : true
@@ -184,13 +230,54 @@ angular.module('offgridmonitoringApp')
           var chargeLevelData = [];
           var capacityData = [];
           var stateOfCharge = [];
-          $scope.chartData = [chargeLevelData, capacityData, stateOfCharge];
+          $scope.socChartData = [chargeLevelData, capacityData, stateOfCharge];
+
+          var chargerDailyCharge = [];
+          var otherDailyCharge = [];
           
+          var energySources = {
+            charger : {
+              data : [],
+              label: 'Generator'
+            },
+            other : {
+              data : [],
+              label: $scope.building.otherEnergySourceName
+            }
+          };
+
+          // Setup the remaining energy sources,
+          angular.forEach($scope.building.energySources, function(source) {
+            energySources[source.id] = {
+              data : [],
+              label: source.name
+            };
+          });
+
+          // Setup axis' and the data array.
+          $scope.energySourceChartData = [];
+          $scope.energySourceChartDatasets = [];
+
+          angular.forEach(energySources, function(energySource, energySourceId) {
+            $scope.energySourceChartData.push(energySource.data);
+            $scope.energySourceChartDatasets.push({
+              label: energySource.label,
+              fill: true
+            });
+          });
+
           angular.forEach(states, function(state) {
             $scope.chartLabels.push(state.timestamp);
             chargeLevelData.push(state.currentChargeLevel);
             capacityData.push(state.batteryCapacity);
             stateOfCharge.push(state.currentChargeLevel / state.batteryCapacity * 100);
+
+            angular.forEach(energySources, function(energySource, energySourceId) {
+              var sourceData = state.sources[energySourceId];
+              if (sourceData) {
+                energySource.data.push(sourceData.dailyCharge);
+              }
+            });
           });
         });
       });

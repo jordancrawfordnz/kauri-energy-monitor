@@ -4,17 +4,27 @@
 	</div>
 
 	<div class="col-xs-12 col-md-8 col-lg-9">
-		<div class="box" ng-if="building">
-			<div class="box-header with-border">
-		    	<h3 class="box-title">State of Charge Graph</h3>
-		  	</div>
-		  	<div class="box-body">
-				<canvas id="line" class="chart chart-line" chart-data="chartData"
-					chart-labels="chartLabels" chart-series="chartSeries" chart-options="chartOptions" chart-dataset-override="chartDatasets">
-				</canvas>
-			</div>
-		</div>
-	</div>	
+        <div class="nav-tabs-custom">
+        	<ul class="nav nav-tabs">
+        		<li ng-class="{'active' : tabId === activeDetailTab}" ng-repeat="(tabId, tabName) in detailTabs">
+        			<a ng-click="$parent.activeDetailTab = tabId">{{tabName}}</a>
+        		</li>
+            </ul>
+            <div class="tab-content" ng-switch="activeDetailTab">
+            	<div ng-switch-when="socgraph" class="tab-pane active">
+                	<canvas id="line" class="chart chart-line" chart-data="socChartData"
+					chart-labels="chartLabels" chart-options="socChartOptions" chart-dataset-override="socChartDatasets">
+					</canvas>
+              	</div>
+            	<div ng-switch-when="energysourcegraph" class="tab-pane active">
+                	<canvas id="line" class="chart chart-line" chart-data="energySourceChartData"
+					chart-labels="chartLabels" chart-options="energySourceChartOptions" chart-dataset-override="energySourceChartDatasets">
+					</canvas>
+              	</div>
+            </div>
+        </div>
+    </div>
+
 	<div class="col-xs-12">
 		<div class="box" ng-if="building">
 		  	<div class="box-header with-border">
