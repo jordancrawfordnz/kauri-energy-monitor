@@ -1,5 +1,18 @@
 <div class="row">
     <div ng-if="summary.state && summary.state.timestamp" class="col-lg-3 col-xs-6">
+        <!-- Current charging state -->
+        <div class="small-box bg-green">
+            <div class="inner">
+                <p>Battery</p>
+                <h3>{{summary.isBatteryCharging ? 'Charging' : 'Discharging'}}</h3>
+            </div>
+            <div class="icon">
+                <i class="fa" ng-class="{'fa-arrow-up' : summary.isBatteryCharging, 'fa-arrow-down' : !summary.isBatteryCharging}"></i>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="summary.state && summary.state.timestamp" class="col-lg-3 col-xs-6">
         <!-- Current state of charge -->
         <div class="small-box bg-green">
             <div class="inner">

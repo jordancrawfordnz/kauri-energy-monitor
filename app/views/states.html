@@ -6,7 +6,7 @@
 	<div class="col-xs-12 col-md-8 col-lg-9">
 		<div class="box" ng-if="building">
 			<div class="box-header with-border">
-		    	<h3 class="box-title">Graph</h3>
+		    	<h3 class="box-title">State of Charge Graph</h3>
 		  	</div>
 		  	<div class="box-body">
 				<canvas id="line" class="chart chart-line" chart-data="chartData"
@@ -36,7 +36,11 @@
 				        	<th>Energy out since last 0%</th>
 				        	<th>Charge Efficiency</th>
 				        	<th>Voltage status</th>
+				        	<th>Is charging</th>
 				        	<th>Empty level established</th>
+				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} power</th>
+				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} hourly charge</th>
+				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} daily charge</th>
 				      	</tr>
 				      	<!-- Each reading -->
 				      	<tr ng-repeat="state in states">
@@ -50,7 +54,17 @@
 				      		<td>{{state.chargeEfficiency * 100 | number:2}}%</td>
 				      		<td ng-if="state.batteryLevelLowSince">Low voltage since {{state.batteryLevelLowSince | amFromUnix | amDateFormat:dateTimeFormat}}</td>
 				      		<td ng-if="!state.batteryLevelLowSince">Normal</td>
+				      		<td>{{state.isBatteryCharging ? "Yes" : "No"}}</td>
 				      		<td>{{state.emptyLevelEstablished ? "Yes" : "No"}}</td>
+	 				      	<td ng-repeat="(energySourceId, energySourceName) in energySources">
+				      			{{state.sources[energySourceId].power | number:2}} Watts
+				      		</td>
+				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
+				      			{{state.sources[energySourceId].hourlyCharge | number:2}} Wh
+				      		</td>
+				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
+				      			{{state.sources[energySourceId].dailyCharge | number:2}} Wh
+				      		</td>
 				      	</tr>
 				    </tbody>
 				</table>

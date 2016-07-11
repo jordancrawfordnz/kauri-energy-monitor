@@ -41,8 +41,8 @@ app.factory('SensorTypes', function() {
       "acpowerfactor" : {
         electricity : "AC",
         type : "Power Factor",
-        unitFull : "",
-        unitShort : "",
+        unitFull : "%",
+        unitShort : "%",
         isAC : true
       }
     };

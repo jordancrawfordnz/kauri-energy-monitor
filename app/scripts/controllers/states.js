@@ -129,10 +129,25 @@ angular.module('offgridmonitoringApp')
       }
     ];
 
-    $scope.building = Building.findById({id : $routeParams.buildingId});
+    $scope.building = Building.findById({
+      id : $routeParams.buildingId,
+      filter : {
+        include : 'energySources'
+      }
+    });
     // Setup breadcrumbs.
     Breadcrumbs.addPlaceholder('Building', $scope.building.$promise, function(building) {
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
+    });
+
+    $scope.energySources = {
+      'charger' : 'Generator'
+    };
+    $scope.building.$promise.then(function(building) {
+      $scope.energySources.other = building.otherEnergySourceName;
+      angular.forEach(building.energySources, function(energySource) {
+        $scope.energySources[energySource.id] = energySource.name;
+      });
     });
 
     Breadcrumbs.add(new Breadcrumb('Battery State', '/' + $routeParams.buildingId + '/states', 'See a paginated view of states for a date range.'));
