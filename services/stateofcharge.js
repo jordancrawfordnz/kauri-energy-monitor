@@ -274,6 +274,30 @@ StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batte
 	return toReturn;
 };
 
+// Updates the details about a charging source.
+function processSource(currentState, sourceId, sensorValue, batteryVoltage, secondsSinceLastReading, reading) {
+	StateOfCharge.setupSourceStateTemplate(currentState, sourceId);
+	var source = currentState.sources[sourceId];
+	if (sensorValue > 0) {
+		// If the sensor value is positive, the source is charging.
+		source.power = batteryVoltage * sensorValue; // record the current power from this source in watts.
+	} else {
+		source.power = 0;
+	}
+	// Reset the daily and hourly charge if needed.
+	if (StateOfCharge.shouldRunEndOfHourJobs(secondsSinceLastReading, reading.timestamp, true)) {
+		source.hourlyCharge = 0;
+	}
+	if (StateOfCharge.shouldRunEndOfDayJobs(secondsSinceLastReading, reading.timestamp, true)) {
+		source.dailyCharge = 0;
+	}
+
+	// Get the energy contribution of this source.
+	var chargeContribution = (source.power * secondsSinceLastReading) / 3600;
+	source.dailyCharge += chargeContribution; // record the total energy from this source for today in Wh.
+	source.hourlyCharge += chargeContribution; // record the total energy from this source for this hour in Wh.
+}
+
 var einEoutStack = [];
 
 /*
@@ -291,8 +315,27 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		var batteryVoltage = reading.values[building.batteryVoltageSensorId];
 		var batteryCurrent = reading.values[building.batteryCurrentSensorId];
 		var loadCurrent = reading.values[building.loadCurrentSensorId];
+		
+		// For each energy source, store the energy source ID and its current.
+		var energySourceCurrents = {};
+		var haveAllReadings = true;
+		building.energySources.forEach(function(energySource) {
+			if (!energySource.currentSensorId) {
+				haveAllReadings = false;
+			} else {
+				var currentReading = reading.values[energySource.currentSensorId];
+				if (!currentReading) {
+					haveAllReadings = false;
+					return;
+				}
+				energySourceCurrents[energySource.id] = currentReading;
+			}
+		});
 
-		// TODO: Get currents for all the source currents.
+		if (!haveAllReadings) {
+			reject('A energy source current is missing.');
+			return;
+		}
 
 		// TODO: Remove. Fix for lack of building power.
 		if (buildingPower === undefined) {
@@ -312,7 +355,6 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		if (lastReading) {
 			secondsSinceLastReading = reading.timestamp - lastReading.timestamp;
 		}
-
 		var powerChange = (batteryVoltage * batteryCurrent * secondsSinceLastReading) / 3600;
 		/*
 			The power change is expressed in Watt Hours.
@@ -358,7 +400,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				// Take the current charge efficiency into account.
 				powerChange *= currentState.chargeEfficiency;
 			} else {
-				// Increement the energy out with the raw power change.
+				// Increment the energy out with the raw power change.
 				currentState.energyOutSinceLastC0 += Math.abs(powerChange);
 			}
 
@@ -450,31 +492,15 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		// Update 'isBatteryCharging' to be true if the battery current is positive.
 		currentState.isBatteryCharging = batteryCurrent > 0;
 
-		// TODO: Fill in user defined sources.
-
-		// The charger runs through the load current sensor.
-		StateOfCharge.setupSourceStateTemplate(currentState, 'charger');
-		var source = currentState.sources.charger;
-		if (loadCurrent > 0) {
-			// If the load current is positive, the charger is being used.
-			source.power = batteryVoltage * loadCurrent; // record the current power from this source in watts.
-		} else {
-			source.power = 0;
+		// Fill in charging information about user sources.
+		for (var energySourceId in energySourceCurrents) {
+			var energySourceCurrent = energySourceCurrents[energySourceId];
+			processSource(currentState, energySourceId, energySourceCurrent, batteryVoltage, secondsSinceLastReading, reading);			
 		}
-		// Reset the daily and hourly charge if needed.
-		if (StateOfCharge.shouldRunEndOfHourJobs(secondsSinceLastReading, reading.timestamp, true)) {
-			source.hourlyCharge = 0;
-		}
-		if (StateOfCharge.shouldRunEndOfDayJobs(secondsSinceLastReading, reading.timestamp, true)) {
-			source.dailyCharge = 0;
-		}
+		// Fill in charging information about the charger.
+		processSource(currentState, 'charger', loadCurrent, batteryVoltage, secondsSinceLastReading, reading);
 
-		// Get the energy contribution of this source.
-		var chargeContribution = (source.power * secondsSinceLastReading) / 3600;
-		source.dailyCharge += chargeContribution; // record the total energy from this source for today in Wh.
-		source.hourlyCharge += chargeContribution; // record the total energy from this source for this hour in Wh.
-
-		StateOfCharge.setupSourceStateTemplate(currentState, 'other');
+		// TODO: Fill in information about 'other' source.
 
 		// If the state needs to be recorded, then record it.
 		if (StateOfCharge.shouldRecordState(secondsSinceLastReading, reading.timestamp)) {

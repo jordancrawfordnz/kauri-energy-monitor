@@ -55,7 +55,7 @@ module.exports = function(Building) {
 
 				// Get the Building with bridge.
 				Building.findById(id, {
-					include : 'bridges'
+					include : ['bridges', 'energySources']
 				}, function(getBuildingError, building) {
 					if (getBuildingError) {
 						cb("Failed to get building.");
