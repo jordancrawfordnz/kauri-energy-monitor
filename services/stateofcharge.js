@@ -25,8 +25,26 @@ StateOfCharge.shouldRecordState = function(timeSinceLastReading, timestamp) {
 // Returns a boolean. True if daily aging should be performed.
 	// timeSinceLastReading: The number of seconds since the last reading.
 	// timestamp: The timestamp of the reading being processed.
-StateOfCharge.shouldPerformDailyAging = function(timeSinceLastReading, timestamp) {
+	// oneReadingAfter: Whether to count end of hour jobs as happening the reading after the hour switches.
+StateOfCharge.shouldRunEndOfHourJobs = function(timeSinceLastReading, timestamp, oneReadingAfter) {
+	if (oneReadingAfter) {
+		timestamp--;
+	}
+	var outBy = timestamp % (60*60);
+
+	// Either the timestamp is perfectly on the hour or the hour change was missed.
+	return outBy === 0 || outBy < timeSinceLastReading;
+};
+
+// Returns a boolean. True if end of day jobs should be performed.
+	// timeSinceLastReading: The number of seconds since the last reading.
+	// timestamp: The timestamp of the reading being processed.
+	// oneReadingAfter: Whether to count end of day jobs as happening the reading after the day switches.
+StateOfCharge.shouldRunEndOfDayJobs = function(timeSinceLastReading, timestamp, oneReadingAfter) {
 	// TODO: Timezone support?
+	if (oneReadingAfter) {
+		timestamp--;
+	}
 	var outBy = (timestamp - 60*60*12) % (60*60*24); // match on midday GMT which is midnight in +12 NZ.
 	// Either the timestamp is perfectly on midnight or midnight was missed.
 	return outBy === 0 || outBy < timeSinceLastReading;
@@ -345,7 +363,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			}
 
 			// If the time is correct, reduce the battery capacity by the daily aging percentage.
-			if (StateOfCharge.shouldPerformDailyAging(secondsSinceLastReading, reading.timestamp)) {
+			if (StateOfCharge.shouldRunEndOfDayJobs(secondsSinceLastReading, reading.timestamp)) {
 				currentState.batteryCapacity *= 1 - building.dailyAgingPercentage / 100;
 				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalDailyAging');
 			}
@@ -439,17 +457,22 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		var source = currentState.sources.charger;
 		if (loadCurrent > 0) {
 			// If the load current is positive, the charger is being used.
-			source.power = building.nominalBatteryVoltage * loadCurrent; // record the current power from this source in watts.
-			
-			// TODO: Reset the daily and hourly charge if needed.
-
-			// Get the energy contribution of this source.
-			var chargeContribution = (source.power * secondsSinceLastReading) / 3600;
-			source.dailyCharge += chargeContribution; // record the total energy from this source for today in Wh.
-			source.hourlyCharge += chargeContribution; // record the total energy from this source for this hour in Wh.
+			source.power = batteryVoltage * loadCurrent; // record the current power from this source in watts.
 		} else {
 			source.power = 0;
 		}
+		// Reset the daily and hourly charge if needed.
+		if (StateOfCharge.shouldRunEndOfHourJobs(secondsSinceLastReading, reading.timestamp, true)) {
+			source.hourlyCharge = 0;
+		}
+		if (StateOfCharge.shouldRunEndOfDayJobs(secondsSinceLastReading, reading.timestamp, true)) {
+			source.dailyCharge = 0;
+		}
+
+		// Get the energy contribution of this source.
+		var chargeContribution = (source.power * secondsSinceLastReading) / 3600;
+		source.dailyCharge += chargeContribution; // record the total energy from this source for today in Wh.
+		source.hourlyCharge += chargeContribution; // record the total energy from this source for this hour in Wh.
 
 		StateOfCharge.setupSourceStateTemplate(currentState, 'other');
 
