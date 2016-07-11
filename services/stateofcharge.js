@@ -50,6 +50,16 @@ StateOfCharge.recordRecalibration = function(building, timestamp, type) {
 	});
 };
 
+// Sets up a source state template if it doesn't exist for the state.
+StateOfCharge.setupSourceStateTemplate = function(state, sourceName) {
+	if (!state.sources[sourceName]) {
+		state.sources[sourceName] = {
+			dailyCharge : 0,
+			hourlyCharge : 0
+		};
+	}
+};
+
 // Returns a template for a blank state object.
 StateOfCharge.getStateTemplate = function(building) {
 	return {
@@ -59,7 +69,9 @@ StateOfCharge.getStateTemplate = function(building) {
 		emptyLevelEstablished : false,
 		currentChargeLevel : 0,
 		chargeEfficiency : 0.8,
-		buildingId : building.id
+		buildingId : building.id,
+		isBatteryCharging : false,
+		sources : {}
 	};
 }
 
@@ -88,6 +100,8 @@ StateOfCharge.processAllReadings = function(building) {
 				
 				processPage(building, bridge, 0, totalPages, null, StateOfCharge.getStateTemplate(building)).then(function(result) {
 					var finishTime = Math.floor(Date.now() / 1000);
+					result.startTime = startTime;
+					result.finishTime = finishTime;
 					result.totalTime = finishTime - startTime;
 					resolve(result);
 				}, reject);
@@ -258,6 +272,9 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		var buildingPower = reading.values[building.buildingPowerSensorId];
 		var batteryVoltage = reading.values[building.batteryVoltageSensorId];
 		var batteryCurrent = reading.values[building.batteryCurrentSensorId];
+		var loadCurrent = reading.values[building.loadCurrentSensorId];
+
+		// TODO: Get currents for all the source currents.
 
 		// TODO: Remove. Fix for lack of building power.
 		if (buildingPower === undefined) {
@@ -268,7 +285,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			}
 		}
 
-		if (buildingPower === undefined || batteryVoltage === undefined || batteryCurrent === undefined) {
+		if (buildingPower === undefined || batteryVoltage === undefined || batteryCurrent === undefined || loadCurrent === undefined) {
 			reject('Essential value is null.');
 			return;
 		}
@@ -373,10 +390,12 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				var einToUse = currentState.energyInSinceLastC0;
 				var eoutToUse = currentState.energyOutSinceLastC0;
 
-				for (var i = 0; i < einEoutStack.length && einToUse > 2 * currentState.batteryCapacity && eoutToUse > 2 * currentState.batteryCapacity; i++) {
-					einToUse += einEoutStack[i].ein;
-					eoutToUse += einEoutStack[i].eout;
-				}
+				// TODO: Prevent this stack from getting massive. Potentially drop old values off if we've merged them.
+
+				// for (var i = 0; i < einEoutStack.length && einToUse > 2 * currentState.batteryCapacity && eoutToUse > 2 * currentState.batteryCapacity; i++) {
+				// 	einToUse += einEoutStack[i].ein;
+				// 	eoutToUse += einEoutStack[i].eout;
+				// }
 
 				// currentState.chargeEfficiency = einToUse / eoutToUse;
 				
@@ -387,10 +406,12 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				// if (currentState.chargeEfficiency > 1) {
 				// 	currentState.chargeEfficiency = 1;
 				// }
-				einEoutStack.unshift({
-					ein : currentState.energyInSinceLastC0,
-					eout : currentState.energyOutSinceLastC0
-				});
+
+				// TODO: This operation is a bit slow. Don't perform it like this.
+				// einEoutStack.unshift({
+				// 	ein : currentState.energyInSinceLastC0,
+				// 	eout : currentState.energyOutSinceLastC0
+				// });
 
 				// currentState.currentChargeLevel = 0;
 				// currentState.energyInSinceLastC0 = 0;
@@ -408,13 +429,37 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			}
 		}
 
+		// Update 'isBatteryCharging' to be true if the battery current is positive.
+		currentState.isBatteryCharging = batteryCurrent > 0;
+
+		// TODO: Fill in user defined sources.
+
+		// The charger runs through the load current sensor.
+		StateOfCharge.setupSourceStateTemplate(currentState, 'charger');
+		var source = currentState.sources.charger;
+		if (loadCurrent > 0) {
+			// If the load current is positive, the charger is being used.
+			source.power = building.nominalBatteryVoltage * loadCurrent; // record the current power from this source in watts.
+			
+			// TODO: Reset the daily and hourly charge if needed.
+
+			// Get the energy contribution of this source.
+			var chargeContribution = (source.power * secondsSinceLastReading) / 3600;
+			source.dailyCharge += chargeContribution; // record the total energy from this source for today in Wh.
+			source.hourlyCharge += chargeContribution; // record the total energy from this source for this hour in Wh.
+		} else {
+			source.power = 0;
+		}
+
+		StateOfCharge.setupSourceStateTemplate(currentState, 'other');
+
 		// If the state needs to be recorded, then record it.
 		if (StateOfCharge.shouldRecordState(secondsSinceLastReading, reading.timestamp)) {
 			// Record the State.
 			currentState.timestamp = reading.timestamp;
 			State.create(currentState, function(error) {
 				if (error) {
-					reject();
+					reject(error);
 				} else {
 					resolve(currentState);
 				}

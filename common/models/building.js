@@ -74,7 +74,10 @@ module.exports = function(Building) {
 						// Process each page serially in the background.
 						StateOfCharge.processAllReadings(building).then(function(result) {
 							// Set the building state to not processing.
-							updatedBuilding.updateAttribute('statesAreRegenerating', false, function(updateBuildingError, updatedBuilding) {
+							updatedBuilding.updateAttributes({
+								'statesAreRegenerating': false,
+								'lastRegeneration' : result 
+							}, function(updateBuildingError, updatedBuilding) {
 								if (updateBuildingError) {
 									console.log('Error updating the building after state re-generation.');
 									console.log(updateBuildingError);

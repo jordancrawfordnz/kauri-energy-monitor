@@ -36,6 +36,14 @@
     "chargeEfficiency": {
       "type": "number",
       "required": true
+    },
+    "isBatteryCharging": {
+      "type": "boolean",
+      "required": true
+    },
+    "sources": {
+      "type": "object",
+      "required": true
     }
   },
   "validations": [],

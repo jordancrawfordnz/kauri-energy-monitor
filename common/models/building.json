@@ -43,6 +43,9 @@
     },
     "averageHourOfWeekConsumption": {
       "type": "array"
+    },
+    "lastRegeneration": {
+      "type": "object"
     }
   },
   "validations": [],
