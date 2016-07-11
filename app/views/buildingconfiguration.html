@@ -124,7 +124,23 @@
         </p>
 
         <p>
-          Current generation state: {{buildingConfig.building.statesAreRegenerating ? 'Regenerating' : 'NOT regenerating'}}
+          <strong>Current generation state:</strong>
+          <span ng-if="buildingConfig.building.statesAreRegenerating === undefined">
+            Loading current state...
+          </span>
+          <span ng-if="buildingConfig.building.statesAreRegenerating !== undefined">
+            <span ng-if="buildingConfig.building.statesAreRegenerating">Regenerating</span>
+            <span ng-if="!buildingConfig.building.statesAreRegenerating">NOT regenerating</span> 
+          </span>
+        </p>
+
+        <p>
+          <strong>Last re-generation result:</strong><br>
+          Started: {{buildingConfig.building.lastRegeneration.startTime | amFromUnix | amDateFormat:dateTimeFormat}}<br>
+          Finished: {{buildingConfig.building.lastRegeneration.finishTime | amFromUnix | amDateFormat:dateTimeFormat}}<br>
+          Time taken: {{buildingConfig.building.lastRegeneration.totalTime | number}} seconds<br>
+          Number of successful readings: {{buildingConfig.building.lastRegeneration.numberOfSuccessfulReadings | number}}<br>
+          Number of failed readings: {{buildingConfig.building.lastRegeneration.numberOfFailedReadings | number}}
         </p>
 
         <!-- Button to refresh the current state. -->
