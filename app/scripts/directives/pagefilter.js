@@ -13,6 +13,13 @@ angular.module('offgridmonitoringApp')
 	  return {
 	    restrict: 'E', // to be used via an element
 	    controller: ['$rootScope', '$scope', function($rootScope, $scope) {
+	    	if ($scope.from === undefined) {
+	    		$scope.from = null;
+	    	}
+	    	if ($scope.until === undefined) {
+	    		$scope.until = null;
+	    	}
+
 	    	$scope.datePickerOptions = {
 		      icons : {
 		        next: 'glyphicon glyphicon-arrow-right',

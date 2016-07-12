@@ -8,11 +8,11 @@ app.factory('Timestamp', function($rootScope) {
     
    	// Gets the where filter that limits the time period.
     Timestamp.getRangeWhereFilter = function(from, until, displayEvery) {
-      if (from && from.length > 0) {
-        var fromTimestamp = moment(from, $rootScope.dateTimeFormat).unix();
+      if (from) {
+        var fromTimestamp = from.unix();
       }
-      if (until && until.length > 0) {
-        var untilTimestamp = moment(until, $rootScope.dateTimeFormat).unix();
+      if (until) {
+        var untilTimestamp = until.unix();
       }
 
       var whereFilter = {};

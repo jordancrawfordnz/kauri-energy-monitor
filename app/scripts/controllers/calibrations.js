@@ -23,6 +23,11 @@ angular.module('offgridmonitoringApp')
     $scope.sortOrder = 'desc';
 
     $scope.building = Building.findById({id : $routeParams.buildingId});
+    $scope.building.$promise.then(function() {
+      $scope.recountSearch();
+      $scope.refreshSearch();
+    });
+
     // Setup breadcrumbs.
     Breadcrumbs.addPlaceholder('Building', $scope.building.$promise, function(building) {
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
@@ -32,29 +37,27 @@ angular.module('offgridmonitoringApp')
 
     // Re-counts the number of results in the search when the filters change.
     $scope.recountSearch = function() {
-      $scope.building.$promise.then(function() {
-        Building.recalibrations.count({
-          id : $scope.building.id,
-          where : Timestamp.getRangeWhereFilter($scope.from, $scope.until)
-        }).$promise.then(function(count) {
-          $scope.totalStates = count.count;
-        });
+      if (!$scope.building.id) return;
+      Building.recalibrations.count({
+        id : $scope.building.id,
+        where : Timestamp.getRangeWhereFilter($scope.from, $scope.until)
+      }).$promise.then(function(count) {
+        $scope.totalStates = count.count;
       });
     };
     $scope.$watchGroup(['from', 'until', 'displayEvery'], $scope.recountSearch);
 
     // Refresh the search results.
     $scope.refreshSearch = function() {
-      $scope.building.$promise.then(function() {
-        $scope.recalibrations = Building.recalibrations({
-          id : $scope.building.id,
-          filter : {
-            skip : ($scope.currentPage - 1) * $scope.amountPerPage,
-            limit : $scope.amountPerPage,
-            order : 'timestamp ' + $scope.sortOrder,
-            where : Timestamp.getRangeWhereFilter($scope.from, $scope.until)
-          }
-        });
+      if (!$scope.building.id) return;
+      $scope.recalibrations = Building.recalibrations({
+        id : $scope.building.id,
+        filter : {
+          skip : ($scope.currentPage - 1) * $scope.amountPerPage,
+          limit : $scope.amountPerPage,
+          order : 'timestamp ' + $scope.sortOrder,
+          where : Timestamp.getRangeWhereFilter($scope.from, $scope.until)
+        }
       });
     };
     $scope.$watchGroup(['currentPage', 'sortOrder', 'from', 'until', 'amountPerPage', 'displayEvery'], $scope.refreshSearch);

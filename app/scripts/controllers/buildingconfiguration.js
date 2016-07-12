@@ -8,10 +8,12 @@
  * Allows building configuration including bridges and other parameters.
  */
 angular.module('offgridmonitoringApp')
-  .controller('BuildingConfigCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, SensorTypes, $timeout, EnergySource) {
+  .controller('BuildingConfigCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, $rootScope, Building, SensorTypes, $timeout, EnergySource) {
   	var _this = this;
     this.sensorTypes = SensorTypes;
     var buildingId = $routeParams.buildingId;
+    this.onlyProcessAfterObject = null;
+    this.onlyProcessUntilObject = null;
 
     function getBuilding() {
       _this.building = Building.findById({
@@ -23,11 +25,35 @@ angular.module('offgridmonitoringApp')
           ]
         }
       });
+      // Setup the date objects.
+      _this.building.$promise.then(function() {
+        if (_this.building.onlyProcessAfter) {
+          _this.onlyProcessAfterObject = moment.unix(_this.building.onlyProcessAfter);
+        } else {
+          _this.onlyProcessAfterObject = null;
+        }
+
+        if (_this.building.onlyProcessUntil) {
+          _this.onlyProcessUntilObject = moment.unix(_this.building.onlyProcessUntil);
+        } else {
+          _this.onlyProcessUntilObject = null;
+        }
+      });
     }
     getBuilding();
 
     this.refreshBuilding = function() {
       getBuilding();
+    };
+
+    this.datePickerOptions = {
+      icons : {
+        next: 'glyphicon glyphicon-arrow-right',
+        previous: 'glyphicon glyphicon-arrow-left',
+        up: 'glyphicon glyphicon-arrow-up',
+        down: 'glyphicon glyphicon-arrow-down'
+      },
+      format : $rootScope.dateTimeFormat
     };
 
     this.regenerateStates = function() {
@@ -47,13 +73,21 @@ angular.module('offgridmonitoringApp')
     Breadcrumbs.add(new Breadcrumb('Configuration', '/' + buildingId + '/configuration', 'Configure the building parameters and bridges.'));
 
     this.saveBuilding = function() {
+      // Update the 'onlyProcessAfter' and 'onlyProcessUntil' values from the moment objects.
+      if (this.onlyProcessAfterObject) {
+        this.building.onlyProcessAfter = this.onlyProcessAfterObject.unix();
+      } else {
+        this.building.onlyProcessAfter = null;
+      }
+      
+      if (this.onlyProcessUntilObject) {
+        this.building.onlyProcessUntil = this.onlyProcessUntilObject.unix();
+      } else {
+        this.building.onlyProcessUntil = null;
+      }
+
       // Save the building. Show a message on error.
-      this.building.$prototype$updateAttributes({
-        lvsdVoltage : this.building.lvsdVoltage,
-        lvsdTime : this.building.lvsdTime,
-        highPowerThreshold : this.building.highPowerThreshold,
-        batteryCurrentSensor : this.building.batteryCurrentSensor
-      }, function(data) {
+      this.building.$save().then(function(data) {
         _this.buildingSaveError = false;
         _this.buildingSaveSuccess = true;
         $timeout(function() {

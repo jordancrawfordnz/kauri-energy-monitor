@@ -73,6 +73,32 @@
               </div>
             </div>
 
+            <div class="form-group">
+              <label for="onlyProcessAfter">Process data after</label>
+              <p>
+                Processes data starting at the defined date and time.
+              </p>
+              <input type="text" class="form-control"
+                datetimepicker
+                options="buildingConfig.datePickerOptions"
+                placeholder="The start of collection."
+                name="onlyProcessAfter"
+                date="buildingConfig.onlyProcessAfterObject">
+            </div>
+
+            <div class="form-group">
+              <label for="onlyProcessUntil">Process data until</label>
+              <p>
+                Stops processing data after the defined date and time.
+              </p>
+              <input type="text" class="form-control"
+                datetimepicker
+                options="buildingConfig.datePickerOptions"
+                placeholder="Forever"
+                name="onlyProcessUntil"
+                date="buildingConfig.onlyProcessUntilObject">
+            </div>
+
             <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.otherEnergySourceName.$dirty && editBuildingForm.otherEnergySourceName.$invalid}">
               <label for="otherEnergySourceName">Other energy source name</label>
               <p>This is the name that is given to all sources of energy without individual current sensors. Depending on the system, this may represent all the sources of energy, so "All" may be an appropriate name, or it could represent a single source, for example, "Wind".</p>

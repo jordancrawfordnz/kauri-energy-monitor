@@ -16,7 +16,7 @@ angular
     'ngTouch',
     'lbServices',
     'environmentConstants',
-    'datetimepicker',
+    'ae-datetimepicker',
     'angularMoment',
     'chart.js'
   ])

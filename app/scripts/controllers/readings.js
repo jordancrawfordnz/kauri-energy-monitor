@@ -58,6 +58,8 @@ angular.module('offgridmonitoringApp')
     });
     $scope.building.$promise.then(function(building) {
       $scope.bridge = building.bridges[0];
+      $scope.recountSearch();
+      $scope.refreshSearch();
     });
 
     // Setup breadcrumbs.
@@ -69,29 +71,27 @@ angular.module('offgridmonitoringApp')
 
     // Re-counts the number of results in the search when the filters change.
     $scope.recountSearch = function() {
-      $scope.building.$promise.then(function() {
-        Bridge.readings.count({
-          id : $scope.bridge.id,
-          where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
-        }).$promise.then(function(count) {
-          $scope.totalReadings = count.count;
-        });
+      if (!$scope.building.id) return;
+      Bridge.readings.count({
+        id : $scope.bridge.id,
+        where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
+      }).$promise.then(function(count) {
+        $scope.totalReadings = count.count;
       });
     };
     $scope.$watchGroup(['from', 'until', 'displayEvery'], $scope.recountSearch);
 
     // Refresh the search results.
     $scope.refreshSearch = function() {
-      $scope.building.$promise.then(function() {
-        $scope.readings = Bridge.readings({
-          id : $scope.bridge.id,
-          filter : {
-            skip : ($scope.currentPage - 1) * $scope.amountPerPage,
-            limit : $scope.amountPerPage,
-            order : 'timestamp ' + $scope.sortOrder,
-            where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
-          }
-        });
+      if (!$scope.building.id) return;
+      $scope.readings = Bridge.readings({
+        id : $scope.bridge.id,
+        filter : {
+          skip : ($scope.currentPage - 1) * $scope.amountPerPage,
+          limit : $scope.amountPerPage,
+          order : 'timestamp ' + $scope.sortOrder,
+          where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
+        }
       });
     };
     $scope.$watchGroup(['currentPage', 'sortOrder', 'from', 'until', 'amountPerPage', 'displayEvery'], $scope.refreshSearch);

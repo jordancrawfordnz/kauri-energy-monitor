@@ -194,90 +194,92 @@ angular.module('offgridmonitoringApp')
       angular.forEach(building.energySources, function(energySource) {
         $scope.energySources[energySource.id] = energySource.name;
       });
+      // Initialise the count and the search.
+      $scope.recountSearch();
+      $scope.refreshSearch();
     });
 
     Breadcrumbs.add(new Breadcrumb('Battery State', '/' + $routeParams.buildingId + '/states', 'See a paginated view of states for a date range.'));
 
     // Re-counts the number of results in the search when the filters change.
     $scope.recountSearch = function() {
-      $scope.building.$promise.then(function() {
-        Building.states.count({
-          id : $scope.building.id,
-          where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
-        }).$promise.then(function(count) {
-          $scope.totalStates = count.count;
-        });
+      if (!$scope.building.id) return;
+      Building.states.count({
+        id : $scope.building.id,
+        where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
+      }).$promise.then(function(count) {
+        $scope.totalStates = count.count;
       });
     };
     $scope.$watchGroup(['from', 'until', 'displayEvery'], $scope.recountSearch);
 
     // Refresh the search results.
     $scope.refreshSearch = function() {
-      $scope.building.$promise.then(function() {
-        $scope.states = Building.states({
-          id : $scope.building.id,
-          filter : {
-            skip : ($scope.currentPage - 1) * $scope.amountPerPage,
-            limit : $scope.amountPerPage,
-            order : 'timestamp ' + $scope.sortOrder,
-            where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
+      if (!$scope.building.id) return;
+      
+      $scope.states = Building.states({
+        id : $scope.building.id,
+        filter : {
+          skip : ($scope.currentPage - 1) * $scope.amountPerPage,
+          limit : $scope.amountPerPage,
+          order : 'timestamp ' + $scope.sortOrder,
+          where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
+        }
+      });
+
+      $scope.states.$promise.then(function(states) {
+        // Add data to the chart.
+        $scope.chartLabels = [];
+        var chargeLevelData = [];
+        var capacityData = [];
+        var stateOfCharge = [];
+        $scope.socChartData = [chargeLevelData, capacityData, stateOfCharge];
+
+        var chargerDailyCharge = [];
+        var otherDailyCharge = [];
+        
+        var energySources = {
+          charger : {
+            data : [],
+            label: 'Generator'
+          },
+          other : {
+            data : [],
+            label: $scope.building.otherEnergySourceName
           }
+        };
+
+        // Setup the remaining energy sources,
+        angular.forEach($scope.building.energySources, function(source) {
+          energySources[source.id] = {
+            data : [],
+            label: source.name
+          };
         });
 
-        $scope.states.$promise.then(function(states) {
-          // Add data to the chart.
-          $scope.chartLabels = [];
-          var chargeLevelData = [];
-          var capacityData = [];
-          var stateOfCharge = [];
-          $scope.socChartData = [chargeLevelData, capacityData, stateOfCharge];
+        // Setup axis' and the data array.
+        $scope.energySourceChartData = [];
+        $scope.energySourceChartDatasets = [];
 
-          var chargerDailyCharge = [];
-          var otherDailyCharge = [];
-          
-          var energySources = {
-            charger : {
-              data : [],
-              label: 'Generator'
-            },
-            other : {
-              data : [],
-              label: $scope.building.otherEnergySourceName
-            }
-          };
-
-          // Setup the remaining energy sources,
-          angular.forEach($scope.building.energySources, function(source) {
-            energySources[source.id] = {
-              data : [],
-              label: source.name
-            };
+        angular.forEach(energySources, function(energySource, energySourceId) {
+          $scope.energySourceChartData.push(energySource.data);
+          $scope.energySourceChartDatasets.push({
+            label: energySource.label,
+            fill: true
           });
+        });
 
-          // Setup axis' and the data array.
-          $scope.energySourceChartData = [];
-          $scope.energySourceChartDatasets = [];
+        angular.forEach(states, function(state) {
+          $scope.chartLabels.push(state.timestamp);
+          chargeLevelData.push(state.currentChargeLevel);
+          capacityData.push(state.batteryCapacity);
+          stateOfCharge.push(state.currentChargeLevel / state.batteryCapacity * 100);
 
           angular.forEach(energySources, function(energySource, energySourceId) {
-            $scope.energySourceChartData.push(energySource.data);
-            $scope.energySourceChartDatasets.push({
-              label: energySource.label,
-              fill: true
-            });
-          });
-
-          angular.forEach(states, function(state) {
-            $scope.chartLabels.push(state.timestamp);
-            chargeLevelData.push(state.currentChargeLevel);
-            capacityData.push(state.batteryCapacity);
-            stateOfCharge.push(state.currentChargeLevel / state.batteryCapacity * 100);
-
-            angular.forEach(energySources, function(energySource, energySourceId) {
-              var sourceData = state.sources[energySourceId];
-              if (sourceData) {
-                energySource.data.push(sourceData.dailyCharge);
-              }
-            });
+            var sourceData = state.sources[energySourceId];
+            if (sourceData) {
+              energySource.data.push(sourceData.dailyCharge);
+            }
           });
         });
       });
