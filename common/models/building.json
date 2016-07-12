@@ -46,6 +46,12 @@
     },
     "lastRegeneration": {
       "type": "object"
+    },
+    "onlyProcessAfter": {
+      "type": "number"
+    },
+    "onlyProcessUntil": {
+      "type": "number"
     }
   },
   "validations": [],

@@ -93,6 +93,28 @@ StateOfCharge.getStateTemplate = function(building) {
 	};
 }
 
+// Gets the where filter for state of charge queries.
+function getWhereFilter(building, bridgeId) {
+	var whereFilter = {
+		and : []
+	};
+	whereFilter.and.push({
+		bridgeId : bridgeId
+	});
+	if (building.onlyProcessAfter) {
+		whereFilter.and.push({
+			timestamp : {gte : building.onlyProcessAfter}
+		});
+	}
+
+	if (building.onlyProcessUntil) {
+		whereFilter.and.push({
+			timestamp : {lt : building.onlyProcessUntil}
+		});
+	}
+	return whereFilter;
+}
+
 /*
 Processes all readings.
 	building: The building to get readings for.
@@ -108,9 +130,7 @@ StateOfCharge.processAllReadings = function(building) {
 		var bridge = building.bridges[0];
 		
 		// Determine how many pages.
-		Reading.count({
-			bridgeId : bridge.id
-		}, function(error, count) {
+		Reading.count(getWhereFilter(building, bridge.id), function(error, count) {
 			if (error) {
 				reject(error);
 			} else {
@@ -135,7 +155,7 @@ StateOfCharge.processAllReadings = function(building) {
 				order: 'timestamp asc',
 				skip: page * amountPerPage,
 				limit: amountPerPage,
-				where: {bridgeId : bridge.id}
+				where: getWhereFilter(building, bridge.id)
 			}, function(error, readings) {
 				if (error) {
 					reject(error);
@@ -321,6 +341,8 @@ Processes a single reading.
 StateOfCharge.processReading = function(building, reading, lastReading, currentState) {
 	var State = app.models.State;
 	return new Promise(function(resolve, reject) {
+		// TODO: Apply the 'onlyProcessAfter' and 'onlyProcessUntil' logic on incoming live data.
+
 		var buildingPower = reading.values[building.buildingPowerSensorId];
 		var batteryVoltage = reading.values[building.batteryVoltageSensorId];
 		var batteryCurrent = reading.values[building.batteryCurrentSensorId];
