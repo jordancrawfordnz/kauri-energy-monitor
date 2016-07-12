@@ -20,7 +20,7 @@
           <div class="box-body">
             <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.nominalBatteryVoltage.$dirty && editBuildingForm.nominalBatteryVoltage.$invalid}">
               <label for="nominalBatteryVoltage">Nominal battery voltage</label>
-              <p>This is the nominal battery voltage of the entire system. This is used as the voltage for all charging sources.</p>
+              <p>This is the nominal battery voltage of the entire system.</p>
               <div class="input-group">
                 <input class="form-control" type="number" ng-model="buildingConfig.building.nominalBatteryVoltage" name="nominalBatteryVoltage" id="nominalBatteryVoltage" required>
                 <span class="input-group-addon">Volts</span>
@@ -182,7 +182,7 @@
 
               <div class="form-group">
                 <label for="currentSensor">Source Current Sensor</label>
-                <p>This is the current sensor that provides the current for this source. Expects values above zero mean charging, and any value below zero is ignored. The voltage of the source is assumed to be the nominal battery voltage.</p>
+                <p>This is the current sensor that provides the current for this source. Expects values above zero mean charging, and any value below zero is ignored.</p>
                 <div sensor-selector building="buildingConfig.building" model="energySource.data.currentSensorId"></div>
 
                 <br>
