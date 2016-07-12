@@ -293,9 +293,19 @@ function processSource(currentState, sourceId, sensorValue, batteryVoltage, seco
 	}
 
 	// Get the energy contribution of this source.
-	var chargeContribution = (source.power * secondsSinceLastReading) / 3600;
+	var chargeContribution
+	if (canExtrapolateReading(secondsSinceLastReading)) {
+		chargeContribution = (source.power * secondsSinceLastReading) / 3600;
+	} else {
+		chargeContribution = 0;
+	}
 	source.dailyCharge += chargeContribution; // record the total energy from this source for today in Wh.
 	source.hourlyCharge += chargeContribution; // record the total energy from this source for this hour in Wh.
+}
+
+// Returns a boolean as to whether the reading can be extrapolated from.
+function canExtrapolateReading(secondsSinceLastReading) {
+	return secondsSinceLastReading < 10*60; // extrapolate if less than 10 minutes since last reading.
 }
 
 var einEoutStack = [];
@@ -355,7 +365,12 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		if (lastReading) {
 			secondsSinceLastReading = reading.timestamp - lastReading.timestamp;
 		}
-		var powerChange = (batteryVoltage * batteryCurrent * secondsSinceLastReading) / 3600;
+		var powerChange;
+		if (canExtrapolateReading(secondsSinceLastReading)) {
+			powerChange = (batteryVoltage * batteryCurrent * secondsSinceLastReading) / 3600;
+		} else {
+			powerChange = 0;
+		}
 		/*
 			The power change is expressed in Watt Hours.
 				A Watt Hour is 3600J.
@@ -492,15 +507,23 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		// Update 'isBatteryCharging' to be true if the battery current is positive.
 		currentState.isBatteryCharging = batteryCurrent > 0;
 
+		var otherCurrent = batteryCurrent;
+
 		// Fill in charging information about user sources.
 		for (var energySourceId in energySourceCurrents) {
 			var energySourceCurrent = energySourceCurrents[energySourceId];
+			if (energySourceCurrent > 0) {
+				otherCurrent -= energySourceCurrent;
+			}
 			processSource(currentState, energySourceId, energySourceCurrent, batteryVoltage, secondsSinceLastReading, reading);			
 		}
+
 		// Fill in charging information about the charger.
+		otherCurrent -= loadCurrent;
 		processSource(currentState, 'charger', loadCurrent, batteryVoltage, secondsSinceLastReading, reading);
 
-		// TODO: Fill in information about 'other' source.
+		// Fill in details about the other source.
+		processSource(currentState, 'other', otherCurrent, batteryVoltage, secondsSinceLastReading, reading);
 
 		// If the state needs to be recorded, then record it.
 		if (StateOfCharge.shouldRecordState(secondsSinceLastReading, reading.timestamp)) {
