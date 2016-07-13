@@ -295,12 +295,12 @@ StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batte
 };
 
 // Updates the details about a charging source.
-function processSource(currentState, sourceId, sensorValue, batteryVoltage, secondsSinceLastReading, reading) {
+function processSource(currentState, sourceId, sensorValueNow, batteryVoltageNow, sensorValueLastReading, batteryVoltageLastReading, secondsSinceLastReading, reading) {
 	StateOfCharge.setupSourceStateTemplate(currentState, sourceId);
 	var source = currentState.sources[sourceId];
-	if (sensorValue > 0) {
+	if (sensorValueNow > 0) {
 		// If the sensor value is positive, the source is charging.
-		source.power = batteryVoltage * sensorValue; // record the current power from this source in watts.
+		source.power = batteryVoltageNow * sensorValueNow; // record the current power from this source in watts.
 	} else {
 		source.power = 0;
 	}
@@ -314,8 +314,8 @@ function processSource(currentState, sourceId, sensorValue, batteryVoltage, seco
 
 	// Get the energy contribution of this source.
 	var chargeContribution
-	if (canExtrapolateReading(secondsSinceLastReading)) {
-		chargeContribution = (source.power * secondsSinceLastReading) / 3600;
+	if (canExtrapolateFromLastReading(secondsSinceLastReading) && sensorValueLastReading > 0) {
+		chargeContribution = (sensorValueLastReading * batteryVoltageLastReading * secondsSinceLastReading) / 3600;
 	} else {
 		chargeContribution = 0;
 	}
@@ -324,7 +324,7 @@ function processSource(currentState, sourceId, sensorValue, batteryVoltage, seco
 }
 
 // Returns a boolean as to whether the reading can be extrapolated from.
-function canExtrapolateReading(secondsSinceLastReading) {
+function canExtrapolateFromLastReading(secondsSinceLastReading) {
 	return secondsSinceLastReading < 10*60; // extrapolate if less than 10 minutes since last reading.
 }
 
@@ -347,6 +347,15 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		var batteryVoltage = reading.values[building.batteryVoltageSensorId];
 		var batteryCurrent = reading.values[building.batteryCurrentSensorId];
 		var loadCurrent = reading.values[building.loadCurrentSensorId];
+
+		var lastReadingBatteryVoltage = 0;
+		var lastReadingBatteryCurrent = 0;
+		var lastReadingLoadCurrent = 0;
+		if (lastReading) {
+			lastReadingBatteryVoltage = lastReading.values[building.batteryVoltageSensorId];
+			lastReadingBatteryCurrent = lastReading.values[building.batteryCurrentSensorId];
+			lastReadingLoadCurrent = lastReading.values[building.loadCurrentSensorId];
+		}
 		
 		// For each energy source, store the energy source ID and its current.
 		var energySourceCurrents = {};
@@ -356,11 +365,18 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				haveAllReadings = false;
 			} else {
 				var currentReading = reading.values[energySource.currentSensorId];
-				if (!currentReading) {
+				var lastCurrentReading = 0;
+				if (lastReading) {
+					lastReading.values[energySource.currentSensorId];
+				}
+				if (!currentReading === undefined) {
 					haveAllReadings = false;
 					return;
 				}
-				energySourceCurrents[energySource.id] = currentReading;
+				energySourceCurrents[energySource.id] = {
+					now: currentReading,
+					last: lastCurrentReading
+				};
 			}
 		});
 
@@ -379,7 +395,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		}
 
 		if (buildingPower === undefined || batteryVoltage === undefined || batteryCurrent === undefined || loadCurrent === undefined) {
-			reject('Essential value is null.');
+			reject('Essential value is undefined.');
 			return;
 		}
 		
@@ -387,11 +403,11 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		if (lastReading) {
 			secondsSinceLastReading = reading.timestamp - lastReading.timestamp;
 		}
-		var powerChange;
-		if (canExtrapolateReading(secondsSinceLastReading)) {
-			powerChange = (batteryVoltage * batteryCurrent * secondsSinceLastReading) / 3600;
+		var powerChangeSinceLastReading;
+		if (canExtrapolateFromLastReading(secondsSinceLastReading)) {
+			powerChangeSinceLastReading = (lastReadingBatteryVoltage * lastReadingBatteryCurrent * secondsSinceLastReading) / 3600;
 		} else {
-			powerChange = 0;
+			powerChangeSinceLastReading = 0;
 		}
 		/*
 			The power change is expressed in Watt Hours.
@@ -405,22 +421,22 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 
 		if (!currentState.emptyLevelEstablished) { // Empty level not established, in preliminary phase.
 			// If power has entered the battery, the charge efficiency is taken into account.
-			if (powerChange > 0) {
-				powerChange *= currentState.chargeEfficiency;
+			if (powerChangeSinceLastReading > 0) {
+				powerChangeSinceLastReading *= currentState.chargeEfficiency;
 			}
 
 			// Update the current charge.
-			currentState.currentChargeLevel += powerChange;
+			currentState.currentChargeLevel += powerChangeSinceLastReading;
 
 			// If the current charge level drops below zero, increase the battery capacity.
 			if (currentState.currentChargeLevel < 0) {
 				currentState.currentChargeLevel = 0;
-				currentState.batteryCapacity += Math.abs(powerChange);
+				currentState.batteryCapacity += Math.abs(powerChangeSinceLastReading);
 			}
 
 			// If the current charge level is over the battery capacity, increase the battery capacity.
 			if (currentState.currentChargeLevel > currentState.batteryCapacity) {
-				currentState.batteryCapacity += Math.abs(powerChange);
+				currentState.batteryCapacity += Math.abs(powerChangeSinceLastReading);
 			}
 
 			if (batteryState.lowBatteryLevelTrigger) {
@@ -430,15 +446,15 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				StateOfCharge.recordRecalibration(building, reading.timestamp, 'PreliminaryPhaseB0Hit');
 			}
 		} else { // Empty level has been established, in operational phase.
-			if (powerChange > 0) { // If power has entered the battery.
+			if (powerChangeSinceLastReading > 0) { // If power has entered the battery since the last reading.
 				// Increment the energy in with the raw power change, don't want charge efficiency having an effect.
-				currentState.energyInSinceLastC0 += powerChange;
+				currentState.energyInSinceLastC0 += powerChangeSinceLastReading;
 
 				// Take the current charge efficiency into account.
-				powerChange *= currentState.chargeEfficiency;
+				powerChangeSinceLastReading *= currentState.chargeEfficiency;
 			} else {
 				// Increment the energy out with the raw power change.
-				currentState.energyOutSinceLastC0 += Math.abs(powerChange);
+				currentState.energyOutSinceLastC0 += Math.abs(powerChangeSinceLastReading);
 			}
 
 			// If the time is correct, reduce the battery capacity by the daily aging percentage.
@@ -448,7 +464,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			}
 
 			// Update the current charge state.
-			currentState.currentChargeLevel += powerChange;
+			currentState.currentChargeLevel += powerChangeSinceLastReading;
 
 			var stateOfCharge = currentState.currentChargeLevel / currentState.batteryCapacity;
 			var positiveThreshold = 1 + building.tolerancePercentage / 100;
@@ -530,22 +546,28 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		currentState.isBatteryCharging = batteryCurrent > 0;
 
 		var otherCurrent = batteryCurrent;
+		var lastReadingOtherCurrent = lastReadingBatteryCurrent;
 
 		// Fill in charging information about user sources.
 		for (var energySourceId in energySourceCurrents) {
-			var energySourceCurrent = energySourceCurrents[energySourceId];
+			var energySourceCurrent = energySourceCurrents[energySourceId].now;
+			var lastReadingEnergySourceCurrent = energySourceCurrents[energySourceId].last;
 			if (energySourceCurrent > 0) {
 				otherCurrent -= energySourceCurrent;
 			}
-			processSource(currentState, energySourceId, energySourceCurrent, batteryVoltage, secondsSinceLastReading, reading);			
+			if (lastReadingEnergySourceCurrent > 0) {
+				lastReadingOtherCurrent -= lastReadingEnergySourceCurrent;
+			}
+			processSource(currentState, energySourceId, energySourceCurrent, batteryVoltage, lastReadingEnergySourceCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);			
 		}
 
 		// Fill in charging information about the charger.
 		otherCurrent -= loadCurrent;
-		processSource(currentState, 'charger', loadCurrent, batteryVoltage, secondsSinceLastReading, reading);
+		lastReadingOtherCurrent -= lastReadingLoadCurrent;
+		processSource(currentState, 'charger', loadCurrent, batteryVoltage, lastReadingLoadCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
 
 		// Fill in details about the other source.
-		processSource(currentState, 'other', otherCurrent, batteryVoltage, secondsSinceLastReading, reading);
+		processSource(currentState, 'other', otherCurrent, batteryVoltage, lastReadingOtherCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
 
 		// If the state needs to be recorded, then record it.
 		if (StateOfCharge.shouldRecordState(secondsSinceLastReading, reading.timestamp)) {
