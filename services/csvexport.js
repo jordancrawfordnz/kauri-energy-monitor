@@ -64,22 +64,24 @@ CSVExport.generateCSV = function(exportJob) {
 				var promise = new Promise(function(resolve, reject) {
 					// Find all the readings for this bridge.
 					var filter = {
-						where: {bridgeId : bridge.id},
+						where: { and : [
+							{ bridgeId : bridge.id }
+						]},
 						order: 'timestamp asc'
 					};
 
-					if (after || until) {
-						filter.where.timestamp = {};
-					}
-
 					// If an after date is defined, get only values greater than this date.
 					if (after) {
-						filter.where.timestamp.gt = after;
+						filter.where.and.push({
+							timestamp : {gt : after}
+						});
 					}
 
 					// If a until date is defined, get only values before this date.
 					if (until) {
-						filter.where.timestamp.lt = until;
+						filter.where.and.push({
+							timestamp : {lt : until}
+						});
 					}
 
 					Reading.find(filter, function(error, readings) {
