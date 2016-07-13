@@ -11,6 +11,9 @@ angular.module('offgridmonitoringApp')
   .controller('ExportCtrl', function ($interval, $scope, Breadcrumb, Breadcrumbs, $routeParams, Building, Environment, People, LoopBackAuth, $rootScope) {
   	$scope.dateTimeFormat = $rootScope.dateTimeFormat;
 
+    $scope.until = null;
+    $scope.from = null;
+
     $scope.baseUrl = Environment.baseUrl; // the base token to use in an export URL.
     $scope.authToken = LoopBackAuth.accessTokenId;
 
@@ -50,7 +53,7 @@ angular.module('offgridmonitoringApp')
         up: 'glyphicon glyphicon-arrow-up',
         down: 'glyphicon glyphicon-arrow-down'
       },
-      locale : 'en-NZ',
+      timeZone : 'Pacific/Auckland',
       format : $scope.dateTimeFormat
     };
 
@@ -64,11 +67,11 @@ angular.module('offgridmonitoringApp')
       $scope.hasFailedExportSetup = false;
       
       var exportRequest = {};
-      if ($scope.from && $scope.from.length > 0) {
-        exportRequest.after = moment($scope.from, $scope.dateTimeFormat).unix();
+      if ($scope.from) {
+        exportRequest.after = $scope.from.unix();
       }
-      if ($scope.until && $scope.until.length > 0) {
-        exportRequest.until = moment($scope.until, $scope.dateTimeFormat).unix();
+      if ($scope.until) {
+        exportRequest.until = $scope.until.unix();
       }
       var exportJob = Building.exports.create({
         id : $routeParams.buildingId

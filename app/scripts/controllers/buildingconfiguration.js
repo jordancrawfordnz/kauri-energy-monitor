@@ -53,7 +53,8 @@ angular.module('offgridmonitoringApp')
         up: 'glyphicon glyphicon-arrow-up',
         down: 'glyphicon glyphicon-arrow-down'
       },
-      format : $rootScope.dateTimeFormat
+      format : $rootScope.dateTimeFormat,
+      timeZone : 'Pacific/Auckland'
     };
 
     this.regenerateStates = function() {
