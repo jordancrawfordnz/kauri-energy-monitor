@@ -1,5 +1,6 @@
 var Promise = require('promise');
 var app = require('../server/server');
+var moment = require('moment');
 
 var StateOfCharge = {};
 module.exports = StateOfCharge;
@@ -325,7 +326,10 @@ function processSource(currentState, sourceId, sensorValueNow, batteryVoltageNow
 
 // Returns a boolean as to whether the reading can be extrapolated from.
 function canExtrapolateFromLastReading(secondsSinceLastReading) {
-	return secondsSinceLastReading < 10*60; // extrapolate if less than 10 minutes since last reading.
+	return true;
+		// TODO: Experiment with allowing large periods of missing data to be ignored.
+
+	// return secondsSinceLastReading < 10*60; // extrapolate if less than 10 minutes since last reading.
 }
 
 var einEoutStack = [];
@@ -405,6 +409,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		}
 		var powerChangeSinceLastReading;
 		if (canExtrapolateFromLastReading(secondsSinceLastReading)) {
+				// TODO: Allow extrapolation from the last reading.
 			powerChangeSinceLastReading = (lastReadingBatteryVoltage * lastReadingBatteryCurrent * secondsSinceLastReading) / 3600;
 		} else {
 			powerChangeSinceLastReading = 0;
@@ -425,24 +430,26 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				powerChangeSinceLastReading *= currentState.chargeEfficiency;
 			}
 
-			// Update the current charge.
-			currentState.currentChargeLevel += powerChangeSinceLastReading;
-
-			// If the current charge level drops below zero, increase the battery capacity.
-			if (currentState.currentChargeLevel < 0) {
-				currentState.currentChargeLevel = 0;
+			// If the charge level won't go below 0.
+			if ((currentState.currentChargeLevel + powerChangeSinceLastReading) >= 0) {
+				// Update the current charge.
+				currentState.currentChargeLevel += powerChangeSinceLastReading;
+			} else {
+				// Don't update the charge level, update the current capacity instead.
 				currentState.batteryCapacity += Math.abs(powerChangeSinceLastReading);
 			}
-
+			
 			// If the current charge level is over the battery capacity, increase the battery capacity.
 			if (currentState.currentChargeLevel > currentState.batteryCapacity) {
-				currentState.batteryCapacity += Math.abs(powerChangeSinceLastReading);
+				currentState.batteryCapacity = currentState.currentChargeLevel;
 			}
 
 			if (batteryState.lowBatteryLevelTrigger) {
 				currentState.emptyLevelEstablished = true; // The level has been established so can go to the operational phase.
 				currentState.batteryCapacity -= currentState.currentChargeLevel; // Adjust the battery capacity to be less as the charge level is less than expected.
 				currentState.currentChargeLevel = 0; // Make the charge level zero as we know the battery is empty.
+
+				// TODO: Use the maximum CT value as C100?
 				StateOfCharge.recordRecalibration(building, reading.timestamp, 'PreliminaryPhaseB0Hit');
 			}
 		} else { // Empty level has been established, in operational phase.
