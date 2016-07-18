@@ -90,7 +90,8 @@ StateOfCharge.getStateTemplate = function(building) {
 		chargeEfficiency : 0.8,
 		buildingId : building.id,
 		isBatteryCharging : false,
-		sources : {}
+		sources : {},
+		maximumPrelimPhaseChargeLevel : 0
 	};
 }
 
@@ -444,12 +445,15 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				currentState.batteryCapacity = currentState.currentChargeLevel;
 			}
 
+			// Update the maximum prelim charge level.
+			if (currentState.maximumPrelimPhaseChargeLevel < currentState.currentChargeLevel) {
+				currentState.maximumPrelimPhaseChargeLevel = currentState.currentChargeLevel;
+			}
+
 			if (batteryState.lowBatteryLevelTrigger) {
 				currentState.emptyLevelEstablished = true; // The level has been established so can go to the operational phase.
-				currentState.batteryCapacity -= currentState.currentChargeLevel; // Adjust the battery capacity to be less as the charge level is less than expected.
+				currentState.batteryCapacity = currentState.maximumPrelimPhaseChargeLevel; // Adjust the battery capacity to be the maximum value of the charge level.
 				currentState.currentChargeLevel = 0; // Make the charge level zero as we know the battery is empty.
-
-				// TODO: Use the maximum CT value as C100?
 				StateOfCharge.recordRecalibration(building, reading.timestamp, 'PreliminaryPhaseB0Hit');
 			}
 		} else { // Empty level has been established, in operational phase.

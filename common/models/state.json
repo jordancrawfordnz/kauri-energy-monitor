@@ -33,6 +33,10 @@
       "type": "number",
       "required": true
     },
+    "maximumPrelimPhaseChargeLevel": {
+      "type": "number",
+      "required": true
+    },
     "chargeEfficiency": {
       "type": "number",
       "required": true
