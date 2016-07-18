@@ -491,19 +491,26 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			*/
 			var recalculateChargeEfficiency = false;
 			
+			var unexpectedE0 = false;
+			
 			// If the voltage represents low battery and above the threshold (e.g.: above or equal to 5% SoC but see battery empty).
 			if (batteryState.lowBatteryLevelTrigger && stateOfCharge >= emptyBottomThreshold) {
-				// StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEff_LowBatteryLevel');
 				recalculateChargeEfficiency = true;
+				unexpectedE0 = true;
 
 				// To help the full charge capacity decrease, pull it down now.
-				currentState.batteryCapacity -= currentState.currentChargeLevel;
+				
+					// TODO: include this when the change is made.
+				// currentState.batteryCapacity -= currentState.currentChargeLevel;
 			}
 			
+			var expectedE0 = false;
+
 			// Less than negative threshold (e.g.: less than or equal to -5%)
 			if (stateOfCharge <= negativeThreshold) {
-				// StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculateCEff_SoCBelowZero');
 				recalculateChargeEfficiency = true;
+
+				expectedE0 = true;
 			}
 
 			if (recalculateChargeEfficiency) {
@@ -511,8 +518,8 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 
 				// Re-calculate the charge efficiency.
 					// TODO: Properly integrate the stack based solution.
-				var einToUse = currentState.energyInSinceLastC0;
-				var eoutToUse = currentState.energyOutSinceLastC0;
+				// var einToUse = currentState.energyInSinceLastC0;
+				// var eoutToUse = currentState.energyOutSinceLastC0;
 
 				// TODO: Prevent this stack from getting massive. Potentially drop old values off if we've merged them.
 
@@ -547,10 +554,13 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				These situations increase the battery capacity, resulting in 100% SoC.
 			*/
 
+			var chargeCapacityTooLow = false;
 			if (stateOfCharge >= positiveThreshold) {
 				currentState.batteryCapacity = currentState.currentChargeLevel; // set the capacity to the current charge level.
 				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalC100AdjustUp');
 			}
+
+			console.log(reading.timestamp + "," + currentState.currentChargeLevel + "," + currentState.batteryCapacity + "," + currentState.energyInSinceLastC0 + "," + currentState.energyOutSinceLastC0 + "," + currentState.chargeEfficiency + "," + (recalculateChargeEfficiency ? "1" : "0") + "," + (unexpectedE0 ? "1" : "0") + "," + (expectedE0 ? "1" : "0") + "," + (chargeCapacityTooLow ? "1" : "0"));
 		}
 
 		// Update 'isBatteryCharging' to be true if the battery current is positive.
