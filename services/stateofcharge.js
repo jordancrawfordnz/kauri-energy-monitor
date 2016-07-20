@@ -299,7 +299,7 @@ StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batte
 };
 
 // Updates the details about a charging source.
-function processSource(currentState, sourceId, sensorValueNow, batteryVoltageNow, sensorValueLastReading, batteryVoltageLastReading, secondsSinceLastReading, reading) {
+function processSource(building, currentState, sourceId, sensorValueNow, batteryVoltageNow, sensorValueLastReading, batteryVoltageLastReading, secondsSinceLastReading, reading) {
 	StateOfCharge.setupSourceStateTemplate(currentState, sourceId);
 	var source = currentState.sources[sourceId];
 	if (sensorValueNow > 0) {
@@ -318,7 +318,7 @@ function processSource(currentState, sourceId, sensorValueNow, batteryVoltageNow
 
 	// Get the energy contribution of this source.
 	var chargeContribution
-	if (canExtrapolateFromLastReading(secondsSinceLastReading) && sensorValueLastReading > 0) {
+	if (canExtrapolateFromLastReading(building, secondsSinceLastReading) && sensorValueLastReading > 0) {
 		chargeContribution = (sensorValueLastReading * batteryVoltageLastReading * secondsSinceLastReading) / 3600;
 	} else {
 		chargeContribution = 0;
@@ -328,13 +328,17 @@ function processSource(currentState, sourceId, sensorValueNow, batteryVoltageNow
 }
 
 // Returns a boolean as to whether the reading can be extrapolated from.
-function canExtrapolateFromLastReading(secondsSinceLastReading) {
-	return secondsSinceLastReading < 60*5; // extrapolate if less than 5 minutes since last reading.
+function canExtrapolateFromLastReading(building, secondsSinceLastReading) {
+	if (building.minutesBetweenReadingsToIgnore === undefined || building.minutesBetweenReadingsToIgnore === null) {
+		return true;
+	} else {
+		return secondsSinceLastReading < building.minutesBetweenReadingsToIgnore*60; // extrapolate only if less than the amount of minutes between readings to ignore.
+	}
 }
 
 // Returns a boolean. True if the energyInSinceLastC0 and energyOutSinceLastC0 are sufficiently large enough to be used.
-function enoughDataToRecalculateChargeEfficiency(currentState, energyInSinceLastC0, energyOutSinceLastC0) {
-	return energyInSinceLastC0 >= 2*currentState.batteryCapacity && energyOutSinceLastC0 >= 1*currentState.batteryCapacity;	
+function enoughDataToRecalculateChargeEfficiency(building, currentState, energyInSinceLastC0, energyOutSinceLastC0) {
+	return energyInSinceLastC0 >= building.recalculateChargeEfficiencyCapacityMultiplier*currentState.batteryCapacity && energyOutSinceLastC0 >= 1*currentState.batteryCapacity;	
 }
 
 /*
@@ -411,7 +415,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			secondsSinceLastReading = reading.timestamp - lastReading.timestamp;
 		}
 		var powerChangeSinceLastReading;
-		if (canExtrapolateFromLastReading(secondsSinceLastReading)) {
+		if (canExtrapolateFromLastReading(building, secondsSinceLastReading)) {
 				// TODO: Allow extrapolation from the last reading.
 			powerChangeSinceLastReading = (lastReadingBatteryVoltage * lastReadingBatteryCurrent * secondsSinceLastReading) / 3600;
 		} else {
@@ -503,12 +507,12 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				var energyInSinceLastC0 = currentState.currentEnergyInSinceLastC0;
 				var energyOutSinceLastC0 = currentState.currentEnergyOutSinceLastC0;
 
-				var currentValuesAreSufficient = enoughDataToRecalculateChargeEfficiency(currentState, energyInSinceLastC0, energyOutSinceLastC0);
+				var currentValuesAreSufficient = enoughDataToRecalculateChargeEfficiency(building, currentState, energyInSinceLastC0, energyOutSinceLastC0);
 				var withPreviousValuesAreSufficient = false;
 				if (!currentValuesAreSufficient) {
 					energyInSinceLastC0 += currentState.previousEnergyInSinceLastC0;
 					energyOutSinceLastC0 += currentState.previousEnergyOutSinceLastC0;
-					withPreviousValuesAreSufficient = enoughDataToRecalculateChargeEfficiency(currentState, energyInSinceLastC0, energyOutSinceLastC0);
+					withPreviousValuesAreSufficient = enoughDataToRecalculateChargeEfficiency(building, currentState, energyInSinceLastC0, energyOutSinceLastC0);
 				}
 
 				if (currentValuesAreSufficient || withPreviousValuesAreSufficient) {
@@ -537,14 +541,11 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				Check for the current charge level rising above the tolerence level. 
 				These situations increase the battery capacity, resulting in 100% SoC.
 			*/
-
 			var chargeCapacityTooLow = false;
 			if (stateOfCharge >= positiveThreshold) {
 				currentState.batteryCapacity = currentState.currentChargeLevel; // set the capacity to the current charge level.
 				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalC100AdjustUp');
 			}
-
-			console.log(reading.timestamp + "," + currentState.currentChargeLevel + "," + currentState.batteryCapacity + "," + currentState.currentEnergyInSinceLastC0 + "," + currentState.currentEnergyOutSinceLastC0 + "," + currentState.previousEnergyInSinceLastC0 + "," + currentState.previousEnergyOutSinceLastC0 + "," + currentState.chargeEfficiency + "," + (unexpectedBatteryEmpty || expectedBatteryEmpty ? "1" : "0") + "," + (unexpectedBatteryEmpty ? "1" : "0") + "," + (expectedBatteryEmpty ? "1" : "0") + "," + (chargeCapacityTooLow ? "1" : "0"));
 		}
 
 		// Update 'isBatteryCharging' to be true if the battery current is positive.
@@ -563,16 +564,16 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			if (lastReadingEnergySourceCurrent > 0) {
 				lastReadingOtherCurrent -= lastReadingEnergySourceCurrent;
 			}
-			processSource(currentState, energySourceId, energySourceCurrent, batteryVoltage, lastReadingEnergySourceCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);			
+			processSource(building, currentState, energySourceId, energySourceCurrent, batteryVoltage, lastReadingEnergySourceCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);			
 		}
 
 		// Fill in charging information about the charger.
 		otherCurrent -= loadCurrent;
 		lastReadingOtherCurrent -= lastReadingLoadCurrent;
-		processSource(currentState, 'charger', loadCurrent, batteryVoltage, lastReadingLoadCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
+		processSource(building, currentState, 'charger', loadCurrent, batteryVoltage, lastReadingLoadCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
 
 		// Fill in details about the other source.
-		processSource(currentState, 'other', otherCurrent, batteryVoltage, lastReadingOtherCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
+		processSource(building, currentState, 'other', otherCurrent, batteryVoltage, lastReadingOtherCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
 
 		// If the state needs to be recorded, then record it.
 		if (StateOfCharge.shouldRecordState(secondsSinceLastReading, reading.timestamp)) {

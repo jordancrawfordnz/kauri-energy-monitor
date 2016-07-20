@@ -14,10 +14,6 @@
       "type": "number",
       "required": true
     },
-    "nominalBatteryVoltage": {
-      "type": "number",
-      "required": true
-    },
     "lowVoltageLevel": {
       "type": "number",
       "required": true
@@ -38,6 +34,10 @@
       "type": "string",
       "required": true
     },
+    "recalculateChargeEfficiencyCapacityMultiplier": {
+      "type": "number",
+      "required": true
+    },
     "statesAreRegenerating": {
       "type": "boolean"
     },
@@ -51,6 +51,9 @@
       "type": "number"
     },
     "onlyProcessUntil": {
+      "type": "number"
+    },
+    "minutesBetweenReadingsToIgnore": {
       "type": "number"
     }
   },
