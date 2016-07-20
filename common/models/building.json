@@ -108,6 +108,11 @@
       "type": "belongsTo",
       "model": "Sensor",
       "foreignKey": ""
+    },
+    "currentState": {
+      "type": "belongsTo",
+      "model": "State",
+      "foreignKey": ""
     }
   },
   "acls": [

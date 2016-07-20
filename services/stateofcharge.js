@@ -126,6 +126,9 @@ Processes all readings.
 		{ numberOfSuccessfulReadings : [the count of successful records], numberOfFailedReadings : [the count of failed records] }
 */
 StateOfCharge.processAllReadings = function(building) {
+	var State = app.models.State;
+	var Building = app.models.Building;
+	
 	var amountPerPage = 10000;
 	var Reading = app.models.Reading;
 	var startTime = Math.floor(Date.now() / 1000);
@@ -133,26 +136,39 @@ StateOfCharge.processAllReadings = function(building) {
 		// TODO: Use only one bridge for a building.
 		var bridge = building.bridges[0];
 		
-		// Determine how many pages.
-		Reading.count(getWhereFilter(building, bridge.id), function(error, count) {
-			if (error) {
-				reject(error);
-			} else {
-				var totalPages = Math.ceil(count / amountPerPage);
-				
-				processPage(building, bridge, 0, totalPages, null, StateOfCharge.getStateTemplate(building)).then(function(result) {
-					var finishTime = Math.floor(Date.now() / 1000);
-					result.startTime = startTime;
-					result.finishTime = finishTime;
-					result.totalTime = finishTime - startTime;
-					resolve(result);
-				}, reject);
-			}
-		});
+		var currentState = StateOfCharge.getStateTemplate(building);
+		processPage(building, bridge, 0, null, currentState).then(function(result) {
+			var finishTime = Math.floor(Date.now() / 1000);
+			result.startTime = startTime;
+			result.finishTime = finishTime;
+			result.totalTime = finishTime - startTime;
+			
+			// Save the current state and link it to the building.
+			Building.findById(building.id, function(getBuildingError, buildingInstance) {
+				if (getBuildingError) {
+					reject(getBuildingError);
+				} else {
+					State.create(currentState, function(createStateError, savedState) {
+						if (createStateError) {
+							reject(createStateError);
+						} else {
+							// Update the building to use this state for the current state.
+							buildingInstance.updateAttribute('currentStateId', savedState.id, function(updateBuildingError, updatedBuilding) {
+		   						if (updateBuildingError) {
+		   							reject(updateBuildingError);
+		   						} else {
+		   							resolve(result);
+		   						}
+		   					});
+						}
+					});
+				}
+			});
+		}, reject);
 	});
 
 	// Fetch the page's results, then process the reading.
-	function processPage(building, bridge, page, totalPages, lastReading, state) {
+	function processPage(building, bridge, page, lastReading, state) {
 		return new Promise(function(resolve, reject) {
 			// Fetch readings.
 			Reading.find({
@@ -170,17 +186,17 @@ StateOfCharge.processAllReadings = function(building) {
 							numberOfSuccessfulReadings : readings.length - processResult.numberOfFailedReadings,
 							numberOfFailedReadings: processResult.numberOfFailedReadings
 						};
-						if (page < totalPages - 1) {
+						if (readings.length === 0) {
+							// If this is a blank page, we are at the end  so just return this page's result.
+							resolve(pageResult);
+						} else {
 							// Provide details from this page to the next page.
-							processPage(building, bridge, page + 1, totalPages, processResult.lastReading, processResult.currentState).then(function(recurseResult) {
+							processPage(building, bridge, page + 1, processResult.lastReading, processResult.currentState).then(function(recurseResult) {
 								// Add to the result of the next page.
 								pageResult.numberOfSuccessfulReadings += recurseResult.numberOfSuccessfulReadings;
 								pageResult.numberOfFailedReadings += recurseResult.numberOfFailedReadings;
 								resolve(pageResult);
 							}, reject);
-						} else {
-							// Base case, last page so just return this page's result.
-							resolve(pageResult);
 						}
 					}, reject);
 				}
@@ -575,10 +591,13 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		// Fill in details about the other source.
 		processSource(building, currentState, 'other', otherCurrent, batteryVoltage, lastReadingOtherCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
 
+		// Update the state timestamp to be up to date with the reading's timestamp.
+		currentState.timestamp = reading.timestamp;
+		currentState.readingId = reading.id;
+
 		// If the state needs to be recorded, then record it.
 		if (StateOfCharge.shouldRecordState(secondsSinceLastReading, reading.timestamp)) {
 			// Record the State.
-			currentState.timestamp = reading.timestamp;
 			State.create(currentState, function(error) {
 				if (error) {
 					reject(error);

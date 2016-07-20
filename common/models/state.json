@@ -64,6 +64,11 @@
       "type": "belongsTo",
       "model": "Building",
       "foreignKey": ""
+    },
+    "reading": {
+      "type": "belongsTo",
+      "model": "Reading",
+      "foreignKey": ""
     }
   },
   "acls": [
