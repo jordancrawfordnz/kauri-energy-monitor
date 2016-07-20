@@ -157,39 +157,51 @@
     <!-- State generation status. -->
     <div class="box box-primary">
       <div class="box-header with-border">
-        <h3 class="box-title">State Generation</h3>
+        <h3 class="box-title">Data processing</h3>
       </div>
       <div class="box-body">
-        If a key parameter changes, all previous states can be re-generated using the raw data.
-
         <p>
-          Please note, all re-calibrations and states will be cleared throughout this process and re-generation may take several minutes.
+          Re-generate all existing data if a key parameter changes. This will clear all calibration points and states and this process may take several minutes.
         </p>
+        <span ng-if="buildingConfig.regenerationStatus === undefined">
+          <strong>Loading current state...</strong>
+        </span>
+        <span ng-if="buildingConfig.regenerationStatus !== undefined && buildingConfig.regenerationStatus.statesAreRegenerating">
+          <h4><span class="fa fa-circle-o-notch fa-spin fa-fw"></span> Processing data.</h4>
+          The processing status will update automatically.
+        </span>
+        <span ng-if="buildingConfig.regenerationStatus !== undefined && !buildingConfig.regenerationStatus.statesAreRegenerating">
+          <h4><span class="fa fa-check"></span> Processing live data.</h4>
+          <button ng-disabled="editBuildingForm.regenerationStatus.statesAreRegenerating" ng-click="buildingConfig.regenerateStates()" class="btn btn-primary"><span class="fa fa-refresh"></span> Re-process data</button>
 
-        <p>
-          <strong>Current generation state:</strong>
-          <span ng-if="buildingConfig.building.statesAreRegenerating === undefined">
-            Loading current state...
+          <span ng-if="buildingConfig.regenerationStatus.lastRegeneration">
+            <h4>Last re-process status</h4>
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td>Started at</td>
+                  <td>{{buildingConfig.regenerationStatus.lastRegeneration.startTime | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+                </tr>
+                <tr>
+                  <td>Finished at</td>
+                  <td>{{buildingConfig.regenerationStatus.lastRegeneration.finishTime | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+                </tr>
+                <tr>
+                  <td>Time taken</td>
+                  <td>{{buildingConfig.regenerationStatus.lastRegeneration.totalTime | number}} seconds</td>
+                </tr>
+                <tr>
+                  <td>Successful readings</td>
+                  <td>{{buildingConfig.regenerationStatus.lastRegeneration.numberOfSuccessfulReadings | number}} readings.</td>
+                </tr>
+                <tr>
+                  <td>Failed readings</td>
+                  <td>{{buildingConfig.regenerationStatus.lastRegeneration.numberOfFailedReadings | number}} readings.</td>
+                </tr>
+              </tbody>
+            </table>
           </span>
-          <span ng-if="buildingConfig.building.statesAreRegenerating !== undefined">
-            <span ng-if="buildingConfig.building.statesAreRegenerating">Regenerating</span>
-            <span ng-if="!buildingConfig.building.statesAreRegenerating">NOT regenerating</span> 
-          </span>
-        </p>
-
-        <p>
-          <strong>Last re-generation result:</strong><br>
-          Started: {{buildingConfig.building.lastRegeneration.startTime | amFromUnix | amDateFormat:dateTimeFormat}}<br>
-          Finished: {{buildingConfig.building.lastRegeneration.finishTime | amFromUnix | amDateFormat:dateTimeFormat}}<br>
-          Time taken: {{buildingConfig.building.lastRegeneration.totalTime | number}} seconds<br>
-          Number of successful readings: {{buildingConfig.building.lastRegeneration.numberOfSuccessfulReadings | number}}<br>
-          Number of failed readings: {{buildingConfig.building.lastRegeneration.numberOfFailedReadings | number}}
-        </p>
-
-        <!-- Button to refresh the current state. -->
-        <button ng-click="buildingConfig.refreshBuilding()" class="btn btn-primary">Refresh status</button>
-
-        <button ng-disabled="editBuildingForm.building.statesAreRegenerating" ng-click="buildingConfig.regenerateStates()" class="btn btn-primary">Re-generate states</button>
+        </span>
       </div>
     </div>
 
@@ -201,7 +213,7 @@
       <div class="box-body">
         <!-- Button to create a new energy source -->
         <p>
-          <button ng-click="buildingConfig.newEnergySource()" class="btn btn-primary">New energy source</button>
+          <button ng-click="buildingConfig.newEnergySource()" class="btn btn-primary"><span class="fa fa-plus"></span> New energy source</button>
         </p>
                 
         <div class="thumbnail" ng-repeat="energySource in buildingConfig.energySources | orderBy: 'hasBeenSaved'">

@@ -42,8 +42,10 @@
 				        	<th>State of Charge</th>
 				        	<th>Current Charge Level</th>
 				        	<th>Battery Capacity</th>
-				        	<th>Energy in since last 0%</th>
-				        	<th>Energy out since last 0%</th>
+				        	<th>Current energy in since last 0%</th>
+				        	<th>Current energy out since last 0%</th>
+				        	<th>Previous energy in since last 0%</th>
+				        	<th>Previous energy out since last 0%</th>
 				        	<th>Charge Efficiency</th>
 				        	<th>Voltage status</th>
 				        	<th>Is charging</th>
@@ -59,8 +61,10 @@
 				      		<td>{{(state.currentChargeLevel / state.batteryCapacity * 100) | number:2}}%
 				      		<td>{{state.currentChargeLevel | number:2}} Wh</td>
 				      		<td>{{state.batteryCapacity | number:2}} Wh</td>
-				      		<td>{{state.energyInSinceLastC0 | number:2}} Wh</td>
-				      		<td>{{state.energyOutSinceLastC0 | number:2}} Wh</td>
+				      		<td>{{state.currentEnergyInSinceLastC0 | number:2}} Wh</td>
+				      		<td>{{state.currentEnergyOutSinceLastC0 | number:2}} Wh</td>
+				      		<td>{{state.previousEnergyInSinceLastC0 | number:2}} Wh</td>
+				      		<td>{{state.previousEnergyOutSinceLastC0 | number:2}} Wh</td>
 				      		<td>{{state.chargeEfficiency * 100 | number:2}}%</td>
 				      		<td ng-if="state.batteryLevelLowSince">Low voltage since {{state.batteryLevelLowSince | amFromUnix | amDateFormat:dateTimeFormat}}</td>
 				      		<td ng-if="!state.batteryLevelLowSince">Normal</td>

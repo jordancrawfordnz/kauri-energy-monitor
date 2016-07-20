@@ -8,7 +8,7 @@
  * Allows building configuration including bridges and other parameters.
  */
 angular.module('offgridmonitoringApp')
-  .controller('BuildingConfigCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, $rootScope, Building, SensorTypes, $timeout, EnergySource) {
+  .controller('BuildingConfigCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, $rootScope, Building, SensorTypes, $timeout, $interval, EnergySource) {
   	var _this = this;
     this.sensorTypes = SensorTypes;
     var buildingId = $routeParams.buildingId;
@@ -38,13 +38,14 @@ angular.module('offgridmonitoringApp')
         } else {
           _this.onlyProcessUntilObject = null;
         }
+
+        _this.regenerationStatus = {
+          statesAreRegenerating : _this.building.statesAreRegenerating,
+          lastRegeneration : _this.building.lastRegeneration
+        };
       });
     }
     getBuilding();
-
-    this.refreshBuilding = function() {
-      getBuilding();
-    };
 
     this.datePickerOptions = {
       icons : {
@@ -62,7 +63,21 @@ angular.module('offgridmonitoringApp')
       Building.regenerateState({
         id : this.building.id
       }).$promise.then(function() {
-        _this.refreshBuilding();
+        _this.regenerationStatus.statesAreRegenerating = true;
+          
+        // Get data about the building until it has finished re-generation.
+        var automaticallyRefresh = $interval(function() {
+          Building.findById({id : buildingId}, function(building) {
+            _this.regenerationStatus = {
+              statesAreRegenerating : building.statesAreRegenerating,
+              lastRegeneration : building.lastRegeneration
+            };
+            // Stop automatically refreshing after the states are finished refreshing.
+            if (!building.statesAreRegenerating) {
+              $interval.cancel(automaticallyRefresh);
+            }
+          });
+        }, 10*1000);
       });
     };
 
