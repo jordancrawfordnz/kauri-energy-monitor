@@ -10,11 +10,19 @@
       "type": "number",
       "required": true
     },
-    "energyInSinceLastC0": {
+    "previousEnergyInSinceLastC0": {
       "type": "number",
       "required": true
     },
-    "energyOutSinceLastC0": {
+    "previousEnergyOutSinceLastC0": {
+      "type": "number",
+      "required": true
+    },
+    "currentEnergyInSinceLastC0": {
+      "type": "number",
+      "required": true
+    },
+    "currentEnergyOutSinceLastC0": {
       "type": "number",
       "required": true
     },

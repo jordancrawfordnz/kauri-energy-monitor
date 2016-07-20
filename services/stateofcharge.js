@@ -82,8 +82,10 @@ StateOfCharge.setupSourceStateTemplate = function(state, sourceName) {
 // Returns a template for a blank state object.
 StateOfCharge.getStateTemplate = function(building) {
 	return {
-		energyInSinceLastC0 : 0,
-		energyOutSinceLastC0 : 0,
+		previousEnergyInSinceLastC0 : 0,
+		previousEnergyOutSinceLastC0 : 0,
+		currentEnergyInSinceLastC0 : 0,
+		currentEnergyOutSinceLastC0 : 0,
 		batteryCapacity : 0,
 		emptyLevelEstablished : false,
 		currentChargeLevel : 0,
@@ -327,13 +329,13 @@ function processSource(currentState, sourceId, sensorValueNow, batteryVoltageNow
 
 // Returns a boolean as to whether the reading can be extrapolated from.
 function canExtrapolateFromLastReading(secondsSinceLastReading) {
-	return true;
-		// TODO: Experiment with allowing large periods of missing data to be ignored.
-
-	// return secondsSinceLastReading < 10*60; // extrapolate if less than 10 minutes since last reading.
+	return secondsSinceLastReading < 60*5; // extrapolate if less than 5 minutes since last reading.
 }
 
-var einEoutStack = [];
+// Returns a boolean. True if the energyInSinceLastC0 and energyOutSinceLastC0 are sufficiently large enough to be used.
+function enoughDataToRecalculateChargeEfficiency(currentState, energyInSinceLastC0, energyOutSinceLastC0) {
+	return energyInSinceLastC0 >= 2*currentState.batteryCapacity && energyOutSinceLastC0 >= 1*currentState.batteryCapacity;	
+}
 
 /*
 Processes a single reading.
@@ -459,13 +461,13 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		} else { // Empty level has been established, in operational phase.
 			if (powerChangeSinceLastReading > 0) { // If power has entered the battery since the last reading.
 				// Increment the energy in with the raw power change, don't want charge efficiency having an effect.
-				currentState.energyInSinceLastC0 += powerChangeSinceLastReading;
+				currentState.currentEnergyInSinceLastC0 += powerChangeSinceLastReading;
 
 				// Take the current charge efficiency into account.
 				powerChangeSinceLastReading *= currentState.chargeEfficiency;
 			} else {
 				// Increment the energy out with the raw power change.
-				currentState.energyOutSinceLastC0 += Math.abs(powerChangeSinceLastReading);
+				currentState.currentEnergyOutSinceLastC0 += Math.abs(powerChangeSinceLastReading);
 			}
 
 			// If the time is correct, reduce the battery capacity by the daily aging percentage.
@@ -489,64 +491,46 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 
 				These situations re-calculate the state of charge.
 			*/
-			var recalculateChargeEfficiency = false;
-			
-			var unexpectedE0 = false;
 			
 			// If the voltage represents low battery and above the threshold (e.g.: above or equal to 5% SoC but see battery empty).
-			if (batteryState.lowBatteryLevelTrigger && stateOfCharge >= emptyBottomThreshold) {
-				recalculateChargeEfficiency = true;
-				unexpectedE0 = true;
-
-				// To help the full charge capacity decrease, pull it down now.
-				
-					// TODO: include this when the change is made.
-				// currentState.batteryCapacity -= currentState.currentChargeLevel;
-			}
-			
-			var expectedE0 = false;
+			var unexpectedBatteryEmpty = batteryState.lowBatteryLevelTrigger && stateOfCharge >= emptyBottomThreshold;
 
 			// Less than negative threshold (e.g.: less than or equal to -5%)
-			if (stateOfCharge <= negativeThreshold) {
-				recalculateChargeEfficiency = true;
+			var expectedBatteryEmpty = !batteryState.lowBatteryLevelTrigger && stateOfCharge <= negativeThreshold;
+			
+			if (unexpectedBatteryEmpty || expectedBatteryEmpty) {
+				// Check if there is enough information to re-calculate the charge efficiency.
+				var energyInSinceLastC0 = currentState.currentEnergyInSinceLastC0;
+				var energyOutSinceLastC0 = currentState.currentEnergyOutSinceLastC0;
 
-				expectedE0 = true;
-			}
+				var currentValuesAreSufficient = enoughDataToRecalculateChargeEfficiency(currentState, energyInSinceLastC0, energyOutSinceLastC0);
+				var withPreviousValuesAreSufficient = false;
+				if (!currentValuesAreSufficient) {
+					energyInSinceLastC0 += currentState.previousEnergyInSinceLastC0;
+					energyOutSinceLastC0 += currentState.previousEnergyOutSinceLastC0;
+					withPreviousValuesAreSufficient = enoughDataToRecalculateChargeEfficiency(currentState, energyInSinceLastC0, energyOutSinceLastC0);
+				}
 
-			if (recalculateChargeEfficiency) {
-				// TODO: Need to prevent situations of negative and over 100% charge efficiencies, also must be careful of close to 0% or 100%.
+				if (currentValuesAreSufficient || withPreviousValuesAreSufficient) {
+					if (unexpectedBatteryEmpty) {
+						// Pull the battery capacity down to help it get lower quicker.
+						currentState.batteryCapacity -= currentState.currentChargeLevel;	
+					}
 
-				// Re-calculate the charge efficiency.
-					// TODO: Properly integrate the stack based solution.
-				// var einToUse = currentState.energyInSinceLastC0;
-				// var eoutToUse = currentState.energyOutSinceLastC0;
+					currentState.currentChargeLevel = 0;
+					currentState.chargeEfficiency = energyOutSinceLastC0 / energyInSinceLastC0;
 
-				// TODO: Prevent this stack from getting massive. Potentially drop old values off if we've merged them.
+					if (currentValuesAreSufficient) {
+						// Make these the previous values.
+						currentState.previousEnergyInSinceLastC0 = currentState.currentEnergyInSinceLastC0;
+						currentState.previousEnergyOutSinceLastC0 = currentState.currentEnergyOutSinceLastC0;
 
-				// for (var i = 0; i < einEoutStack.length && einToUse > 2 * currentState.batteryCapacity && eoutToUse > 2 * currentState.batteryCapacity; i++) {
-				// 	einToUse += einEoutStack[i].ein;
-				// 	eoutToUse += einEoutStack[i].eout;
-				// }
-
-				// currentState.chargeEfficiency = einToUse / eoutToUse;
-				
-				// // TODO: Need these limits?
-				// if (currentState.chargeEfficiency < 0.1) {
-				// 	currentState.chargeEfficiency = 0.1;
-				// }
-				// if (currentState.chargeEfficiency > 1) {
-				// 	currentState.chargeEfficiency = 1;
-				// }
-
-				// TODO: This operation is a bit slow. Don't perform it like this.
-				// einEoutStack.unshift({
-				// 	ein : currentState.energyInSinceLastC0,
-				// 	eout : currentState.energyOutSinceLastC0
-				// });
-
-				// currentState.currentChargeLevel = 0;
-				// currentState.energyInSinceLastC0 = 0;
-				// currentState.energyOutSinceLastC0 = 0;
+						// Reset the current values.
+						currentState.currentEnergyInSinceLastC0 = 0;
+						currentState.currentEnergyOutSinceLastC0 = 0;
+						StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculatedChargeEfficiency');
+					}
+				}
 			}
 
 			/* 
@@ -560,7 +544,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalC100AdjustUp');
 			}
 
-			console.log(reading.timestamp + "," + currentState.currentChargeLevel + "," + currentState.batteryCapacity + "," + currentState.energyInSinceLastC0 + "," + currentState.energyOutSinceLastC0 + "," + currentState.chargeEfficiency + "," + (recalculateChargeEfficiency ? "1" : "0") + "," + (unexpectedE0 ? "1" : "0") + "," + (expectedE0 ? "1" : "0") + "," + (chargeCapacityTooLow ? "1" : "0"));
+			console.log(reading.timestamp + "," + currentState.currentChargeLevel + "," + currentState.batteryCapacity + "," + currentState.currentEnergyInSinceLastC0 + "," + currentState.currentEnergyOutSinceLastC0 + "," + currentState.previousEnergyInSinceLastC0 + "," + currentState.previousEnergyOutSinceLastC0 + "," + currentState.chargeEfficiency + "," + (unexpectedBatteryEmpty || expectedBatteryEmpty ? "1" : "0") + "," + (unexpectedBatteryEmpty ? "1" : "0") + "," + (expectedBatteryEmpty ? "1" : "0") + "," + (chargeCapacityTooLow ? "1" : "0"));
 		}
 
 		// Update 'isBatteryCharging' to be true if the battery current is positive.
