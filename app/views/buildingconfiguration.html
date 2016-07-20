@@ -18,15 +18,6 @@
       </div>
       <form role="form" name="editBuildingForm" novalidate>
           <div class="box-body">
-            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.nominalBatteryVoltage.$dirty && editBuildingForm.nominalBatteryVoltage.$invalid}">
-              <label for="nominalBatteryVoltage">Nominal battery voltage</label>
-              <p>This is the nominal battery voltage of the entire system.</p>
-              <div class="input-group">
-                <input class="form-control" type="number" ng-model="buildingConfig.building.nominalBatteryVoltage" name="nominalBatteryVoltage" id="nominalBatteryVoltage" required>
-                <span class="input-group-addon">Volts</span>
-              </div>
-            </div>
-
             <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.lowVoltageLevel.$dirty && editBuildingForm.lowVoltageLevel.$invalid}">
               <label for="lowVoltageLevel">Critical low voltage level</label>
               <p>This is the voltage considered low. This is used to adjust the battery state of charge and automatically activate the generator. This is typically the LVSD trigger voltage.</p>
@@ -74,9 +65,9 @@
             </div>
 
             <div class="form-group">
-              <label for="onlyProcessAfter">Process data after</label>
+              <label for="onlyProcessAfter">Process data after (optional)</label>
               <p>
-                Processes data starting at the defined date and time.
+                Processes data starting at the defined date and time. If not defined, all data up to "Process data until" is processed.
               </p>
               <input type="text" class="form-control"
                 datetimepicker
@@ -87,9 +78,9 @@
             </div>
 
             <div class="form-group">
-              <label for="onlyProcessUntil">Process data until</label>
+              <label for="onlyProcessUntil">Process data until (optional)</label>
               <p>
-                Stops processing data after the defined date and time.
+                Stops processing data after the defined date and time. If not defined, all data up to the latest reading is processed.
               </p>
               <input type="text" class="form-control"
                 datetimepicker
@@ -97,6 +88,32 @@
                 placeholder="Forever"
                 name="onlyProcessUntil"
                 date="buildingConfig.onlyProcessUntilObject">
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.recalculateChargeEfficiencyCapacityMultiplier.$dirty && editBuildingForm.recalculateChargeEfficiencyCapacityMultiplier.$invalid}">
+              <label for="recalculateChargeEfficiencyCapacityMultiplier">Re-calculate charge efficiency multiplier</label>
+              <p>
+                For the charge efficiency to be calculated, their must be sufficient energy in/out since the last time the battery was empty. The level required for this is a multiple of the current battery capacity. The recommended value is 2 x the current battery capacity.
+              </p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.recalculateChargeEfficiencyCapacityMultiplier" name="recalculateChargeEfficiencyCapacityMultiplier" id="recalculateChargeEfficiencyCapacityMultiplier" required>
+                <span class="input-group-addon">times the current charge capacity</span>
+              </div>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.minutesBetweenReadingsToIgnore.$dirty && editBuildingForm.minutesBetweenReadingsToIgnore.$invalid}">
+              <label for="minutesBetweenReadingsToIgnore">Size of reading gaps to ignore (optional)</label>
+              <p>
+                When there are large gaps between readings, this can cause incorrect data while processing. This allows the threshold for a reading to be ignored to be defined. This is defined in minutes. If not defined, there is no limit for the size of gaps. The recommended value is 5 minutes.
+              </p>
+              <div class="input-group" ng-if="buildingConfig.building.minutesBetweenReadingsToIgnore">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.minutesBetweenReadingsToIgnore" name="minutesBetweenReadingsToIgnore" id="minutesBetweenReadingsToIgnore">
+                <span class="input-group-addon">Minute(s) gap</span>
+              </div>
+              <div ng-if="!buildingConfig.building.minutesBetweenReadingsToIgnore">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.minutesBetweenReadingsToIgnore" name="minutesBetweenReadingsToIgnore" id="minutesBetweenReadingsToIgnore"
+                placeholder="Don't ignore gaps">
+              </div>
             </div>
 
             <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.otherEnergySourceName.$dirty && editBuildingForm.otherEnergySourceName.$invalid}">
