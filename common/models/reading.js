@@ -1,4 +1,8 @@
 module.exports = function(Reading) {
+	// Don't allow upserting! Updates are fine, but all creates should go through the bridge's processReadings route.
+	Reading.disableRemoteMethod('upsert', true);
+	Reading.disableRemoteMethod('create', true);
+	
 	Reading.observe('before save', function(context, callback) {
 		var data;
 		if (context.isNewInstance) {
@@ -7,6 +11,10 @@ module.exports = function(Reading) {
 			data = context.data;
 		}
 
+		if (!data.values) {
+			callback('No values provided.');
+			return;
+		}
 		var valueKeys = Object.keys(data.values);
 		if (valueKeys.length === 0) {
 			callback('Must provide at least one value.');

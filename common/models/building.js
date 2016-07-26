@@ -5,22 +5,6 @@ module.exports = function(Building) {
 
 	Building.disableRemoteMethod('__updateById__exports');
 
-	// Gets the latest state for the building, based on the most recent timestamp.
-	Building.latestState = function(id, cb) {
-		Building.app.models.State.findOne({
-			where: {
-				buildingId : id
-			},
-			order: 'timestamp DESC'
-		}, function(error, state) {
-			if (error) {
-				cb(error);
-			} else {
-				cb(null, state);
-			}
-		});
-	};
-
 	/*
 		Re-generates the entire state of the system by:
 			- deleting all existing State's for the building
@@ -105,11 +89,4 @@ module.exports = function(Building) {
 		    returns: {type: 'object', root: true}
 		}
 	);
-
-	Building.remoteMethod('latestState',
-	{
-		accepts: {arg: 'id', type: 'string', required: true},
-		http: {path: '/:id/lateststate', verb: 'get'},
-		returns: {type: 'object', root: true}
-	});
 };
