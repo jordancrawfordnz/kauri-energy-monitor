@@ -23,14 +23,14 @@ angular.module('offgridmonitoringApp')
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
     });
 
-    /* == Fetch down the latest state.
+    /* == Fetch down the current state.
        Display:
        - The current state of charge
        - (maybe) Today's total energy usage
        - The battery capacity
        - The charge efficiency.
     */
-    this.state = Building.latestState({
+    this.state = Building.currentState({
       id : $routeParams.buildingId
     });
     

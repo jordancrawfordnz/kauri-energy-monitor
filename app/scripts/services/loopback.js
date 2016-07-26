@@ -208,6 +208,12 @@ module.factory(
           method: "PUT"
         },
 
+        // INTERNAL. Use Building.currentState() instead.
+        "prototype$__get__currentState": {
+          url: urlBase + "/Buildings/:id/currentState",
+          method: "GET"
+        },
+
         // INTERNAL. Use Building.recalibrations.findById() instead.
         "prototype$__findById__recalibrations": {
           params: {
@@ -872,41 +878,6 @@ module.factory(
         "regenerateState": {
           url: urlBase + "/Buildings/:id/regeneratestate",
           method: "POST"
-        },
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Building#latestState
-         * @methodOf lbServices.Building
-         *
-         * @description
-         *
-         * <em>
-         * (The remote method definition does not provide any description.)
-         * </em>
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{string}` - 
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * <em>
-         * (The remote method definition does not provide any description.
-         * This usually means the response is a `Building` object.)
-         * </em>
-         */
-        "latestState": {
-          url: urlBase + "/Buildings/:id/lateststate",
-          method: "GET"
         },
 
         // INTERNAL. Use Bridge.building() instead.
@@ -2583,6 +2554,42 @@ module.factory(
           var action = TargetResource["::updateById::Building::states"];
           return action.apply(R, arguments);
         };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building#currentState
+         * @methodOf lbServices.Building
+         *
+         * @description
+         *
+         * Fetches belongsTo relation currentState.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `refresh` – `{boolean=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `State` object.)
+         * </em>
+         */
+        R.currentState = function() {
+          var TargetResource = $injector.get("State");
+          var action = TargetResource["::get::Building::currentState"];
+          return action.apply(R, arguments);
+        };
     /**
      * @ngdoc object
      * @name lbServices.Building.recalibrations
@@ -3306,12 +3313,6 @@ module.factory(
           method: "GET"
         },
 
-        // INTERNAL. Use Bridge.readings.create() instead.
-        "prototype$__create__readings": {
-          url: urlBase + "/Bridges/:id/readings",
-          method: "POST"
-        },
-
         // INTERNAL. Use Bridge.readings.destroyAll() instead.
         "prototype$__delete__readings": {
           url: urlBase + "/Bridges/:id/readings",
@@ -3743,6 +3744,48 @@ module.factory(
          */
         "createChangeStream": {
           url: urlBase + "/Bridges/change-stream",
+          method: "POST"
+        },
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Bridge#recordReadings
+         * @methodOf lbServices.Bridge
+         *
+         * @description
+         *
+         * <em>
+         * (The remote method definition does not provide any description.)
+         * </em>
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *   This method does not accept any parameters.
+         *   Supply an empty object or omit this argument altogether.
+         *
+         * @param {Object} postData Request data.
+         *
+         *  - `id` – `{string}` - 
+         *
+         *  - `data` – `{*=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Bridge` object.)
+         * </em>
+         */
+        "recordReadings": {
+          url: urlBase + "/Bridges/:id/recordreadings",
           method: "POST"
         },
 
@@ -4413,82 +4456,6 @@ module.factory(
         R.readings.count = function() {
           var TargetResource = $injector.get("Reading");
           var action = TargetResource["::count::Bridge::readings"];
-          return action.apply(R, arguments);
-        };
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Bridge.readings#create
-         * @methodOf lbServices.Bridge.readings
-         *
-         * @description
-         *
-         * Creates a new instance in readings of this model.
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - PersistedModel id
-         *
-         * @param {Object} postData Request data.
-         *
-         * This method expects a subset of model properties as request parameters.
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * <em>
-         * (The remote method definition does not provide any description.
-         * This usually means the response is a `Reading` object.)
-         * </em>
-         */
-        R.readings.create = function() {
-          var TargetResource = $injector.get("Reading");
-          var action = TargetResource["::create::Bridge::readings"];
-          return action.apply(R, arguments);
-        };
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Bridge.readings#createMany
-         * @methodOf lbServices.Bridge.readings
-         *
-         * @description
-         *
-         * Creates a new instance in readings of this model.
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *  - `id` – `{*}` - PersistedModel id
-         *
-         * @param {Object} postData Request data.
-         *
-         * This method expects a subset of model properties as request parameters.
-         *
-         * @param {function(Array.<Object>,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Array.<Object>} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * <em>
-         * (The remote method definition does not provide any description.
-         * This usually means the response is a `Reading` object.)
-         * </em>
-         */
-        R.readings.createMany = function() {
-          var TargetResource = $injector.get("Reading");
-          var action = TargetResource["::createMany::Bridge::readings"];
           return action.apply(R, arguments);
         };
 
@@ -5391,121 +5358,6 @@ module.factory(
 
         /**
          * @ngdoc method
-         * @name lbServices.Reading#create
-         * @methodOf lbServices.Reading
-         *
-         * @description
-         *
-         * Create a new instance of the model and persist it into the data source.
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *   This method does not accept any parameters.
-         *   Supply an empty object or omit this argument altogether.
-         *
-         * @param {Object} postData Request data.
-         *
-         * This method expects a subset of model properties as request parameters.
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * <em>
-         * (The remote method definition does not provide any description.
-         * This usually means the response is a `Reading` object.)
-         * </em>
-         */
-        "create": {
-          url: urlBase + "/Readings",
-          method: "POST"
-        },
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Reading#createMany
-         * @methodOf lbServices.Reading
-         *
-         * @description
-         *
-         * Create a new instance of the model and persist it into the data source.
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *   This method does not accept any parameters.
-         *   Supply an empty object or omit this argument altogether.
-         *
-         * @param {Object} postData Request data.
-         *
-         * This method expects a subset of model properties as request parameters.
-         *
-         * @param {function(Array.<Object>,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Array.<Object>} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * <em>
-         * (The remote method definition does not provide any description.
-         * This usually means the response is a `Reading` object.)
-         * </em>
-         */
-        "createMany": {
-          isArray: true,
-          url: urlBase + "/Readings",
-          method: "POST"
-        },
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Reading#upsert
-         * @methodOf lbServices.Reading
-         *
-         * @description
-         *
-         * Update an existing model instance or insert a new one into the data source.
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *   This method does not accept any parameters.
-         *   Supply an empty object or omit this argument altogether.
-         *
-         * @param {Object} postData Request data.
-         *
-         * This method expects a subset of model properties as request parameters.
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * <em>
-         * (The remote method definition does not provide any description.
-         * This usually means the response is a `Reading` object.)
-         * </em>
-         */
-        "upsert": {
-          url: urlBase + "/Readings",
-          method: "PUT"
-        },
-
-        /**
-         * @ngdoc method
          * @name lbServices.Reading#exists
          * @methodOf lbServices.Reading
          *
@@ -5845,19 +5697,6 @@ module.factory(
           method: "GET"
         },
 
-        // INTERNAL. Use Bridge.readings.create() instead.
-        "::create::Bridge::readings": {
-          url: urlBase + "/Bridges/:id/readings",
-          method: "POST"
-        },
-
-        // INTERNAL. Use Bridge.readings.createMany() instead.
-        "::createMany::Bridge::readings": {
-          isArray: true,
-          url: urlBase + "/Bridges/:id/readings",
-          method: "POST"
-        },
-
         // INTERNAL. Use Bridge.readings.destroyAll() instead.
         "::delete::Bridge::readings": {
           url: urlBase + "/Bridges/:id/readings",
@@ -5869,45 +5708,16 @@ module.factory(
           url: urlBase + "/Bridges/:id/readings/count",
           method: "GET"
         },
+
+        // INTERNAL. Use State.reading() instead.
+        "::get::State::reading": {
+          url: urlBase + "/States/:id/reading",
+          method: "GET"
+        },
       }
     );
 
 
-
-        /**
-         * @ngdoc method
-         * @name lbServices.Reading#updateOrCreate
-         * @methodOf lbServices.Reading
-         *
-         * @description
-         *
-         * Update an existing model instance or insert a new one into the data source.
-         *
-         * @param {Object=} parameters Request parameters.
-         *
-         *   This method does not accept any parameters.
-         *   Supply an empty object or omit this argument altogether.
-         *
-         * @param {Object} postData Request data.
-         *
-         * This method expects a subset of model properties as request parameters.
-         *
-         * @param {function(Object,Object)=} successCb
-         *   Success callback with two arguments: `value`, `responseHeaders`.
-         *
-         * @param {function(Object)=} errorCb Error callback with one argument:
-         *   `httpResponse`.
-         *
-         * @returns {Object} An empty reference that will be
-         *   populated with the actual data once the response is returned
-         *   from the server.
-         *
-         * <em>
-         * (The remote method definition does not provide any description.
-         * This usually means the response is a `Reading` object.)
-         * </em>
-         */
-        R["updateOrCreate"] = R["upsert"];
 
         /**
          * @ngdoc method
@@ -8467,6 +8277,12 @@ module.factory(
           method: "GET"
         },
 
+        // INTERNAL. Use State.reading() instead.
+        "prototype$__get__reading": {
+          url: urlBase + "/States/:id/reading",
+          method: "GET"
+        },
+
         /**
          * @ngdoc method
          * @name lbServices.State#create
@@ -8916,6 +8732,12 @@ module.factory(
           method: "PUT"
         },
 
+        // INTERNAL. Use Building.currentState() instead.
+        "::get::Building::currentState": {
+          url: urlBase + "/Buildings/:id/currentState",
+          method: "GET"
+        },
+
         // INTERNAL. Use Building.states() instead.
         "::get::Building::states": {
           isArray: true,
@@ -9123,6 +8945,42 @@ module.factory(
         R.building = function() {
           var TargetResource = $injector.get("Building");
           var action = TargetResource["::get::State::building"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.State#reading
+         * @methodOf lbServices.State
+         *
+         * @description
+         *
+         * Fetches belongsTo relation reading.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `refresh` – `{boolean=}` - 
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `Reading` object.)
+         * </em>
+         */
+        R.reading = function() {
+          var TargetResource = $injector.get("Reading");
+          var action = TargetResource["::get::State::reading"];
           return action.apply(R, arguments);
         };
 

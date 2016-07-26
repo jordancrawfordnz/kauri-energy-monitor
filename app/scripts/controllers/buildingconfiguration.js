@@ -20,8 +20,7 @@ angular.module('offgridmonitoringApp')
         id : buildingId,
         filter : {
           include : [
-            {'bridges' : 'sensors'},
-            'batteryCurrentSensor'
+            {'bridges' : 'sensors'}
           ]
         }
       });
