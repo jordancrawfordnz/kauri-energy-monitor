@@ -143,6 +143,12 @@ StateOfCharge.processAllReadings = function(building) {
 			result.finishTime = finishTime;
 			result.totalTime = finishTime - startTime;
 			
+			if (result.numberOfSuccessfulReadings === 0) {
+				// Don't save the current state if there are no successful readings.
+				resolve(result);
+				return;
+			}
+
 			// Save the current state and link it to the building.
 			Building.findById(building.id, function(getBuildingError, buildingInstance) {
 				if (getBuildingError) {
@@ -368,7 +374,15 @@ Processes a single reading.
 StateOfCharge.processReading = function(building, reading, lastReading, currentState) {
 	var State = app.models.State;
 	return new Promise(function(resolve, reject) {
-		// TODO: Apply the 'onlyProcessAfter' and 'onlyProcessUntil' logic on incoming live data.
+		// Apply the 'onlyProcessAfter' and 'onlyProcessUntil' logic on incoming live data.
+		if (building.onlyProcessAfter && reading.timestamp < building.onlyProcessAfter) {
+			reject('Reading happened before the onlyProcessAfter time.');
+			return;
+		}
+		if (building.onlyProcessUntil && reading.timestamp >= building.onlyProcessUntil) {
+			reject('Reading happened after or at the onlyProcessUntil time.');
+			return;
+		}
 
 		var buildingPower = reading.values[building.buildingPowerSensorId];
 		var batteryVoltage = reading.values[building.batteryVoltageSensorId];
@@ -429,6 +443,10 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		var secondsSinceLastReading = 0;
 		if (lastReading) {
 			secondsSinceLastReading = reading.timestamp - lastReading.timestamp;
+		}
+		if (secondsSinceLastReading < 0) {
+			reject('Less than zero seconds between this reading and the last reading.');
+			return;
 		}
 		var powerChangeSinceLastReading;
 		if (canExtrapolateFromLastReading(building, secondsSinceLastReading)) {

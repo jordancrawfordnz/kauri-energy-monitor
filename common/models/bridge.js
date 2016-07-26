@@ -41,14 +41,14 @@ module.exports = function(Bridge) {
 	    		if (error) {
 	    			cb('Could not find the bridge.');
 	    		} else {
-	    			// TODO: What happens if only one result present?
-	    			// TODO: Clean up logging.
-	    			// TODO: Make it return something. Current state?
-	    			// TODO: Setup the bridge to support the new route.
-	    			// TODO: Test with a large piece of simulated data from my computer (i.e.: an hour worth of data).
-	    			// TODO: Deploy new bridge, frontend, backend, etc.
 	    			bridge = bridge.toJSON();
 	    			var building = bridge.building;
+	    			if (building.statesAreRegenerating) {
+	    				// Don't do any processing if the states are currently re-generating.
+	    					// The worst case scenario here is missing readings, better than processing these readings and making older readings invalid!
+    					cb(null, { count : createReadingResults.length});
+    					return;
+	    			}
 	    			var currentStatePromise = new Promise(function(resolve, reject) {
     					if (building.currentStateId) {
     						// Get the current state with the reading included.

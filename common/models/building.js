@@ -5,6 +5,22 @@ module.exports = function(Building) {
 
 	Building.disableRemoteMethod('__updateById__exports');
 
+	function removeProcessingState(updatedBuilding, regenerationState) {
+		var toUpdate = {
+			'statesAreRegenerating': false
+		};
+		if (regenerationState) {
+			toUpdate.lastRegeneration = regenerationState;
+		}
+		// Set the building state to not processing.
+		updatedBuilding.updateAttributes(toUpdate, function(updateBuildingError, updatedBuilding) {
+			if (updateBuildingError) {
+				console.log('Error updating the building after state re-generation.');
+				console.log(updateBuildingError);
+			}
+		});
+	}
+
 	/*
 		Re-generates the entire state of the system by:
 			- deleting all existing State's for the building
@@ -57,19 +73,11 @@ module.exports = function(Building) {
 						
 						// Process each page serially in the background.
 						StateOfCharge.processAllReadings(building).then(function(result) {
-							// Set the building state to not processing.
-							updatedBuilding.updateAttributes({
-								'statesAreRegenerating': false,
-								'lastRegeneration' : result 
-							}, function(updateBuildingError, updatedBuilding) {
-								if (updateBuildingError) {
-									console.log('Error updating the building after state re-generation.');
-									console.log(updateBuildingError);
-								}
-							});
+							removeProcessingState(updatedBuilding, result);							
 						}, function(error) {
 							console.log('Error while processing state.');
 							console.log(error);
+							removeProcessingState(updatedBuilding);
 						});
 
 						cb(null, true); // The job has started, return true.
