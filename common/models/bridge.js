@@ -69,6 +69,7 @@ module.exports = function(Bridge) {
 
 	    			currentStatePromise.then(function(currentState) {
 	    				var currentStateNeedsCreating = false;
+	    				var latestReading = null;
 	    				if (currentState) {
 	    					latestReading = currentState.toJSON().reading;
 	    				} else {
