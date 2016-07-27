@@ -615,8 +615,13 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 
 		// If the state needs to be recorded, then record it.
 		if (StateOfCharge.shouldRecordState(secondsSinceLastReading, reading.timestamp)) {
+			var currentStateToSave = currentState.toJSON();
+			if (currentStateToSave.id) {
+				delete currentStateToSave.id;
+			}
+
 			// Record the State.
-			State.create(currentState, function(error) {
+			State.create(currentStateToSave, function(error) {
 				if (error) {
 					reject(error);
 				} else {

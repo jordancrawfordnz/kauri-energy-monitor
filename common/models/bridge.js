@@ -67,13 +67,10 @@ module.exports = function(Bridge) {
 		    			}
     				});
 
-	    			var currentStateId;
 	    			currentStatePromise.then(function(currentState) {
 	    				if (currentState) {
 	    					currentState = currentState.toJSON();
-	    					currentStateId = currentState.id;
-	    					delete currentState.id; // Remove the current state's ID when in use.
-
+	    					
 	    					var latestReading = null;
 		    				if (currentState && currentState.reading) {
 		    					latestReading = currentState.reading;
@@ -87,42 +84,30 @@ module.exports = function(Bridge) {
 	    				
 	    				StateOfCharge.processReadingsSerially(building, createReadingResults, latestReading, currentState)
 		    			.then(function(processReadingResult) {
-		    				new Promise(function(resolve, reject) {
-		    					if (currentStateId) {
-			    					// If the current state had an ID, save it.
-
-			    					// Copy the current state and include the ID.
-			    					var currentStateCopy = JSON.parse(JSON.stringify(currentState));
-			    					currentStateCopy.id = currentStateId;
-			    					State.update(currentStateCopy, function(updateStateError, updateStateResult) {
-			    						if (updateStateError) {
-			    							reject(updateStateError);
-			    						} else {
-			    							resolve(updateStateResult);
-			    						}
-			    					});
-			    				} else {
-			    					// If the current state has no ID, create it and update the building's ID.
-			    					State.create(currentState, function(createStateError, createStateResult) {
-			    						if (createStateError) {
-			    							reject(createStateError);
-			    						} else {
-			    							// Update the building to use the new currentStateId.
-				    						building.currentStateId = createStateResult.id;
-				    						Building.update(building, function(updateBuildingError, updatedBuilding) {
-				    							if (updateBuildingError) {
-				    								reject(updateBuildingError);
-				    							} else {
-				    								resolve(updatedBuilding);
-				    							}
-				    						});
-			    						}
-			    					});
-			    				}
-		    				}).then(function() {
-		    					cb(null, { count : createReadingResults.length});
-		    				}, function(persistStateError) {
-		    					cb('Error persisting end state.');
+		    				// Upsert the current state.
+		    				State.upsert(currentState, function(upsertStateError, upsertStateResult) {
+		    					if (updateStateError) {
+		    						cb('Error saving state.');
+		    						return;
+		    					} else {
+		    						// Get an instance of the building.
+		    						Building.findById(building.id, function(findBuildingError, buildingInstance) {
+		    							if (findBuildingError) {
+		    								cb('Error getting the building.');
+		    								return;
+		    							} else {
+											// Update the building to use the new state.
+		    								buildingInstance.updateAttribute('currentStateId', upsertStateResult.id, function(updateBuildingError, updatedBuilding) {
+		    									if (updateBuildingError) {
+		    										cb('Error updating the building.');
+		    										return;
+		    									} else {
+						    						cb(null, { count : createReadingResults.length});
+		    									}
+		    								});
+		    							}
+		    						});
+		    					}
 		    				});
 		    			}, function() {
 		    				cb('Error processing readings.');
