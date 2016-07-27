@@ -68,46 +68,64 @@ module.exports = function(Bridge) {
     				});
 
 	    			currentStatePromise.then(function(currentState) {
+	    				var currentStateNeedsCreating = false;
 	    				if (currentState) {
-	    					currentState = currentState.toJSON();
-	    					
-	    					var latestReading = null;
-		    				if (currentState && currentState.reading) {
-		    					latestReading = currentState.reading;
-		    				}
-	    				}
-
-	    				if (!currentState) {
+	    					latestReading = currentState.toJSON().reading;
+	    				} else {
+	    					currentStateNeedsCreating = true;
+	
 	    					// Use the state template as the starting state.
 	    					currentState = StateOfCharge.getStateTemplate(building);
 	    				}
-	    				
+
+	    				// Process the readings.
 	    				StateOfCharge.processReadingsSerially(building, createReadingResults, latestReading, currentState)
 		    			.then(function(processReadingResult) {
-		    				// Upsert the current state.
-		    				State.upsert(currentState, function(upsertStateError, upsertStateResult) {
-		    					if (updateStateError) {
-		    						cb('Error saving state.');
-		    						return;
-		    					} else {
-		    						// Get an instance of the building.
-		    						Building.findById(building.id, function(findBuildingError, buildingInstance) {
-		    							if (findBuildingError) {
-		    								cb('Error getting the building.');
-		    								return;
+		    				var saveCurrentStatePromise = new Promise(function(resolve, reject) {
+		    					if (currentStateNeedsCreating) {
+		    						// Create the current state.
+		    						State.create(currentState, function(createCurrentStateError, createdCurrentState) {
+		    							console.log('created current state');
+		    							console.log('createCurrentStateError');
+		    							console.log(createCurrentStateError);
+		    							console.log('createdCurrentState');
+		    							console.log(createdCurrentState);
+		    							if (createCurrentStateError) {
+		    								reject(createCurrentStateError);
 		    							} else {
-											// Update the building to use the new state.
-		    								buildingInstance.updateAttribute('currentStateId', upsertStateResult.id, function(updateBuildingError, updatedBuilding) {
-		    									if (updateBuildingError) {
-		    										cb('Error updating the building.');
-		    										return;
-		    									} else {
-						    						cb(null, { count : createReadingResults.length});
-		    									}
-		    								});
+		    								resolve(createdCurrentState);
 		    							}
 		    						});
-		    					}
+			    				} else {
+			    					// Update the current state.
+			    					currentState.save(function(saveStateError, savedStateResult) {
+			    						console.log('saved current state');
+		    							console.log('saveStateError');
+		    							console.log(saveStateError);
+		    							console.log('savedStateResult');
+		    							console.log(savedStateResult);
+			    						if (saveStateError) {
+			    							reject(saveStateError);
+			    						} else {
+			    							resolve(savedStateResult);
+			    						}
+			    					});
+			    				}
+		    				});
+
+		    				saveCurrentStatePromise.then(function(savedCurrentState) {
+		    					// Update the building to use the new state.
+								buildingInstance.updateAttribute('currentStateId', savedCurrentState.id, function(updateBuildingError, updatedBuilding) {
+									if (updateBuildingError) {
+										cb('Error updating the building.');
+										return;
+									} else {
+			    						cb(null, { count : createReadingResults.length});
+									}
+								});
+		    				}, function() {
+	    						cb('Error saving state.');
+	    						return;
 		    				});
 		    			}, function() {
 		    				cb('Error processing readings.');
