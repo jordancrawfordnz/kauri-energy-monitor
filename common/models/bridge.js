@@ -86,11 +86,6 @@ module.exports = function(Bridge) {
 		    					if (currentStateNeedsCreating) {
 		    						// Create the current state.
 		    						State.create(currentState, function(createCurrentStateError, createdCurrentState) {
-		    							console.log('created current state');
-		    							console.log('createCurrentStateError');
-		    							console.log(createCurrentStateError);
-		    							console.log('createdCurrentState');
-		    							console.log(createdCurrentState);
 		    							if (createCurrentStateError) {
 		    								reject(createCurrentStateError);
 		    							} else {
@@ -100,11 +95,6 @@ module.exports = function(Bridge) {
 			    				} else {
 			    					// Update the current state.
 			    					currentState.save(function(saveStateError, savedStateResult) {
-			    						console.log('saved current state');
-		    							console.log('saveStateError');
-		    							console.log(saveStateError);
-		    							console.log('savedStateResult');
-		    							console.log(savedStateResult);
 			    						if (saveStateError) {
 			    							reject(saveStateError);
 			    						} else {
@@ -115,17 +105,24 @@ module.exports = function(Bridge) {
 		    				});
 
 		    				saveCurrentStatePromise.then(function(savedCurrentState) {
-		    					// Update the building to use the new state.
-								buildingInstance.updateAttribute('currentStateId', savedCurrentState.id, function(updateBuildingError, updatedBuilding) {
-									if (updateBuildingError) {
-										cb('Error updating the building.');
-										return;
-									} else {
-			    						cb(null, { count : createReadingResults.length});
-									}
-								});
+		    					// Get a full instance of the building.
+		    					Building.findById(building.id, function(getBuildingError, buildingInstance) {
+		    						if (getBuildingError) {
+		    							cb('Error getting the building.');
+		    						} else {
+		    							// Update the building to use the new state.
+										buildingInstance.updateAttribute('currentStateId', savedCurrentState.id, function(updateBuildingError, updatedBuilding) {
+											if (updateBuildingError) {
+												cb('Error updating the building.');
+												return;
+											} else {
+					    						cb(null, { count : createReadingResults.length});
+											}
+										});
+		    						}
+		    					});
 		    				}, function() {
-	    						cb('Error saving state.');
+		    					cb('Error saving state.');
 	    						return;
 		    				});
 		    			}, function() {
