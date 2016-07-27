@@ -20,6 +20,7 @@ module.exports = function(Bridge) {
     	var createPromises = [];
     	// Create each item.
     	toProcess.forEach(function(reading) {
+    		reading.bridgeId = id;
     		createPromises.push(new Promise(function(resolve, reject) {
     			Reading.create(reading, function(error, result) {
 	    			if (error) {
