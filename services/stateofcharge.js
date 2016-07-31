@@ -408,7 +408,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				var currentReading = reading.values[energySource.currentSensorId];
 				var lastCurrentReading = 0;
 				if (lastReading) {
-					lastReading.values[energySource.currentSensorId];
+					lastCurrentReading = lastReading.values[energySource.currentSensorId];
 				}
 				if (!currentReading === undefined) {
 					haveAllReadings = false;
@@ -600,7 +600,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			}
 			processSource(building, currentState, energySourceId, energySourceCurrent, batteryVoltage, lastReadingEnergySourceCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);			
 		}
-
+		
 		// Fill in charging information about the charger.
 		otherCurrent -= loadCurrent;
 		lastReadingOtherCurrent -= lastReadingLoadCurrent;
