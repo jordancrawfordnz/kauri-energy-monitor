@@ -13,12 +13,12 @@
             <div class="tab-content" ng-switch="activeDetailTab">
             	<div ng-switch-when="socgraph" class="tab-pane active">
                 	<canvas id="line" class="chart chart-line" chart-data="socChartData"
-					chart-labels="chartLabels" chart-options="socChartOptions" chart-dataset-override="socChartDatasets">
+					chart-labels="socChartLabels" chart-options="socChartOptions" chart-dataset-override="socChartDatasets">
 					</canvas>
               	</div>
             	<div ng-switch-when="energysourcegraph" class="tab-pane active">
                 	<canvas id="line" class="chart chart-line" chart-data="energySourceChartData"
-					chart-labels="chartLabels" chart-options="energySourceChartOptions" chart-dataset-override="energySourceChartDatasets">
+					chart-labels="energySourceChartLabels" chart-options="energySourceChartOptions" chart-dataset-override="energySourceChartDatasets">
 					</canvas>
               	</div>
             </div>

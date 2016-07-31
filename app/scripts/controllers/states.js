@@ -25,6 +25,7 @@ angular.module('offgridmonitoringApp')
     };
     $scope.activeDetailTab = 'socgraph';
 
+    // == SoC chart configuration
     $scope.socChartOptions = {
       legend: {
         display: true
@@ -54,7 +55,7 @@ angular.module('offgridmonitoringApp')
             scaleLabel: {
               display: true,
               labelString: 'Battery Level (Wh)'
-            },
+            }
           },
           {
             type: 'linear',
@@ -79,6 +80,30 @@ angular.module('offgridmonitoringApp')
       }
     };
 
+    $scope.socChartDatasets = [
+      {
+        label: 'Current Charge Level',
+        fill : true,
+        pointRadius: 0,
+        pointHitRadius: 4
+      },
+      {
+        label: 'Battery Capacity',
+        fill : true,
+        pointRadius: 0,
+        pointHitRadius: 4
+      },
+      {
+        color : 'red',
+        label : 'State of Charge',
+        yAxisID : 'percentageAxis',
+        fill : false,
+        pointRadius: 0,
+        pointHitRadius: 4
+      }
+    ];
+
+    // == Energy source chart configuration
     $scope.energySourceChartOptions = {
       legend: {
         display: true
@@ -111,30 +136,14 @@ angular.module('offgridmonitoringApp')
           {
             type: 'time',
             time: {
-              parser: 'X'
+              parser: 'X',
+              unit: 'day'
             },
             display: true
           }
         ]
       }
     };
-
-    $scope.socChartDatasets = [
-      {
-        label: 'Current Charge Level',
-        fill : true
-      },
-      {
-        label: 'Battery Capacity',
-        fill : true
-      },
-      {
-        color : 'red',
-        label : 'State of Charge',
-        yAxisID : 'percentageAxis',
-        fill : false
-      }
-    ];
 
     $scope.amountPerPage = '50';
     $scope.debounceTime = 500;
@@ -186,6 +195,38 @@ angular.module('offgridmonitoringApp')
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
     });
 
+    function getAmountOutFromMidnight(timestamp) {
+      return (timestamp - 60*60*12 - 1) % (60*60*24); // match on midday GMT which is midnight in +12 NZ.
+    }
+
+    // Gets the timestamp of the last midnight.
+    function getLastMidnightTimestamp(timestamp) {
+      var outBy = getAmountOutFromMidnight(timestamp);
+      return timestamp - outBy;
+    }
+
+    // Returns true if the end of the day has been missed.
+    function hasMissedEndOfDay(timeSinceLastReading, currentTimestamp) {
+      var outBy = getAmountOutFromMidnight(currentTimestamp);
+      // Either the timestamp is perfectly on midnight or midnight was missed.
+      return outBy < timeSinceLastReading;    
+    }
+
+    // Converts a hex colour like FFFFFF to an object with red, green and blue components.
+    function seperateHexColour(hex) {
+      var asInteger = parseInt(hex, 16);
+      return {
+        red : (asInteger >> 16) & 255,
+        green : (asInteger >> 8) & 255,
+        blue : asInteger & 255
+      };
+    }
+
+    // Converts a hex object of the red, green and blue components to a rgba string with some alpha level.
+    function hexColourToRGBA(hexColour, alphaLevel) {
+      return 'rgba(' + hexColour.red + ', ' + hexColour.green + ', ' + hexColour.blue + ', ' + alphaLevel + ')';
+    }
+
     $scope.energySources = {
       'charger' : 'Generator'
     };
@@ -229,7 +270,9 @@ angular.module('offgridmonitoringApp')
 
       $scope.states.$promise.then(function(states) {
         // Add data to the chart.
-        $scope.chartLabels = [];
+        $scope.socChartLabels = [];
+        $scope.energySourceChartLabels = [];
+
         var chargeLevelData = [];
         var capacityData = [];
         var stateOfCharge = [];
@@ -238,49 +281,107 @@ angular.module('offgridmonitoringApp')
         var chargerDailyCharge = [];
         var otherDailyCharge = [];
         
-        var energySources = {
-          charger : {
-            data : [],
-            label: 'Generator'
-          },
+        var nonRenewableSourceColours = [
+          '4D4D4D'
+        ];
+
+        var renewableSourceColours = [
+          'FAE500',
+          '0085FA',
+          '00FA43'
+        ];
+
+        var renewableEnergySources = {
           other : {
             data : [],
             label: $scope.building.otherEnergySourceName
           }
         };
+        var renewableSourceOrder = [renewableEnergySources.other];
+        
+        var nonRenewableEnergySources = {
+          charger : {
+            data : [],
+            label: 'Generator'
+          }
+        };
+        var nonRenewableSourceOrder = [nonRenewableEnergySources.charger];
 
         // Setup the remaining energy sources,
         angular.forEach($scope.building.energySources, function(source) {
-          energySources[source.id] = {
+          renewableEnergySources[source.id] = {
             data : [],
             label: source.name
           };
+          renewableSourceOrder.unshift(renewableEnergySources[source.id]); // Make this source to go the front.
         });
+
+        var allEnergySources = $.extend({}, renewableEnergySources, nonRenewableEnergySources);
 
         // Setup axis' and the data array.
         $scope.energySourceChartData = [];
         $scope.energySourceChartDatasets = [];
 
-        angular.forEach(energySources, function(energySource, energySourceId) {
+        for (var renewableSourceIndex = 0; renewableSourceIndex < renewableSourceOrder.length; renewableSourceIndex++) {
+          var energySource = renewableSourceOrder[renewableSourceIndex];
           $scope.energySourceChartData.push(energySource.data);
+          var colourToUse = seperateHexColour(renewableSourceColours[renewableSourceIndex]);
           $scope.energySourceChartDatasets.push({
             label: energySource.label,
-            fill: true
+            fill: true,
+            pointRadius: 0,
+            pointHitRadius: 4,
+            backgroundColor: hexColourToRGBA(colourToUse, 0.2),
+            borderColor: hexColourToRGBA(colourToUse, 1)
           });
-        });
+        }
 
+        for (var nonRenewableSourceIndex = 0; nonRenewableSourceIndex < nonRenewableSourceOrder.length; nonRenewableSourceIndex++) {
+          var energySource = nonRenewableSourceOrder[nonRenewableSourceIndex];
+          $scope.energySourceChartData.push(energySource.data);
+          var colourToUse = seperateHexColour(nonRenewableSourceOrder[nonRenewableSourceIndex]);
+          $scope.energySourceChartDatasets.push({
+            label: energySource.label,
+            fill: true,
+            pointRadius: 0,
+            pointHitRadius: 4,
+            backgroundColor: hexColourToRGBA(colourToUse, 0.2),
+            borderColor: hexColourToRGBA(colourToUse, 1)
+          });
+        }
+
+        // Fill in graph data with information from the states.
+        var previousState;
         angular.forEach(states, function(state) {
-          $scope.chartLabels.push(state.timestamp);
+          var fillInMidnightZero = false;
+          if (previousState && hasMissedEndOfDay(Math.abs(state.timestamp - previousState.timestamp), state.timestamp)) {
+            // If the end of the day is not included in this data set, for daily source totals we know these will be zero so can add this data in.
+              // The absolute value is used because the sort order can be reversed.
+            $scope.energySourceChartLabels.push(getLastMidnightTimestamp(state.timestamp));
+            fillInMidnightZero = true;
+          }
+          
+          $scope.socChartLabels.push(state.timestamp);
+          $scope.energySourceChartLabels.push(state.timestamp);
+
           chargeLevelData.push(state.currentChargeLevel);
           capacityData.push(state.batteryCapacity);
           stateOfCharge.push(state.currentChargeLevel / state.batteryCapacity * 100);
 
-          angular.forEach(energySources, function(energySource, energySourceId) {
+          angular.forEach(allEnergySources, function(energySource, energySourceId) {
             var sourceData = state.sources[energySourceId];
             if (sourceData) {
-              energySource.data.push(sourceData.dailyCharge);
+              if (fillInMidnightZero) {
+                energySource.data.push(0);
+              }
+              if (energySourceId === 'charger') {
+                energySource.data.push(-sourceData.dailyCharge); 
+              } else {
+                energySource.data.push(sourceData.dailyCharge); 
+              }
             }
           });
+          previousState = state;
         });
       });
     };
