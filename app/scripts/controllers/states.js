@@ -115,7 +115,7 @@ angular.module('offgridmonitoringApp')
           },
           label : function(tooltipItem, data) {
             var label = data.datasets[tooltipItem.datasetIndex].label;
-            var value = tooltipItem.yLabel.toFixed(0) + 'Wh'; 
+            var value = Math.abs(tooltipItem.yLabel).toFixed(0) + 'Wh'; 
             return label + ': ' + value;
           }
         }
@@ -125,22 +125,16 @@ angular.module('offgridmonitoringApp')
           {
             type: 'linear',
             display: true,
-            id: 'renewableAxis',
             stacked: true,
             scaleLabel: {
               display: true,
-              labelString: 'Energy provided by renewable sources (Wh)'
+              labelString: 'Energy provided (Wh)'
             },
-          },
-          {
-            type: 'linear',
-            display: true,
-            id: 'nonRenewableAxis',
-            stacked: true,
-            position: 'right',
-            scaleLabel: {
-              display: true,
-              labelString: 'Energy provided by non-renewable sources (Wh)'
+            ticks: {
+              callback: function(tickData) {
+                // Make ticks below 0 show as positive values.
+                return Math.abs(tickData);
+              }
             }
           }
         ],
@@ -267,7 +261,7 @@ angular.module('offgridmonitoringApp')
     $scope.$watchGroup(['from', 'until', 'displayEvery'], $scope.recountSearch);
 
 
-    function getEnergySourceDatasetTemplate(label, colourToUse, yAxisID) {
+    function getEnergySourceDatasetTemplate(label, colourToUse) {
       return {
         label: label,
         fill: true,
@@ -277,7 +271,7 @@ angular.module('offgridmonitoringApp')
         borderColor: hexColourToRGBA(colourToUse, 1),
         pointHoverBorderColor: hexColourToRGBA(colourToUse, 1),
         pointHoverBackgroundColor: hexColourToRGBA(colourToUse, 1),
-        yAxisID : yAxisID
+        lineTension: 0.1
       };
     }
 
@@ -349,18 +343,18 @@ angular.module('offgridmonitoringApp')
         $scope.energySourceChartData = [];
         $scope.energySourceChartDatasets = [];
 
-        for (var renewableSourceIndex = 0; renewableSourceIndex < renewableSourceOrder.length; renewableSourceIndex++) {
-          var energySource = renewableSourceOrder[renewableSourceIndex];
-          $scope.energySourceChartData.push(energySource.data);
-          var colourToUse = seperateHexColour(renewableSourceColours[renewableSourceIndex]);
-          $scope.energySourceChartDatasets.push(getEnergySourceDatasetTemplate(energySource.label, colourToUse, 'renewableAxis'));
-        }
-
         for (var nonRenewableSourceIndex = 0; nonRenewableSourceIndex < nonRenewableSourceOrder.length; nonRenewableSourceIndex++) {
           var energySource = nonRenewableSourceOrder[nonRenewableSourceIndex];
           $scope.energySourceChartData.push(energySource.data);
           var colourToUse = seperateHexColour(nonRenewableSourceOrder[nonRenewableSourceIndex]);
-          $scope.energySourceChartDatasets.push(getEnergySourceDatasetTemplate(energySource.label, colourToUse, 'nonRenewableAxis'));
+          $scope.energySourceChartDatasets.push(getEnergySourceDatasetTemplate(energySource.label, colourToUse));
+        }
+
+        for (var renewableSourceIndex = 0; renewableSourceIndex < renewableSourceOrder.length; renewableSourceIndex++) {
+          var energySource = renewableSourceOrder[renewableSourceIndex];
+          $scope.energySourceChartData.push(energySource.data);
+          var colourToUse = seperateHexColour(renewableSourceColours[renewableSourceIndex]);
+          $scope.energySourceChartDatasets.push(getEnergySourceDatasetTemplate(energySource.label, colourToUse));
         }
 
         // Fill in graph data with information from the states.
@@ -387,7 +381,11 @@ angular.module('offgridmonitoringApp')
               if (fillInMidnightZero) {
                 energySource.data.push(0);
               }
-              energySource.data.push(sourceData.dailyCharge);
+              if (nonRenewableSourceOrder.indexOf(energySource) !== -1) {
+                energySource.data.push(-sourceData.dailyCharge); 
+              } else {
+                energySource.data.push(sourceData.dailyCharge); 
+              }
             }
           });
           previousState = state;
