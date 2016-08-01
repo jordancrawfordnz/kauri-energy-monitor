@@ -125,11 +125,23 @@ angular.module('offgridmonitoringApp')
           {
             type: 'linear',
             display: true,
+            id: 'renewableAxis',
             stacked: true,
             scaleLabel: {
               display: true,
-              labelString: 'Daily energy provided (Wh)'
+              labelString: 'Energy provided by renewable sources (Wh)'
             },
+          },
+          {
+            type: 'linear',
+            display: true,
+            id: 'nonRenewableAxis',
+            stacked: true,
+            position: 'right',
+            scaleLabel: {
+              display: true,
+              labelString: 'Energy provided by non-renewable sources (Wh)'
+            }
           }
         ],
         xAxes: [
@@ -254,6 +266,21 @@ angular.module('offgridmonitoringApp')
     };
     $scope.$watchGroup(['from', 'until', 'displayEvery'], $scope.recountSearch);
 
+
+    function getEnergySourceDatasetTemplate(label, colourToUse, yAxisID) {
+      return {
+        label: label,
+        fill: true,
+        pointRadius: 0,
+        pointHitRadius: 4,
+        backgroundColor: hexColourToRGBA(colourToUse, 0.2),
+        borderColor: hexColourToRGBA(colourToUse, 1),
+        pointHoverBorderColor: hexColourToRGBA(colourToUse, 1),
+        pointHoverBackgroundColor: hexColourToRGBA(colourToUse, 1),
+        yAxisID : yAxisID
+      };
+    }
+
     // Refresh the search results.
     $scope.refreshSearch = function() {
       if (!$scope.building.id) return;
@@ -326,28 +353,14 @@ angular.module('offgridmonitoringApp')
           var energySource = renewableSourceOrder[renewableSourceIndex];
           $scope.energySourceChartData.push(energySource.data);
           var colourToUse = seperateHexColour(renewableSourceColours[renewableSourceIndex]);
-          $scope.energySourceChartDatasets.push({
-            label: energySource.label,
-            fill: true,
-            pointRadius: 0,
-            pointHitRadius: 4,
-            backgroundColor: hexColourToRGBA(colourToUse, 0.2),
-            borderColor: hexColourToRGBA(colourToUse, 1)
-          });
+          $scope.energySourceChartDatasets.push(getEnergySourceDatasetTemplate(energySource.label, colourToUse, 'renewableAxis'));
         }
 
         for (var nonRenewableSourceIndex = 0; nonRenewableSourceIndex < nonRenewableSourceOrder.length; nonRenewableSourceIndex++) {
           var energySource = nonRenewableSourceOrder[nonRenewableSourceIndex];
           $scope.energySourceChartData.push(energySource.data);
           var colourToUse = seperateHexColour(nonRenewableSourceOrder[nonRenewableSourceIndex]);
-          $scope.energySourceChartDatasets.push({
-            label: energySource.label,
-            fill: true,
-            pointRadius: 0,
-            pointHitRadius: 4,
-            backgroundColor: hexColourToRGBA(colourToUse, 0.2),
-            borderColor: hexColourToRGBA(colourToUse, 1)
-          });
+          $scope.energySourceChartDatasets.push(getEnergySourceDatasetTemplate(energySource.label, colourToUse, 'nonRenewableAxis'));
         }
 
         // Fill in graph data with information from the states.
@@ -374,11 +387,7 @@ angular.module('offgridmonitoringApp')
               if (fillInMidnightZero) {
                 energySource.data.push(0);
               }
-              if (energySourceId === 'charger') {
-                energySource.data.push(-sourceData.dailyCharge); 
-              } else {
-                energySource.data.push(sourceData.dailyCharge); 
-              }
+              energySource.data.push(sourceData.dailyCharge);
             }
           });
           previousState = state;
