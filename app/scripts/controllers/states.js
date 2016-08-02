@@ -201,19 +201,27 @@ angular.module('offgridmonitoringApp')
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
     });
 
-    function getAmountOutFromMidnight(timestamp) {
-      return (timestamp - 60*60*12 - 1) % (60*60*24); // match on midday GMT which is midnight in +12 NZ.
+    function getAmountOutFromMidnight(timestamp, reverseOrder) {
+      var offset = (timestamp - 60*60*12 - 1) % (60*60*24); // match on midday GMT which is midnight in +12 NZ.
+      if (reverseOrder) {
+        offset = (60*60*24) - offset;
+      }
+      return offset;
     }
 
     // Gets the timestamp of the last midnight.
-    function getLastMidnightTimestamp(timestamp) {
-      var outBy = getAmountOutFromMidnight(timestamp);
-      return timestamp - outBy;
+    function getLastMidnightTimestamp(timestamp, reverseOrder) {
+      var outBy = getAmountOutFromMidnight(timestamp, reverseOrder);
+      if (reverseOrder){
+        return timestamp + outBy; 
+      } else {
+        return timestamp - outBy;
+      }
     }
 
     // Returns true if the end of the day has been missed.
-    function hasMissedEndOfDay(timeSinceLastReading, currentTimestamp) {
-      var outBy = getAmountOutFromMidnight(currentTimestamp);
+    function hasMissedEndOfDay(timeSinceLastReading, currentTimestamp, reverseOrder) {
+      var outBy = getAmountOutFromMidnight(currentTimestamp, reverseOrder);
       // Either the timestamp is perfectly on midnight or midnight was missed.
       return outBy < timeSinceLastReading;    
     }
@@ -359,15 +367,15 @@ angular.module('offgridmonitoringApp')
 
         // Fill in graph data with information from the states.
         var previousState;
+        var isReverseOrder = $scope.sortOrder === 'desc';
         angular.forEach(states, function(state) {
           var fillInMidnightZero = false;
-          if (previousState && hasMissedEndOfDay(Math.abs(state.timestamp - previousState.timestamp), state.timestamp)) {
+          if (previousState && hasMissedEndOfDay(Math.abs(state.timestamp - previousState.timestamp), state.timestamp, isReverseOrder)) {
             // If the end of the day is not included in this data set, for daily source totals we know these will be zero so can add this data in.
               // The absolute value is used because the sort order can be reversed.
-            $scope.energySourceChartLabels.push(getLastMidnightTimestamp(state.timestamp));
+            $scope.energySourceChartLabels.push(getLastMidnightTimestamp(state.timestamp, isReverseOrder));
             fillInMidnightZero = true;
           }
-          
           $scope.socChartLabels.push(state.timestamp);
           $scope.energySourceChartLabels.push(state.timestamp);
 
