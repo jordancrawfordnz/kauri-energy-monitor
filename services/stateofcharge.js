@@ -268,8 +268,9 @@ Provides information on the state of the system based on the battery voltage and
 	timestamp: the current reading's timestamp.
 	batteryVoltage: the battery voltage
 	buildingPower: the amount of power consumed by the building
+	inverterCurrent: the amount of current going from the battery to the inverter.
 */
-StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batteryVoltage, buildingPower) {
+StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batteryVoltage, buildingPower, inverterCurrent) {
 	// TODO: How to determine if inverter output is off?
 		// Need battery in place in field so readings continue.
 		// Power sensor un-reachable, however could be any sort of failure.
@@ -300,7 +301,7 @@ StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batte
 	};
 
 	toReturn.lowVoltage = batteryVoltage < building.lowVoltageLevel; // Is the battery voltage too low.
-	toReturn.highLoad = buildingPower > building.highPowerThreshold; // If the load excessive?
+	toReturn.highLoad = buildingPower !== undefined && buildingPower > building.highPowerThreshold; // If the load excessive?
 
 	if (toReturn.lowVoltage && !toReturn.highLoad) {
 		toReturn.lowBatteryLevel = true;
@@ -315,6 +316,11 @@ StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batte
 		}
 	} else {
 		currentState.batteryLevelLowSince = undefined;
+	}
+
+	// If the inverter current is low, trigger low battery event.
+	if (inverterCurrent !== undefined && inverterCurrent <= 0.1) {
+		toReturn.lowBatteryLevelTrigger;
 	}
 
 	return toReturn;
@@ -435,7 +441,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			}
 		}
 
-		if (buildingPower === undefined || batteryVoltage === undefined || batteryCurrent === undefined || loadCurrent === undefined) {
+		if (batteryVoltage === undefined || batteryCurrent === undefined || loadCurrent === undefined) {
 			reject('Essential value is undefined.');
 			return;
 		}
@@ -463,7 +469,7 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		*/
 
 		// Get information about the battery state.
-		var batteryState = StateOfCharge.analyseVoltage(building, currentState, reading.timestamp, batteryVoltage, buildingPower);	
+		var batteryState = StateOfCharge.analyseVoltage(building, currentState, reading.timestamp, batteryVoltage, buildingPower, loadCurrent);	
 
 		if (!currentState.emptyLevelEstablished) { // Empty level not established, in preliminary phase.
 			// If power has entered the battery, the charge efficiency is taken into account.
