@@ -556,13 +556,11 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 				}
 
 				if (currentValuesAreSufficient || withPreviousValuesAreSufficient) {
-					if (unexpectedBatteryEmpty) {
-						// Pull the battery capacity down to help it get lower quicker.
-						currentState.batteryCapacity -= currentState.currentChargeLevel;	
-					}
-
 					currentState.currentChargeLevel = 0;
 					currentState.chargeEfficiency = energyOutSinceLastC0 / energyInSinceLastC0;
+
+
+					StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculatedChargeEfficiency');
 
 					if (currentValuesAreSufficient) {
 						// Make these the previous values.
@@ -572,7 +570,6 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 						// Reset the current values.
 						currentState.currentEnergyInSinceLastC0 = 0;
 						currentState.currentEnergyOutSinceLastC0 = 0;
-						StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculatedChargeEfficiency');
 					}
 				}
 			}
