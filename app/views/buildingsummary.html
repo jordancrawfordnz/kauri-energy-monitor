@@ -4,7 +4,7 @@
         <div class="small-box bg-green">
             <div class="inner">
                 <p>Battery</p>
-                <h3>{{summary.isBatteryCharging ? 'Charging' : 'Discharging'}}</h3>
+                <h3>{{summary.state.isBatteryCharging ? 'Charging' : 'Discharging'}}</h3>
             </div>
             <div class="icon">
                 <i class="fa" ng-class="{'fa-arrow-up' : summary.isBatteryCharging, 'fa-arrow-down' : !summary.isBatteryCharging}"></i>
