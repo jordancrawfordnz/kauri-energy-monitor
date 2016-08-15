@@ -1,9 +1,9 @@
-<div ng-controller="BuildingsCtrl as buildings">
+<div class="buildings" ng-controller="BuildingsCtrl as buildings">
 	<div class="row">
 	  <div ng-repeat="building in buildings.buildings" class="col-sm-6 col-md-4">
 	    <div class="thumbnail">
 	      <div class="caption">
-	        <h3>{{building.name}}</h3>
+	        <h3 class="name"><a ng-href="/{{building.id}}">{{building.name}}</a></h3>
 
 	        Building owners:
 	        <ul>

@@ -8,7 +8,7 @@
  * Allows building configuration including bridges and other parameters.
  */
 angular.module('offgridmonitoringApp')
-  .controller('BuildingConfigCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, $rootScope, Building, SensorTypes, $timeout, $interval, EnergySource) {
+  .controller('BuildingConfigCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, $rootScope, $scope, Building, SensorTypes, $timeout, $interval, EnergySource) {
   	var _this = this;
     this.sensorTypes = SensorTypes;
     var buildingId = $routeParams.buildingId;
@@ -65,7 +65,7 @@ angular.module('offgridmonitoringApp')
         _this.regenerationStatus.statesAreRegenerating = true;
           
         // Get data about the building until it has finished re-generation.
-        var automaticallyRefresh = $interval(function() {
+        _this.automaticallyRefreshGenerationStatus = $interval(function() {
           Building.findById({id : buildingId}, function(building) {
             _this.regenerationStatus = {
               statesAreRegenerating : building.statesAreRegenerating,
@@ -73,12 +73,19 @@ angular.module('offgridmonitoringApp')
             };
             // Stop automatically refreshing after the states are finished refreshing.
             if (!building.statesAreRegenerating) {
-              $interval.cancel(automaticallyRefresh);
+              $interval.cancel(_this.automaticallyRefreshGenerationStatus);
             }
           });
         }, 10*1000);
       });
     };
+
+    // Stop automatically refreshing for state change.
+    $scope.$on('$destroy', function() {
+      if (_this.automaticallyRefreshGenerationStatus) {
+        $interval.cancel(_this.automaticallyRefreshGenerationStatus);
+      }
+    });
 
     // Setup breadcrumbs.
     Breadcrumbs.addPlaceholder('Building', this.building.$promise, function(building) {
