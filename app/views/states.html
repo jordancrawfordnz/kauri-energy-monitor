@@ -50,6 +50,8 @@
 				        	<th>Voltage status</th>
 				        	<th>Is charging</th>
 				        	<th>Empty level established</th>
+				        	<th>Hourly consumption</th>
+				        	<th>Daily consumption</th>
 				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} power</th>
 				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} hourly charge</th>
 				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} daily charge</th>
@@ -70,6 +72,8 @@
 				      		<td ng-if="!state.batteryLevelLowSince">Normal</td>
 				      		<td>{{state.isBatteryCharging ? "Yes" : "No"}}</td>
 				      		<td>{{state.emptyLevelEstablished ? "Yes" : "No"}}</td>
+				      		<td>{{state.consumption.hourlyTotal | number:2}} Wh</td>
+				      		<td>{{state.consumption.dailyTotal | number:2}} Wh</td>
 	 				      	<td ng-repeat="(energySourceId, energySourceName) in energySources">
 				      			{{state.sources[energySourceId].power | number:2}} Watts
 				      		</td>
