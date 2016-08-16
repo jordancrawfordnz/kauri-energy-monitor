@@ -93,6 +93,10 @@ StateOfCharge.getStateTemplate = function(building) {
 		buildingId : building.id,
 		isBatteryCharging : false,
 		sources : {},
+		consumption : {
+			hourlyTotal : 0,
+			dailyTotal : 0
+		},
 		maximumPrelimPhaseChargeLevel : 0
 	};
 }
@@ -326,6 +330,29 @@ StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batte
 	return toReturn;
 };
 
+// Updates the details about the house consumption.
+function processConsumption(building, currentState, consumptionNow, secondsSinceLastReading, reading) {
+	
+	// Reset the daily and hourly consumption if needed.
+	if (StateOfCharge.shouldRunEndOfHourJobs(secondsSinceLastReading, reading.timestamp, true)) {
+		currentState.consumption.hourlyTotal = 0;
+	}
+	if (StateOfCharge.shouldRunEndOfDayJobs(secondsSinceLastReading, reading.timestamp, true)) {
+		currentState.consumption.dailyTotal = 0;
+	}
+
+	// Get the consumption since the last reading.
+	var consumption;
+	if (canExtrapolateFromLastReading(building, secondsSinceLastReading)) {
+		consumption = (consumptionNow * secondsSinceLastReading) / 3600;
+	} else {
+		consumption = 0;
+	}
+
+	currentState.consumption.hourlyTotal += consumption;
+	currentState.consumption.dailyTotal += consumption;
+}
+
 // Updates the details about a charging source.
 function processSource(building, currentState, sourceId, sensorValueNow, batteryVoltageNow, sensorValueLastReading, batteryVoltageLastReading, secondsSinceLastReading, reading) {
 	StateOfCharge.setupSourceStateTemplate(currentState, sourceId);
@@ -345,7 +372,7 @@ function processSource(building, currentState, sourceId, sensorValueNow, battery
 	}
 
 	// Get the energy contribution of this source.
-	var chargeContribution
+	var chargeContribution;
 	if (canExtrapolateFromLastReading(building, secondsSinceLastReading) && sensorValueLastReading > 0) {
 		chargeContribution = (sensorValueLastReading * batteryVoltageLastReading * secondsSinceLastReading) / 3600;
 	} else {
@@ -611,6 +638,11 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 
 		// Fill in details about the other source.
 		processSource(building, currentState, 'other', otherCurrent, batteryVoltage, lastReadingOtherCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
+
+		// Fill in details about house energy consumption.
+		if (buildingPower) {
+			processConsumption(building, currentState, buildingPower, secondsSinceLastReading, reading);	
+		}
 
 		// Update the state timestamp to be up to date with the reading's timestamp.
 		currentState.timestamp = reading.timestamp;
