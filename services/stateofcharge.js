@@ -7,6 +7,12 @@ module.exports = StateOfCharge;
 
 var produceStateEvery = 10*60; // ten minutes
 
+// Make the rolling source average about 10 minutes (not gaurented due to possible varibility in time between readings).
+var SOURCE_POWER_ROLLING_AVERAGE_PERIOD = 60;
+
+// Make the rolling consumption average about 10 minutes (not gaurented due to possible varibility in time between readings).
+var CONSUMPTION_POWER_ROLLING_AVERAGE_PERIOD = 60;
+
 // Require that the state production will be the same times each day.
 if (3600*24 % produceStateEvery !== 0) {
 	console.log('Building States should be computed by a number that divides the number of seconds in a day.')
@@ -35,6 +41,16 @@ StateOfCharge.shouldRunEndOfHourJobs = function(timeSinceLastReading, timestamp,
 
 	// Either the timestamp is perfectly on the hour or the hour change was missed.
 	return outBy === 0 || outBy < timeSinceLastReading;
+};
+
+// Computes an estimated rolling average that prevents looking back to previous data.
+	// The rolling period is the number of values that should be included in the rolling average.
+StateOfCharge.calculateNewRollingAverage = function(currentAverage, newValue, rollingPeriod) {
+	if (currentAverage === undefined) {
+		return newValue;
+	} else {
+		return ((rollingPeriod - 1) * currentAverage + newValue) / rollingPeriod;
+	}
 };
 
 // Returns a boolean. True if end of day jobs should be performed.
@@ -332,25 +348,27 @@ StateOfCharge.analyseVoltage = function(building, currentState, timestamp, batte
 
 // Updates the details about the house consumption.
 function processConsumption(building, currentState, consumptionNow, secondsSinceLastReading, reading) {
-	
+	var consumption = currentState.consumption;
+
 	// Reset the daily and hourly consumption if needed.
 	if (StateOfCharge.shouldRunEndOfHourJobs(secondsSinceLastReading, reading.timestamp, true)) {
-		currentState.consumption.hourlyTotal = 0;
+		consumption.hourlyTotal = 0;
 	}
 	if (StateOfCharge.shouldRunEndOfDayJobs(secondsSinceLastReading, reading.timestamp, true)) {
-		currentState.consumption.dailyTotal = 0;
+		consumption.dailyTotal = 0;
 	}
 
 	// Get the consumption since the last reading.
-	var consumption;
+	var consumptionContribution;
 	if (canExtrapolateFromLastReading(building, secondsSinceLastReading)) {
-		consumption = (consumptionNow * secondsSinceLastReading) / 3600;
+		consumptionContribution = (consumptionNow * secondsSinceLastReading) / 3600;
+		consumption.averagePower = StateOfCharge.calculateNewRollingAverage(consumption.averagePower, consumptionNow, CONSUMPTION_POWER_ROLLING_AVERAGE_PERIOD);
 	} else {
-		consumption = 0;
+		consumptionContribution = 0;
 	}
 
-	currentState.consumption.hourlyTotal += consumption;
-	currentState.consumption.dailyTotal += consumption;
+	consumption.hourlyTotal += consumptionContribution;
+	consumption.dailyTotal += consumptionContribution;
 }
 
 // Updates the details about a charging source.
@@ -373,11 +391,18 @@ function processSource(building, currentState, sourceId, sensorValueNow, battery
 
 	// Get the energy contribution of this source.
 	var chargeContribution;
-	if (canExtrapolateFromLastReading(building, secondsSinceLastReading) && sensorValueLastReading > 0) {
+	var canExtrapolate = canExtrapolateFromLastReading(building, secondsSinceLastReading);
+	if (canExtrapolate && sensorValueLastReading > 0) {
 		chargeContribution = (sensorValueLastReading * batteryVoltageLastReading * secondsSinceLastReading) / 3600;
 	} else {
 		chargeContribution = 0;
 	}
+
+	if (canExtrapolate) {
+		// Re-calculate the average power of the source.
+		source.averagePower = StateOfCharge.calculateNewRollingAverage(source.averagePower, source.power, SOURCE_POWER_ROLLING_AVERAGE_PERIOD);
+	}
+	
 	source.dailyCharge += chargeContribution; // record the total energy from this source for today in Wh.
 	source.hourlyCharge += chargeContribution; // record the total energy from this source for this hour in Wh.
 }
