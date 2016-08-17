@@ -393,7 +393,7 @@ function canExtrapolateFromLastReading(building, secondsSinceLastReading) {
 
 // Returns a boolean. True if the energyInSinceLastC0 and energyOutSinceLastC0 are sufficiently large enough to be used.
 function enoughDataToRecalculateChargeEfficiency(building, currentState, energyInSinceLastC0, energyOutSinceLastC0) {
-	return energyInSinceLastC0 >= building.recalculateChargeEfficiencyCapacityMultiplier*currentState.batteryCapacity && energyOutSinceLastC0 >= 1*currentState.batteryCapacity;	
+	return energyInSinceLastC0 >= building.recalculateChargeEfficiencyCapacityMultiplier*currentState.batteryCapacity && energyOutSinceLastC0 >= building.recalculateChargeEfficiencyCapacityMultiplier*currentState.batteryCapacity;	
 }
 
 /*
@@ -457,15 +457,6 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		if (!haveAllReadings) {
 			reject('A energy source current is missing.');
 			return;
-		}
-
-		// TODO: Remove. Fix for lack of building power.
-		if (buildingPower === undefined) {
-			var buildingVoltage = reading.values['572023553916fd9b1ac7ba4d'];
-			var buildingCurrent = reading.values['5720235d3916fd9b1ac7ba4e'];
-			if (buildingVoltage !== undefined && buildingCurrent !== undefined) {
-				buildingPower = Math.abs(batteryVoltage * batteryCurrent);
-			}
 		}
 
 		if (batteryVoltage === undefined || batteryCurrent === undefined || loadCurrent === undefined) {
@@ -584,19 +575,22 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 
 				if (currentValuesAreSufficient || withPreviousValuesAreSufficient) {
 					currentState.currentChargeLevel = 0;
-					currentState.chargeEfficiency = energyOutSinceLastC0 / energyInSinceLastC0;
+					var potentialChargeEfficiency = energyOutSinceLastC0 / energyInSinceLastC0;
+					if (potentialChargeEfficiency <= 1) {
+						currentState.chargeEfficiency = potentialChargeEfficiency;
 
+						StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculatedChargeEfficiency');
 
-					StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalRecalculatedChargeEfficiency');
+						if (currentValuesAreSufficient) {
+							// Make these the previous values.
+							currentState.previousEnergyInSinceLastC0 = currentState.currentEnergyInSinceLastC0;
+							currentState.previousEnergyOutSinceLastC0 = currentState.currentEnergyOutSinceLastC0;
+							StateOfCharge.recordRecalibration(building, reading.timestamp, 'OperationalMovingEinEoutSinceLastC0ToPrevious');
 
-					if (currentValuesAreSufficient) {
-						// Make these the previous values.
-						currentState.previousEnergyInSinceLastC0 = currentState.currentEnergyInSinceLastC0;
-						currentState.previousEnergyOutSinceLastC0 = currentState.currentEnergyOutSinceLastC0;
-
-						// Reset the current values.
-						currentState.currentEnergyInSinceLastC0 = 0;
-						currentState.currentEnergyOutSinceLastC0 = 0;
+							// Reset the current values.
+							currentState.currentEnergyInSinceLastC0 = 0;
+							currentState.currentEnergyOutSinceLastC0 = 0;
+						}
 					}
 				}
 			}
