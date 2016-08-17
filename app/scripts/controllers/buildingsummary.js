@@ -118,13 +118,13 @@ angular.module('offgridmonitoringApp')
 
       // Add consumption data.
       energyFlowData.consumption.push({
-        name : 'Inverter Output',
+        name : 'Building',
         value : _this.state.consumption.averagePower
       });
       
       // Add energy source data.
       energyFlowData.generation.push({
-        name : 'Generator',
+        name : _this.building.chargerEnergySourceName,
         value : _this.state.sources.charger.averagePower
       });
 

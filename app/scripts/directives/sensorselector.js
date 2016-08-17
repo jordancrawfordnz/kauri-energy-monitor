@@ -15,12 +15,12 @@ angular.module('offgridmonitoringApp')
 	    controller: function($scope) {
 	    	// Fill in the sensors once the building has loaded.
 	    	$scope.building.$promise.then(function() {
-	    		$scope.sensors = [];
+	    		$scope.options = [];
 		    	
 		    	// Get all sensors.
 		    	angular.forEach($scope.building.bridges, function(bridge) {
 		    		angular.forEach(bridge.sensors, function(sensor) {
-		    			$scope.sensors.push({
+		    			$scope.options.push({
 		    				value : sensor.id,
 		    				text : sensor.name
 		    			});
@@ -32,6 +32,6 @@ angular.module('offgridmonitoringApp')
 	    	building : '=building', // building should include bridges and sensors.
 	    	model : '=model'
 	    },
-	    templateUrl: 'views/sensorselector.html'
+	    templateUrl: 'views/selectordropdown.html'
 	  };
 	});

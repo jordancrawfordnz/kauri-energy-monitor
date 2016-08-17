@@ -122,6 +122,12 @@
               <input class="form-control" ng-model="buildingConfig.building.otherEnergySourceName" name="otherEnergySourceName" id="otherEnergySourceName" required>
             </div>
 
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.chargerEnergySourceName.$dirty && editBuildingForm.chargerEnergySourceName.$invalid}">
+              <label for="chargerEnergySourceName">Charger energy source name</label>
+              <p>This is the name that is given to the charger. The charger is assumed to run through the inverter so is detected when the load current is above zero.</p>
+              <input class="form-control" ng-model="buildingConfig.building.chargerEnergySourceName" name="chargerEnergySourceName" id="chargerEnergySourceName" required>
+            </div>
+
             <div class="form-group">
               <label for="batteryCurrentSensor">Battery current sensor</label>
               <p>This is the sensor that is used to measure the battery current used in state of charge calculations. Assumes positive means charging.</p>
@@ -144,6 +150,24 @@
               <label for="loadCurrentSensor">Load current sensor</label>
               <p>This is the sensor that records the current through the inverter/charger. If this is above zero, then the system is being charged by an external source. This allows the incoming charge to be measured.</p>
               <div sensor-selector building="buildingConfig.building" model="buildingConfig.building.loadCurrentSensorId"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="houseConsumptionColour">House consumption colour</label>
+              <p>This is the colour to display house consumption as in graphs.</p>
+              <div colour-selector model="buildingConfig.building.houseConsumptionColour"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="chargerGenerationColour">Charger generation colour</label>
+              <p>This is the colour to display charger generation as in graphs.</p>
+              <div colour-selector model="buildingConfig.building.chargerGenerationColour"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="otherGenerationColour">Other source generation colour</label>
+              <p>This is the colour to display the 'other' energy source generation as in graphs.</p>
+              <div colour-selector model="buildingConfig.building.otherGenerationColour"></div>
             </div>
 
           </div>
@@ -240,6 +264,11 @@
                 <p>This is the current sensor that provides the current for this source. Expects values above zero mean charging, and any value below zero is ignored.</p>
                 <div sensor-selector building="buildingConfig.building" model="energySource.data.currentSensorId"></div>
 
+                <br>
+                <label for="chartColour">Chart colour</label>
+                <p>This is the colour to display the source with in graphs.</p>
+                <div colour-selector model="energySource.data.chartColour"></div>
+                
                 <br>
                 <button ng-if="energySource.hasBeenSaved" ng-disabled="energySourceForm.$invalid" type="submit" ng-click="buildingConfig.saveEnergySource(energySource)" class="btn btn-primary">Save</button>
 
