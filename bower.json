@@ -13,10 +13,9 @@
     "Ionicons": "ionicons#^2.0.1",
     "moment": "^2.13.0",
     "angular-moment": "^1.0.0-beta.6",
-    "Chart.js": "^2.1.6",
-    "angular-chart.js": "^1.0.0-beta1",
     "angular-eonasdan-datetimepicker": "0.3.2",
-    "moment-timezone": "^0.5.4"
+    "moment-timezone": "^0.5.4",
+    "angular-chart.js": "^1.0.1"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"
@@ -40,6 +39,11 @@
     "font-awesome": {
       "main": [
         "css/font-awesome.css"
+      ]
+    },
+    "chart.js": {
+      "main": [
+        "dist/Chart.bundle.min.js"
       ]
     }
   },

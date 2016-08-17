@@ -1,4 +1,5 @@
 <div class="row building-summary">
+
     <!-- Battery status section -->
     <div class="col-md-6" ng-if="summary.state && summary.state.timestamp">
         <p class="lead">Battery</p>
@@ -18,5 +19,15 @@
                 {{summary.state.isBatteryCharging ? 'Charging' : 'Discharging'}}
             </h3>
         </div>
+        <div class="clear"></div>
+    </div>
+
+    <!-- Energy flow section -->
+    <div class="col-md-6" ng-if="summary.state && summary.state.timestamp">
+        <p class="lead">Energy Flow</p>
+
+        <canvas class="chart chart-bar"
+            chart-data="summary.energyFlowData" chart-labels="summary.energyFlowLabels">
+        </canvas>
     </div>
 </div>
