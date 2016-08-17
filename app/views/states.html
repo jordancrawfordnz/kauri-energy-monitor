@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-xs-12 col-md-4 col-lg-3">
-		<page-filter sort-order="sortOrder" number-of-results="totalStates" amount-per-page="amountPerPage" current-page="currentPage" from="from" until="until" display-every="displayEvery" display-every-levels="displayEveryLevels"></page-filter>
+		<page-filter sort-order="sortOrder" number-of-results="totalStates" amount-per-page="amountPerPage" current-page="currentPage" from="from" until="until" display-every="displayEvery" display-every-levels="displayEveryLevels" refresh="refreshSearch()"></page-filter>
 	</div>
 
 	<div class="col-xs-12 col-md-8 col-lg-9">
@@ -54,9 +54,9 @@
 				        	<th>Daily consumption</th>
 				        	<th>Average consumption power</th>
 				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} power</th>
+				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} average power</th>
 				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} hourly charge</th>
 				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} daily charge</th>
-				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} average power</th>
 				      	</tr>
 				      	<!-- Each reading -->
 				      	<tr ng-repeat="state in states">
@@ -81,13 +81,13 @@
 				      			{{state.sources[energySourceId].power | number:2}} Watts
 				      		</td>
 				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
+				      			{{state.sources[energySourceId].averagePower | number:2}} Watts
+				      		</td>
+				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
 				      			{{state.sources[energySourceId].hourlyCharge | number:2}} Wh
 				      		</td>
 				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
 				      			{{state.sources[energySourceId].dailyCharge | number:2}} Wh
-				      		</td>
-				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
-				      			{{state.sources[energySourceId].averagePower | number:2}} Watts
 				      		</td>
 				      	</tr>
 				    </tbody>

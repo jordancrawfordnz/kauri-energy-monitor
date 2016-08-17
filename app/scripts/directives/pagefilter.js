@@ -61,7 +61,8 @@ angular.module('offgridmonitoringApp')
 	    	from : '=from',
 	    	until : '=until',
 	    	displayEveryLevels : '=displayEveryLevels',
-	    	displayEvery : '=displayEvery'
+	    	displayEvery : '=displayEvery',
+	    	refresh : '&refresh'
 	    },
 	    templateUrl: 'views/pagefilter.html'
 	  };
