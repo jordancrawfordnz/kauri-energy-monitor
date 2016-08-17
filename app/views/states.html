@@ -52,9 +52,11 @@
 				        	<th>Empty level established</th>
 				        	<th>Hourly consumption</th>
 				        	<th>Daily consumption</th>
+				        	<th>Average consumption power</th>
 				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} power</th>
 				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} hourly charge</th>
 				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} daily charge</th>
+				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} average power</th>
 				      	</tr>
 				      	<!-- Each reading -->
 				      	<tr ng-repeat="state in states">
@@ -74,6 +76,7 @@
 				      		<td>{{state.emptyLevelEstablished ? "Yes" : "No"}}</td>
 				      		<td>{{state.consumption.hourlyTotal | number:2}} Wh</td>
 				      		<td>{{state.consumption.dailyTotal | number:2}} Wh</td>
+				      		<td>{{state.consumption.averagePower | number:2}} Watts</td>
 	 				      	<td ng-repeat="(energySourceId, energySourceName) in energySources">
 				      			{{state.sources[energySourceId].power | number:2}} Watts
 				      		</td>
@@ -82,6 +85,9 @@
 				      		</td>
 				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
 				      			{{state.sources[energySourceId].dailyCharge | number:2}} Wh
+				      		</td>
+				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
+				      			{{state.sources[energySourceId].averagePower | number:2}} Watts
 				      		</td>
 				      	</tr>
 				    </tbody>
