@@ -34,8 +34,24 @@
       "type": "string",
       "required": true
     },
+    "chargerEnergySourceName": {
+      "type": "string",
+      "required": true
+    },
     "recalculateChargeEfficiencyCapacityMultiplier": {
       "type": "number",
+      "required": true
+    },
+    "houseConsumptionColour": {
+      "type": "string",
+      "required": true
+    },
+    "chargerGenerationColour": {
+      "type": "string",
+      "required": true
+    },
+    "otherGenerationColour": {
+      "type": "string",
       "required": true
     },
     "statesAreRegenerating": {
