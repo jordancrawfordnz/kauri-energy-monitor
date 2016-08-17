@@ -18,6 +18,43 @@ angular.module('offgridmonitoringApp')
       }
     });
 
+    this.energyFlowLabels = ['Consumption', 'Generation']
+
+    this.energyFlowOptions = {
+      legend: {
+        display: true
+      },
+      tooltips: {
+        callbacks : {
+          label : function(tooltipItem, data) {
+            var valueData = tooltipItem.yLabel;
+            if (isNaN(valueData)) {
+              return null; // Hide completely null values.
+            }
+            var label = data.datasets[tooltipItem.datasetIndex].label;
+            var value = valueData.toFixed(0) + ' Watts';
+            return label + ' : ' + value;
+          }
+        }
+      },
+      scales: {
+        yAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: 'Exponential Average Power (Watts)'
+            },
+            stacked: true
+          }
+        ],
+        xAxes: [
+          {
+            stacked: true
+          }
+        ]
+      }
+    };
+
     this.batteryDiagramHeight = 200;
 
     // Gets the height for the battery level indicator.
@@ -73,29 +110,54 @@ angular.module('offgridmonitoringApp')
 
     // Sets up the energy flow graph using the state and building data.
     function setupEnergyFlowGraph() {
-      _this.energyFlowLabels = [];
-      _this.energyFlowData = [];
+      // === Prepare energy flow data.
+      var energyFlowData = {
+        consumption: [],
+        generation: []
+      };
 
       // Add consumption data.
-      _this.energyFlowLabels.push('Consumption');
-      _this.energyFlowData.push(_this.state.consumption.averagePower);
-
+      energyFlowData.consumption.push({
+        name : 'Inverter Output',
+        value : _this.state.consumption.averagePower
+      });
+      
       // Add energy source data.
-      _this.energyFlowLabels.push('Generator');
-      _this.energyFlowData.push(_this.state.sources.charger.averagePower);
+      energyFlowData.generation.push({
+        name : 'Generator',
+        value : _this.state.sources.charger.averagePower
+      });
 
       // Add custom sources.
       angular.forEach(_this.building.energySources, function(energySource) {
         var sourceState = _this.state.sources[energySource.id];
         if (sourceState) {
-          _this.energyFlowLabels.push(energySource.name);
-          _this.energyFlowData.push(sourceState.averagePower);
+          energyFlowData.generation.push({
+            name : energySource.name,
+            value : sourceState.averagePower
+          });
         }
       });
 
       // Add other source.
-      _this.energyFlowLabels.push(_this.building.otherEnergySourceName);
-      _this.energyFlowData.push(_this.state.sources.other.averagePower);
+      energyFlowData.generation.push({
+        name : _this.building.otherEnergySourceName,
+        value : _this.state.sources.other.averagePower
+      });
+
+      // === Setup energy flow data into the chart.js format.
+      _this.energyFlowSeries = [];
+      _this.energyFlowData = [];
+
+      angular.forEach(energyFlowData.consumption, function(consumptionSeries) {
+        _this.energyFlowSeries.push(consumptionSeries.name);
+        _this.energyFlowData.push([consumptionSeries.value, null]);
+      });
+
+      angular.forEach(energyFlowData.generation, function(generationSeries) {
+        _this.energyFlowSeries.push(generationSeries.name);
+        _this.energyFlowData.push([null, generationSeries.value]);
+      });
     }
 
   });
