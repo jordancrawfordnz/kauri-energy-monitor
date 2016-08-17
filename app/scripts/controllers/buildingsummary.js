@@ -18,6 +18,20 @@ angular.module('offgridmonitoringApp')
       }
     });
 
+    this.batteryDiagramHeight = 200;
+    this.getBatteryLevelHeight = function() {
+      var level = this.chargeLevel * this.batteryDiagramHeight;
+      if (level > this.batteryDiagramHeight) {
+        return this.batteryDiagramHeight;
+      }
+      if (level < 0) {
+        return 0;
+      }
+      
+      return level;
+    };
+
+
     // Setup breadcrumbs.
     Breadcrumbs.addPlaceholder('Building', this.building.$promise, function(building) {
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
@@ -60,6 +74,7 @@ angular.module('offgridmonitoringApp')
         id : $routeParams.buildingId
       }).$promise.then(function(currentState) {
         _this.state = currentState;
+        _this.chargeLevel = currentState.currentChargeLevel / currentState.batteryCapacity;
       });
     
       /* == Fetch down the latest sensor reading.
