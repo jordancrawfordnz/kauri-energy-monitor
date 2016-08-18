@@ -134,7 +134,8 @@ module.exports = function(Bridge) {
 	    		}
 	    	});
     	}, function() {
-    		cb('Could not save readings.');
+    		//  Still return a successful state because re-sending won't help.
+    		cb(null, { error : 'Not all readings saved successfully.'});
     	});
 	};
 
