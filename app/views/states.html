@@ -12,9 +12,7 @@
             </ul>
             <div class="tab-content" ng-switch="activeDetailTab">
             	<div ng-switch-when="socgraph" class="tab-pane active">
-                	<canvas id="line" class="chart chart-line" chart-data="socChartData"
-					chart-labels="socChartLabels" chart-options="socChartOptions" chart-dataset-override="socChartDatasets">
-					</canvas>
+            		<div state-of-charge-graph states="states"></div>
               	</div>
             	<div ng-switch-when="energysourcegraph" class="tab-pane active">
                 	<canvas id="line" class="chart chart-line" chart-data="energySourceChartData"

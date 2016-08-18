@@ -25,84 +25,6 @@ angular.module('offgridmonitoringApp')
     };
     $scope.activeDetailTab = 'socgraph';
 
-    // == SoC chart configuration
-    $scope.socChartOptions = {
-      legend: {
-        display: true
-      },
-      tooltips: {
-        callbacks : {
-          title : function(tooltips, data) {
-            return moment.unix(tooltips[0].xLabel).format($rootScope.dateTimeFormat);
-          },
-          label : function(tooltipItem, data) {
-            var label = data.datasets[tooltipItem.datasetIndex].label;
-            var value
-            if (tooltipItem.datasetIndex === 2) {
-              value = tooltipItem.yLabel.toFixed(0) + '%'; 
-            } else {
-              value = tooltipItem.yLabel.toFixed(0) + 'Wh'; 
-            }
-            return label + ': ' + value;
-          }
-        }
-      },
-      scales: {
-        yAxes: [
-          {
-            type: 'linear',
-            display: true,
-            scaleLabel: {
-              display: true,
-              labelString: 'Battery Level (Wh)'
-            }
-          },
-          {
-            type: 'linear',
-            display: true,
-            id: 'percentageAxis',
-            position: 'right',
-            scaleLabel: {
-              display: true,
-              labelString: 'State of Charge (%)'
-            }
-          }
-        ],
-        xAxes: [
-          {
-            type: 'time',
-            time: {
-              parser: 'X'
-            },
-            display: true
-          }
-        ]
-      }
-    };
-
-    $scope.socChartDatasets = [
-      {
-        label: 'Current Charge Level',
-        fill : true,
-        pointRadius: 0,
-        pointHitRadius: 4
-      },
-      {
-        label: 'Battery Capacity',
-        fill : true,
-        pointRadius: 0,
-        pointHitRadius: 4
-      },
-      {
-        color : 'red',
-        label : 'State of Charge',
-        yAxisID : 'percentageAxis',
-        fill : false,
-        pointRadius: 0,
-        pointHitRadius: 4
-      }
-    ];
-
     // == Energy source chart configuration
     $scope.energySourceChartOptions = {
       legend: {
@@ -252,7 +174,6 @@ angular.module('offgridmonitoringApp')
     };
     $scope.$watchGroup(['from', 'until', 'displayEvery'], $scope.recountSearch);
 
-
     function getEnergySourceDatasetTemplate(label, colourKey) {
       return $.extend({
         label: label,
@@ -267,7 +188,7 @@ angular.module('offgridmonitoringApp')
     $scope.refreshSearch = function() {
       if (!$scope.building.id) return;
       
-      $scope.states = Building.states({
+      Building.states({
         id : $scope.building.id,
         filter : {
           skip : ($scope.currentPage - 1) * $scope.amountPerPage,
@@ -275,17 +196,11 @@ angular.module('offgridmonitoringApp')
           order : 'timestamp ' + $scope.sortOrder,
           where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
         }
-      });
+      }).$promise.then(function(states) {
+        $scope.states = states;
 
-      $scope.states.$promise.then(function(states) {
         // Add data to the chart.
-        $scope.socChartLabels = [];
         $scope.energySourceChartLabels = [];
-
-        var chargeLevelData = [];
-        var capacityData = [];
-        var stateOfCharge = [];
-        $scope.socChartData = [chargeLevelData, capacityData, stateOfCharge];
 
         var chargerDailyCharge = [];
         var otherDailyCharge = [];
@@ -347,12 +262,7 @@ angular.module('offgridmonitoringApp')
             $scope.energySourceChartLabels.push(getLastMidnightTimestamp(state.timestamp, isReverseOrder));
             fillInMidnightZero = true;
           }
-          $scope.socChartLabels.push(state.timestamp);
           $scope.energySourceChartLabels.push(state.timestamp);
-
-          chargeLevelData.push(state.currentChargeLevel);
-          capacityData.push(state.batteryCapacity);
-          stateOfCharge.push(state.currentChargeLevel / state.batteryCapacity * 100);
 
           angular.forEach(allEnergySources, function(energySource, energySourceId) {
             var sourceData = state.sources[energySourceId];
