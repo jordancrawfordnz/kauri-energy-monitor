@@ -25,54 +25,6 @@ angular.module('offgridmonitoringApp')
     };
     $scope.activeDetailTab = 'socgraph';
 
-    // == Energy source chart configuration
-    $scope.energySourceChartOptions = {
-      legend: {
-        display: true
-      },
-      tooltips: {
-        callbacks : {
-          title : function(tooltips, data) {
-            return moment.unix(tooltips[0].xLabel).format($rootScope.dateTimeFormat);
-          },
-          label : function(tooltipItem, data) {
-            var label = data.datasets[tooltipItem.datasetIndex].label;
-            var value = Math.abs(tooltipItem.yLabel).toFixed(0) + 'Wh'; 
-            return label + ': ' + value;
-          }
-        }
-      },
-      scales: {
-        yAxes: [
-          {
-            type: 'linear',
-            display: true,
-            stacked: true,
-            scaleLabel: {
-              display: true,
-              labelString: 'Energy provided (Wh)'
-            },
-            ticks: {
-              callback: function(tickData) {
-                // Make ticks below 0 show as positive values.
-                return Math.abs(tickData);
-              }
-            }
-          }
-        ],
-        xAxes: [
-          {
-            type: 'time',
-            time: {
-              parser: 'X',
-              unit: 'day'
-            },
-            display: true
-          }
-        ]
-      }
-    };
-
     $scope.amountPerPage = '50';
     $scope.debounceTime = 500;
     $scope.currentPage = 1;
@@ -123,31 +75,6 @@ angular.module('offgridmonitoringApp')
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
     });
 
-    function getAmountOutFromMidnight(timestamp, reverseOrder) {
-      var offset = (timestamp - 60*60*12 - 1) % (60*60*24); // match on midday GMT which is midnight in +12 NZ.
-      if (reverseOrder) {
-        offset = (60*60*24) - offset;
-      }
-      return offset;
-    }
-
-    // Gets the timestamp of the last midnight.
-    function getLastMidnightTimestamp(timestamp, reverseOrder) {
-      var outBy = getAmountOutFromMidnight(timestamp, reverseOrder);
-      if (reverseOrder){
-        return timestamp + outBy; 
-      } else {
-        return timestamp - outBy;
-      }
-    }
-
-    // Returns true if the end of the day has been missed.
-    function hasMissedEndOfDay(timeSinceLastReading, currentTimestamp, reverseOrder) {
-      var outBy = getAmountOutFromMidnight(currentTimestamp, reverseOrder);
-      // Either the timestamp is perfectly on midnight or midnight was missed.
-      return outBy < timeSinceLastReading;    
-    }
-
     $scope.energySources = {};
     $scope.building.$promise.then(function(building) {
       $scope.energySources.charger = building.chargerEnergySourceName;
@@ -174,16 +101,6 @@ angular.module('offgridmonitoringApp')
     };
     $scope.$watchGroup(['from', 'until', 'displayEvery'], $scope.recountSearch);
 
-    function getEnergySourceDatasetTemplate(label, colourKey) {
-      return $.extend({
-        label: label,
-        fill: true,
-        pointRadius: 0,
-        pointHitRadius: 4,
-        lineTension: 0.1
-      }, ChartColours.getChartColourFields(colourKey));
-    }
-
     // Refresh the search results.
     $scope.refreshSearch = function() {
       if (!$scope.building.id) return;
@@ -198,87 +115,6 @@ angular.module('offgridmonitoringApp')
         }
       }).$promise.then(function(states) {
         $scope.states = states;
-
-        // Add data to the chart.
-        $scope.energySourceChartLabels = [];
-
-        var chargerDailyCharge = [];
-        var otherDailyCharge = [];
-        
-        var renewableEnergySources = {
-          other : {
-            data : [],
-            label: $scope.building.otherEnergySourceName,
-            colour: $scope.building.otherGenerationColour
-          }
-        };
-        var renewableSourceOrder = [renewableEnergySources.other];
-        
-        var nonRenewableEnergySources = {
-          charger : {
-            data : [],
-            label: $scope.building.chargerEnergySourceName,
-            colour: $scope.building.chargerGenerationColour
-          }
-        };
-        var nonRenewableSourceOrder = [nonRenewableEnergySources.charger];
-
-        // Setup the remaining energy sources,
-        angular.forEach($scope.building.energySources, function(source) {
-          renewableEnergySources[source.id] = {
-            data : [],
-            label: source.name,
-            colour: source.chartColour
-          };
-          renewableSourceOrder.unshift(renewableEnergySources[source.id]); // Make this source to go the front.
-        });
-
-        var allEnergySources = $.extend({}, renewableEnergySources, nonRenewableEnergySources);
-
-        // Setup axis' and the data array.
-        $scope.energySourceChartData = [];
-        $scope.energySourceChartDatasets = [];
-
-        for (var nonRenewableSourceIndex = 0; nonRenewableSourceIndex < nonRenewableSourceOrder.length; nonRenewableSourceIndex++) {
-          var energySource = nonRenewableSourceOrder[nonRenewableSourceIndex];
-          $scope.energySourceChartData.push(energySource.data);
-          $scope.energySourceChartDatasets.push(getEnergySourceDatasetTemplate(energySource.label, energySource.colour));
-        }
-
-        for (var renewableSourceIndex = 0; renewableSourceIndex < renewableSourceOrder.length; renewableSourceIndex++) {
-          var energySource = renewableSourceOrder[renewableSourceIndex];
-          $scope.energySourceChartData.push(energySource.data);
-          $scope.energySourceChartDatasets.push(getEnergySourceDatasetTemplate(energySource.label, energySource.colour));
-        }
-
-        // Fill in graph data with information from the states.
-        var previousState;
-        var isReverseOrder = $scope.sortOrder === 'desc';
-        angular.forEach(states, function(state) {
-          var fillInMidnightZero = false;
-          if (previousState && hasMissedEndOfDay(Math.abs(state.timestamp - previousState.timestamp), state.timestamp, isReverseOrder)) {
-            // If the end of the day is not included in this data set, for daily source totals we know these will be zero so can add this data in.
-              // The absolute value is used because the sort order can be reversed.
-            $scope.energySourceChartLabels.push(getLastMidnightTimestamp(state.timestamp, isReverseOrder));
-            fillInMidnightZero = true;
-          }
-          $scope.energySourceChartLabels.push(state.timestamp);
-
-          angular.forEach(allEnergySources, function(energySource, energySourceId) {
-            var sourceData = state.sources[energySourceId];
-            if (sourceData) {
-              if (fillInMidnightZero) {
-                energySource.data.push(0);
-              }
-              if (nonRenewableSourceOrder.indexOf(energySource) !== -1) {
-                energySource.data.push(-sourceData.dailyCharge); 
-              } else {
-                energySource.data.push(sourceData.dailyCharge); 
-              }
-            }
-          });
-          previousState = state;
-        });
       });
     };
     $scope.$watchGroup(['currentPage', 'sortOrder', 'from', 'until', 'amountPerPage', 'displayEvery'], $scope.refreshSearch);

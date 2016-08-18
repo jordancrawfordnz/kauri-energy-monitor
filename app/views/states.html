@@ -15,9 +15,7 @@
             		<div state-of-charge-graph states="states"></div>
               	</div>
             	<div ng-switch-when="energysourcegraph" class="tab-pane active">
-                	<canvas id="line" class="chart chart-line" chart-data="energySourceChartData"
-					chart-labels="energySourceChartLabels" chart-options="energySourceChartOptions" chart-dataset-override="energySourceChartDatasets">
-					</canvas>
+                	<div energy-source-graph states="states" building="building" is-reverse-order="sortOrder === 'desc'"></div>
               	</div>
             </div>
         </div>
