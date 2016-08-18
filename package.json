@@ -43,6 +43,7 @@
     "test": "karma start test/karma.conf.js"
   },
   "dependencies": {
+    "bower-npm-resolver": "^0.4.0",
     "connect-modrewrite": "^0.9.0"
   }
 }
