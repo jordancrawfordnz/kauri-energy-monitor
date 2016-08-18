@@ -8,7 +8,7 @@
  * Displays a summary of key indicators about a building.
  */
 angular.module('offgridmonitoringApp')
-  .controller('BuildingSummaryCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval) {
+  .controller('BuildingSummaryCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours) {
   	var _this = this;
 
     this.building = Building.findById({
@@ -119,13 +119,15 @@ angular.module('offgridmonitoringApp')
       // Add consumption data.
       energyFlowData.consumption.push({
         name : 'Building',
-        value : _this.state.consumption.averagePower
+        value : _this.state.consumption.averagePower,
+        colour : _this.building.houseConsumptionColour
       });
       
       // Add energy source data.
       energyFlowData.generation.push({
         name : _this.building.chargerEnergySourceName,
-        value : _this.state.sources.charger.averagePower
+        value : _this.state.sources.charger.averagePower,
+        colour : _this.building.chargerGenerationColour
       });
 
       // Add custom sources.
@@ -134,7 +136,8 @@ angular.module('offgridmonitoringApp')
         if (sourceState) {
           energyFlowData.generation.push({
             name : energySource.name,
-            value : sourceState.averagePower
+            value : sourceState.averagePower,
+            colour : energySource.chartColour
           });
         }
       });
@@ -142,20 +145,27 @@ angular.module('offgridmonitoringApp')
       // Add other source.
       energyFlowData.generation.push({
         name : _this.building.otherEnergySourceName,
-        value : _this.state.sources.other.averagePower
+        value : _this.state.sources.other.averagePower,
+        colour : _this.building.otherGenerationColour
       });
 
       // === Setup energy flow data into the chart.js format.
-      _this.energyFlowSeries = [];
       _this.energyFlowData = [];
+      _this.energyFlowDatasetOverride = [];
 
       angular.forEach(energyFlowData.consumption, function(consumptionSeries) {
-        _this.energyFlowSeries.push(consumptionSeries.name);
+        var dataset = $.extend({
+          label: consumptionSeries.name
+        }, ChartColours.getChartColourFields(consumptionSeries.colour));
+        _this.energyFlowDatasetOverride.push(dataset);
         _this.energyFlowData.push([consumptionSeries.value, null]);
       });
 
       angular.forEach(energyFlowData.generation, function(generationSeries) {
-        _this.energyFlowSeries.push(generationSeries.name);
+        var dataset = $.extend({
+          label: generationSeries.name
+        }, ChartColours.getChartColourFields(generationSeries.colour));
+        _this.energyFlowDatasetOverride.push(dataset);
         _this.energyFlowData.push([null, generationSeries.value]);
       });
     }
