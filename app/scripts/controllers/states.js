@@ -21,7 +21,8 @@ angular.module('offgridmonitoringApp')
     */
     $scope.detailTabs = {
       'socgraph' : 'State of Charge',
-      'energysourcegraph' : 'Energy Sources'
+      'energysourcegraph' : 'Daily Energy Sources',
+      'totalenergy' : 'Daily Total Energy'
     };
     $scope.activeDetailTab = 'socgraph';
 

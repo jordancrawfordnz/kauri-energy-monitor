@@ -2,19 +2,19 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:energySourceGraph
+ * @name offgridmonitoringApp.directive:totalEnergyGraph
  * @description
- * # energySourceGraph
- * Shows a graph of the energy sources.
+ * # totalEnergyGraph
+ * Shows a graph of the total energy.
  */
 
 angular.module('offgridmonitoringApp')
-	.directive('energySourceGraph', function() {
+	.directive('totalEnergyGraph', function() {
 	  return {
 	    restrict: 'A', // to be used via an attribute
 	    controller: ['$rootScope', '$scope', 'ChartColours', 'ChartHelper', function($rootScope, $scope, ChartColours, ChartHelper) {
-	    	// Energy source chart configuration
-		    $scope.energySourceChartOptions = {
+	    	// Total energy chart configuration
+		    $scope.chartOptions = {
 		      legend: {
 		        display: true
 		      },
@@ -29,14 +29,12 @@ angular.module('offgridmonitoringApp')
 		            stacked: true,
 		            scaleLabel: {
 		              display: true,
-		              labelString: 'Energy provided (Wh)'
-		            },
-		            ticks: {
-		              callback: function(tickData) {
-		                // Make ticks below 0 show as positive values.
-		                return Math.abs(tickData);
-		              }
+		              labelString: 'Daily energy (Wh)'
 		            }
+		          },
+		          { // TODO: Make this scale work the same as the main scale!
+		          	display: false,
+		          	id: 'consumptionAxis'
 		          }
 		        ],
 		        xAxes: [
@@ -53,7 +51,7 @@ angular.module('offgridmonitoringApp')
 
 		    // Refresh the chart using the current states.
 		    $scope.refreshChart = function() {
-		    	$scope.energySourceChartLabels = [];
+		    	$scope.chartLabels = [];
 
 		       	// == Get all energy sources
 		       	var energySourceDetails = ChartHelper.getEnergySourceDetails($scope.building);
@@ -61,13 +59,25 @@ angular.module('offgridmonitoringApp')
 		       	var allSourceOrder = energySourceDetails.order;
 
 		       	// == Setup axis' and the data array.
-		        $scope.energySourceChartData = [];
-		        $scope.energySourceChartDatasets = [];
+		        $scope.chartData = [];
+		        $scope.chartDatasets = [];
 
 		        angular.forEach(allSourceOrder, function(energySource) {
-		        	$scope.energySourceChartData.push(energySource.data);
-		          	$scope.energySourceChartDatasets.push(ChartHelper.getEnergySourceDatasetTemplate(energySource.label, energySource.colour));
+		        	$scope.chartData.push(energySource.data);
+		          	$scope.chartDatasets.push(ChartHelper.getEnergySourceDatasetTemplate(energySource.label, energySource.colour));
 		        });
+
+		        var consumptionData = [];
+		        $scope.chartData.push(consumptionData);
+		        $scope.chartDatasets.push($.extend({
+		        	label: 'Consumption',
+        			pointRadius: 0,
+        			pointHitRadius: 4,
+        			lineTension: 0.1,
+        			borderDash: [10,5],
+        			fill: false,
+        			yAxisID : 'consumptionAxis'
+      			}, ChartColours.getChartColourFields($scope.building.houseConsumptionColour)));
 
 		        // == Fill in graph data with information from the states.
 		        var previousState;
@@ -76,10 +86,10 @@ angular.module('offgridmonitoringApp')
 		          	if (previousState && ChartHelper.hasMissedEndOfDay(Math.abs(state.timestamp - previousState.timestamp), state.timestamp, $scope.isReverseOrder)) {
 		            	// If the end of the day is not included in this data set, for daily source totals we know these will be zero so can add this data in.
 		              	// The absolute value is used because the sort order can be reversed.
-		            	$scope.energySourceChartLabels.push(ChartHelper.getLastMidnightTimestamp(state.timestamp, $scope.isReverseOrder));
+		            	$scope.chartLabels.push(ChartHelper.getLastMidnightTimestamp(state.timestamp, $scope.isReverseOrder));
 		            	fillInMidnightZero = true;
 		          	}
-		          	$scope.energySourceChartLabels.push(state.timestamp);
+		          	$scope.chartLabels.push(state.timestamp);
 
 		          	angular.forEach(allEnergySources, function(energySource, energySourceId) {
 		            	var sourceData = state.sources[energySourceId];
@@ -87,13 +97,15 @@ angular.module('offgridmonitoringApp')
 		              		if (fillInMidnightZero) {
 		                		energySource.data.push(0);
 		              		}
-		              		if (energySource.isRenewable) {
-		                		energySource.data.push(sourceData.dailyCharge); 
-		              		} else {
-		                		energySource.data.push(-sourceData.dailyCharge); 
-		              		}
+		              		energySource.data.push(sourceData.dailyCharge);
 		            	}
 		          	});
+
+		          	if (fillInMidnightZero) {
+		          		consumptionData.push(0);
+		          	}
+		          	consumptionData.push(state.consumption.dailyTotal);
+
 		          	previousState = state;
 		        });
 		    };
@@ -105,8 +117,8 @@ angular.module('offgridmonitoringApp')
 	    	building : '=building',
 	    	isReverseOrder : '=isReverseOrder'
 	    },
-	    template: '<canvas id="line" class="chart chart-line" chart-data="energySourceChartData"'
-			+ 'chart-labels="energySourceChartLabels" chart-options="energySourceChartOptions" '
-			+ 'chart-dataset-override="energySourceChartDatasets"></canvas>'
+	    template: '<canvas id="line" class="chart chart-line" chart-data="chartData"'
+			+ 'chart-labels="chartLabels" chart-options="chartOptions" '
+			+ 'chart-dataset-override="chartDatasets"></canvas>'
 	  };
 	});

@@ -52,12 +52,13 @@ app.factory('ChartColours', function() {
     // Returns colour fields for a chart based on the colours key.
     ChartColours.getChartColourFields = function(colourKey) {
         var colourToUse = ChartColours.seperateHexColour(ChartColours.getColour(colourKey));
-        return {
-            backgroundColor: ChartColours.hexColourToRGBA(colourToUse, 0.2),
+        var colourFields = {
             borderColor: ChartColours.hexColourToRGBA(colourToUse, 1),
             pointHoverBorderColor: ChartColours.hexColourToRGBA(colourToUse, 1),
-            pointHoverBackgroundColor: ChartColours.hexColourToRGBA(colourToUse, 1)
+            pointHoverBackgroundColor: ChartColours.hexColourToRGBA(colourToUse, 1),
+            backgroundColor: ChartColours.hexColourToRGBA(colourToUse, 0.2)
         };
+        return colourFields;
     };
 
     return ChartColours;

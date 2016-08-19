@@ -17,6 +17,9 @@
             	<div ng-switch-when="energysourcegraph" class="tab-pane active">
                 	<div energy-source-graph states="states" building="building" is-reverse-order="sortOrder === 'desc'"></div>
               	</div>
+              	<div ng-switch-when="totalenergy" class="tab-pane active">
+              		<div total-energy-graph states="states" building="building" is-reverse-order="sortOrder === 'desc'"></div>
+              	</div>
             </div>
         </div>
     </div>
