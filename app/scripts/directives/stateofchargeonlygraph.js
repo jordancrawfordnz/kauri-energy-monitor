@@ -2,22 +2,19 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:stateOfChargeGraph
+ * @name offgridmonitoringApp.directive:stateOfChargeOnlyGraph
  * @description
- * # stateOfChargeGraph
- * Shows a graph of state of charge, the current charge level, and the charge capacity.
+ * # stateOfChargeOnlyGraph
+ * Shows a graph of state of charge.
  */
 
 angular.module('offgridmonitoringApp')
-	.directive('stateOfChargeGraph', function() {
+	.directive('stateOfChargeOnlyGraph', function() {
 	  return {
 	    restrict: 'A', // to be used via an attribute
 	    controller: ['$rootScope', '$scope', function($rootScope, $scope) {
 	    	// SoC chart configuration
 		    $scope.socChartOptions = {
-		      legend: {
-		        display: true
-		      },
 		      tooltips: {
 		        callbacks : {
 		          title : function(tooltips, data) {
@@ -25,12 +22,7 @@ angular.module('offgridmonitoringApp')
 		          },
 		          label : function(tooltipItem, data) {
 		            var label = data.datasets[tooltipItem.datasetIndex].label;
-		            var value
-		            if (tooltipItem.datasetIndex === 2) {
-		              value = tooltipItem.yLabel.toFixed(0) + '%'; 
-		            } else {
-		              value = tooltipItem.yLabel.toFixed(0) + 'Wh'; 
-		            }
+		            var value = tooltipItem.yLabel.toFixed(0) + '%'; 
 		            return label + ': ' + value;
 		          }
 		        }
@@ -40,16 +32,7 @@ angular.module('offgridmonitoringApp')
 		          {
 		            type: 'linear',
 		            display: true,
-		            scaleLabel: {
-		              display: true,
-		              labelString: 'Battery Level (Wh)'
-		            }
-		          },
-		          {
-		            type: 'linear',
-		            display: true,
 		            id: 'percentageAxis',
-		            position: 'right',
 		            scaleLabel: {
 		              display: true,
 		              labelString: 'State of Charge (%)'
@@ -71,21 +54,8 @@ angular.module('offgridmonitoringApp')
 		    // Setup the datasets
 		    $scope.socChartDatasets = [
 		      {
-		        label: 'Current Charge Level',
-		        fill : true,
-		        pointRadius: 0,
-		        pointHitRadius: 4
-		      },
-		      {
-		        label: 'Battery Capacity',
-		        fill : true,
-		        pointRadius: 0,
-		        pointHitRadius: 4
-		      },
-		      {
-		        color : 'red',
+		        borderColor : 'red',
 		        label : 'State of Charge',
-		        yAxisID : 'percentageAxis',
 		        fill : false,
 		        pointRadius: 0,
 		        pointHitRadius: 4
@@ -96,16 +66,12 @@ angular.module('offgridmonitoringApp')
 		    $scope.refreshChart = function() {
 		    	$scope.socChartLabels = [];
         		
-        		var chargeLevelData = [];
-		        var capacityData = [];
-		        var stateOfCharge = [];
-		        $scope.socChartData = [chargeLevelData, capacityData, stateOfCharge];
+        		var stateOfCharge = [];
+		        $scope.socChartData = [stateOfCharge];
 
 		        angular.forEach($scope.states, function(state) {
         			$scope.socChartLabels.push(state.timestamp);
-          			chargeLevelData.push(state.currentChargeLevel);
-			        capacityData.push(state.batteryCapacity);
-			        stateOfCharge.push(state.currentChargeLevel / state.batteryCapacity * 100);  
+          			stateOfCharge.push(state.currentChargeLevel / state.batteryCapacity * 100);  
         		});
 		    };
 

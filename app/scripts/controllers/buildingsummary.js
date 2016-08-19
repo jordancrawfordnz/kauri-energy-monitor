@@ -127,7 +127,8 @@ angular.module('offgridmonitoringApp')
         id : _this.building.id,
         filter : {
           limit : timeWorth / stateInterval,
-          order : 'timestamp desc'
+          order : 'timestamp desc',
+          where: {timestamp : {mod : [stateInterval, 0]}}
         }
       }).$promise.then(function(states) {
         _this.last24HourStates = states;
