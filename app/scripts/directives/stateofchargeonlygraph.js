@@ -51,11 +51,14 @@ angular.module('offgridmonitoringApp')
 		      }
 		    };
 
+		    var lineColour = 'red';
 		    // Setup the datasets
 		    $scope.socChartDatasets = [
 		      {
-		        borderColor : 'red',
-		        label : 'State of Charge',
+		        borderColor : lineColour,
+		        pointHoverBorderColor: lineColour,
+            	pointHoverBackgroundColor: lineColour,
+            	label : 'State of Charge',
 		        fill : false,
 		        pointRadius: 0,
 		        pointHitRadius: 4
