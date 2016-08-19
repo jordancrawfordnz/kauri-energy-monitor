@@ -112,9 +112,10 @@ angular.module('offgridmonitoringApp')
 		    $scope.$watchCollection('states', $scope.refreshChart); // Refresh the chart when the states change.
 	    }],
 	    scope: {
-	    	states : '=states'
+	    	states : '=states',
+	    	height : '=height'
 	    },
-	    template: '<canvas id="line" class="chart chart-line" chart-data="socChartData" ' + 
+	    template: '<canvas height="{{height}}" id="line" class="chart chart-line" chart-data="socChartData" ' + 
 			' chart-labels="socChartLabels" chart-options="socChartOptions" chart-dataset-override="socChartDatasets"></canvas>'
 	  };
 	});

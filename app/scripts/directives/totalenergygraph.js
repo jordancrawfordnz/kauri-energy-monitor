@@ -115,9 +115,10 @@ angular.module('offgridmonitoringApp')
 	    scope: {
 	    	states : '=states',
 	    	building : '=building',
-	    	isReverseOrder : '=isReverseOrder'
+	    	isReverseOrder : '=isReverseOrder',
+	    	height : '=height'
 	    },
-	    template: '<canvas id="line" class="chart chart-line" chart-data="chartData"'
+	    template: '<canvas id="line" height="{{height}}" class="chart chart-line" chart-data="chartData"'
 			+ 'chart-labels="chartLabels" chart-options="chartOptions" '
 			+ 'chart-dataset-override="chartDatasets"></canvas>'
 	  };

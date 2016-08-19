@@ -91,6 +91,9 @@ angular.module('offgridmonitoringApp')
       if (_this.refreshTimer) {
         $interval.cancel(_this.refreshTimer);
       }
+      if (_this.refresh24HourTimer) {
+        $interval.cancel(_this.refresh24HourTimer);
+      }
     });
 
     // Sets up the summary page.
@@ -103,9 +106,32 @@ angular.module('offgridmonitoringApp')
         _this.state = currentState;
         _this.chargeLevel = currentState.currentChargeLevel / currentState.batteryCapacity;
         setupEnergyFlowGraph();
+        
+        // If don't have any data on the last 24 hour's states.
+        if (!_this.last24HourStates) {
+          // Get the current 24 hour data and refresh this every 10 minutes.
+          get24HourData();
+          _this.last24HourStates = $interval(function() {
+            get24HourData();
+          }, 10*60*1000);
+        }
       });
+    }
 
-      // TODO: Get 24 hour state data too.
+    function get24HourData() {
+      // Get the latest 24 hours worth of data.
+        // Get 30 minutely data.
+      var timeWorth = 24*60*60;
+      var stateInterval = 30*60;
+      Building.states({
+        id : _this.building.id,
+        filter : {
+          limit : timeWorth / stateInterval,
+          order : 'timestamp desc'
+        }
+      }).$promise.then(function(states) {
+        _this.last24HourStates = states;
+      });
     }
 
     // Sets up the energy flow graph using the state and building data.
