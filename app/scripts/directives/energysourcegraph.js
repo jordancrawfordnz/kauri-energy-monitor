@@ -71,6 +71,7 @@ angular.module('offgridmonitoringApp')
 
 		        // == Fill in graph data with information from the states.
 		        var previousState;
+		        var maximumValueSeen = 0;
 		        angular.forEach($scope.states, function(state) {
 		        	var fillInMidnightZero = false;
 		          	if (previousState && ChartHelper.hasMissedEndOfDay(Math.abs(state.timestamp - previousState.timestamp), state.timestamp, $scope.isReverseOrder)) {
@@ -87,6 +88,9 @@ angular.module('offgridmonitoringApp')
 		              		if (fillInMidnightZero) {
 		                		energySource.data.push(0);
 		              		}
+		              		if (sourceData.dailyCharge > maximumValueSeen) {
+		              			maximumValueSeen = sourceData.dailyCharge;
+		              		}
 		              		if (energySource.isRenewable) {
 		                		energySource.data.push(sourceData.dailyCharge); 
 		              		} else {
@@ -96,6 +100,10 @@ angular.module('offgridmonitoringApp')
 		          	});
 		          	previousState = state;
 		        });
+
+		        var chartMax = ChartHelper.getYAxisMax(maximumValueSeen, 3000);
+		        $scope.energySourceChartOptions.scales.yAxes[0].ticks.max = chartMax;
+    			$scope.energySourceChartOptions.scales.yAxes[0].ticks.min = -chartMax;
 		    };
 
 		    $scope.$watchCollection('states', $scope.refreshChart); // Refresh the chart when the states change.

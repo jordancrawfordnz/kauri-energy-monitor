@@ -30,11 +30,13 @@ angular.module('offgridmonitoringApp')
 		            scaleLabel: {
 		              display: true,
 		              labelString: 'Daily energy (Wh)'
-		            }
+		            },
+		            ticks: {}
 		          },
 		          { // TODO: Make this scale work the same as the main scale!
 		          	display: false,
-		          	id: 'consumptionAxis'
+		          	id: 'consumptionAxis',
+		          	ticks: {}
 		          }
 		        ],
 		        xAxes: [
@@ -81,6 +83,7 @@ angular.module('offgridmonitoringApp')
 
 		        // == Fill in graph data with information from the states.
 		        var previousState;
+		        var maximumValueSeen = 0;
 		        angular.forEach($scope.states, function(state) {
 		        	var fillInMidnightZero = false;
 		          	if (previousState && ChartHelper.hasMissedEndOfDay(Math.abs(state.timestamp - previousState.timestamp), state.timestamp, $scope.isReverseOrder)) {
@@ -97,6 +100,9 @@ angular.module('offgridmonitoringApp')
 		              		if (fillInMidnightZero) {
 		                		energySource.data.push(0);
 		              		}
+		              		if (sourceData.dailyCharge > maximumValueSeen) {
+		              			maximumValueSeen = sourceData.dailyCharge;
+		              		}
 		              		energySource.data.push(sourceData.dailyCharge);
 		            	}
 		          	});
@@ -105,9 +111,16 @@ angular.module('offgridmonitoringApp')
 		          		consumptionData.push(0);
 		          	}
 		          	consumptionData.push(state.consumption.dailyTotal);
+		          	if (state.consumption.dailyTotal > maximumValueSeen) {
+		          		maximumValueSeen = state.consumption.dailyTotal;
+		          	}
 
 		          	previousState = state;
 		        });
+
+		        var chartMax = ChartHelper.getYAxisMax(maximumValueSeen, 3000);
+		        $scope.chartOptions.scales.yAxes[0].ticks.max = chartMax;
+	    		$scope.chartOptions.scales.yAxes[1].ticks.max = chartMax;
 		    };
 
 		    $scope.$watchCollection('states', $scope.refreshChart); // Refresh the chart when the states change.

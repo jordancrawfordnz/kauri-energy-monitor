@@ -8,7 +8,7 @@
  * Displays a summary of key indicators about a building.
  */
 angular.module('offgridmonitoringApp')
-  .controller('BuildingSummaryCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours) {
+  .controller('BuildingSummaryCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours, ChartHelper) {
   	var _this = this;
 
     this.building = Building.findById({
@@ -44,7 +44,8 @@ angular.module('offgridmonitoringApp')
               display: true,
               labelString: 'Exponential Average Power (Watts)'
             },
-            stacked: true
+            stacked: true,
+            ticks: {}
           }
         ],
         xAxes: [
@@ -180,11 +181,15 @@ angular.module('offgridmonitoringApp')
       _this.energyFlowData = [];
       _this.energyFlowDatasetOverride = [];
 
+      var maximumValueSeen = 0;
       angular.forEach(energyFlowData.consumption, function(consumptionSeries) {
         var dataset = $.extend({
           label: consumptionSeries.name
         }, ChartColours.getChartColourFields(consumptionSeries.colour));
         _this.energyFlowDatasetOverride.push(dataset);
+        if (consumptionSeries.value > maximumValueSeen) {
+          maximumValueSeen = consumptionSeries.value;
+        }
         _this.energyFlowData.push([consumptionSeries.value, null]);
       });
 
@@ -193,8 +198,14 @@ angular.module('offgridmonitoringApp')
           label: generationSeries.name
         }, ChartColours.getChartColourFields(generationSeries.colour));
         _this.energyFlowDatasetOverride.push(dataset);
+        if (generationSeries.value > maximumValueSeen) {
+          maximumValueSeen = generationSeries.value;
+        }
         _this.energyFlowData.push([null, generationSeries.value]);
       });
+
+      var chartMax = ChartHelper.getYAxisMax(maximumValueSeen, 1000);
+      _this.energyFlowOptions.scales.yAxes[0].ticks.max = chartMax;
     }
 
   });

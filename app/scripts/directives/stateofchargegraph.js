@@ -53,6 +53,9 @@ angular.module('offgridmonitoringApp')
 		            scaleLabel: {
 		              display: true,
 		              labelString: 'State of Charge (%)'
+		            },
+		            ticks: {
+		            	suggestedMax: 100
 		            }
 		          }
 		        ],

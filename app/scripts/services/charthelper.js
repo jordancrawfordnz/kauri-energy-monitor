@@ -6,6 +6,13 @@ var app = angular.module('offgridmonitoringApp');
 app.factory('ChartHelper', function(ChartColours, $rootScope) {
    	var ChartHelper = {};
 
+    // Gets the maximum value to use based on the maximum value seen and the chosen interval.
+      // If given a maximum of 500 and an interval of 2000, this requires 1 interval, so 2000 is the maximum.
+    ChartHelper.getYAxisMax = function(maximumSeen, interval) {
+      var intervalsRequired = Math.floor(maximumSeen / interval) + 1;
+      return interval * intervalsRequired;
+    };
+
     // Gets the time offset since midnight.
     ChartHelper.getAmountOutFromMidnight = function(timestamp, reverseOrder) {
       var offset = (timestamp - 60*60*12 - 1) % (60*60*24); // match on midday GMT which is midnight in +12 NZ.
