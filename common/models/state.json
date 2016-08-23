@@ -56,6 +56,10 @@
     "sources": {
       "type": "object",
       "required": true
+    },
+    "consumption": {
+      "type": "object",
+      "required": true
     }
   },
   "validations": [],
