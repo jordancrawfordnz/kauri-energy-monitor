@@ -38,7 +38,8 @@ angular.module('offgridmonitoringApp')
 		              labelString: 'State of Charge (%)'
 		            },
 		            ticks: {
-		            	suggestedMax: 100
+		            	suggestedMax: 100,
+		            	beginAtZero: true
 		            }
 		          }
 		        ],
@@ -77,7 +78,13 @@ angular.module('offgridmonitoringApp')
 
 		        angular.forEach($scope.states, function(state) {
         			$scope.socChartLabels.push(state.timestamp);
-          			stateOfCharge.push(state.currentChargeLevel / state.batteryCapacity * 100);  
+        			var currentStateOfCharge = state.currentChargeLevel / state.batteryCapacity * 100;
+          			if (currentStateOfCharge > 100) {
+          				currentStateOfCharge = 100;
+          			} else if (currentStateOfCharge < 0) {
+          				currentStateOfCharge = 0;
+          			}
+          			stateOfCharge.push(currentStateOfCharge);
         		});
 		    };
 
@@ -85,7 +92,8 @@ angular.module('offgridmonitoringApp')
 	    }],
 	    scope: {
 	    	states : '=states',
-	    	height : '=height'
+	    	height : '=height',
+	    	capToPercentRange: '=capToPercentRange'
 	    },
 	    template: '<canvas height="{{height}}" id="line" class="chart chart-line" chart-data="socChartData" ' + 
 			' chart-labels="socChartLabels" chart-options="socChartOptions" chart-dataset-override="socChartDatasets"></canvas>'

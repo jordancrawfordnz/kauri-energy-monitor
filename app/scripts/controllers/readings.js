@@ -18,35 +18,10 @@ angular.module('offgridmonitoringApp')
 
       The page starts at 1 which will map to page 0 in API calls.
     */
-    $scope.amountPerPage = '10';
+    $scope.filter = $rootScope.batteryDataFilter;
     $scope.debounceTime = 500;
     $scope.currentPage = 1;
-    $scope.sortOrder = 'desc';
-    $scope.displayEveryLevels = [
-      {
-        name : 'Original'
-      },
-      {
-        name : '30 Seconds',
-        period : 30
-      },
-      {
-        name : 'Minute',
-        period : 60
-      },
-      {
-        name : '10 Minutes',
-        period : 10*60
-      },
-      {
-        name : '30 Minutes',
-        period : 30*60
-      },
-      {
-        name : 'Hour',
-        period : 60*60
-      }
-    ];
+    $scope.displayEveryLevels = $rootScope.displayEveryLevels;
     
     $scope.SensorTypes = SensorTypes;
     
@@ -74,12 +49,12 @@ angular.module('offgridmonitoringApp')
       if (!$scope.building.id) return;
       Bridge.readings.count({
         id : $scope.bridge.id,
-        where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
+        where : Timestamp.getRangeWhereFilter($scope.filter.from, $scope.filter.until, $scope.filter.displayEvery)
       }).$promise.then(function(count) {
         $scope.totalReadings = count.count;
       });
     };
-    $scope.$watchGroup(['from', 'until', 'displayEvery'], $scope.recountSearch);
+    $scope.$watchGroup(['filter.from', 'filter.until', 'filter.displayEvery'], $scope.recountSearch);
 
     // Refresh the search results.
     $scope.refreshSearch = function() {
@@ -87,13 +62,13 @@ angular.module('offgridmonitoringApp')
       $scope.readings = Bridge.readings({
         id : $scope.bridge.id,
         filter : {
-          skip : ($scope.currentPage - 1) * $scope.amountPerPage,
-          limit : $scope.amountPerPage,
-          order : 'timestamp ' + $scope.sortOrder,
-          where : Timestamp.getRangeWhereFilter($scope.from, $scope.until, $scope.displayEvery)
+          skip : ($scope.currentPage - 1) * $scope.filter.amountPerPage,
+          limit : $scope.filter.amountPerPage,
+          order : 'timestamp ' + $scope.filter.sortOrder,
+          where : Timestamp.getRangeWhereFilter($scope.filter.from, $scope.filter.until, $scope.filter.displayEvery)
         }
       });
     };
-    $scope.$watchGroup(['currentPage', 'sortOrder', 'from', 'until', 'amountPerPage', 'displayEvery'], $scope.refreshSearch);
+    $scope.$watchGroup(['currentPage', 'filter.sortOrder', 'filter.from', 'filter.until', 'filter.amountPerPage', 'filter.displayEvery'], $scope.refreshSearch);
 
   });

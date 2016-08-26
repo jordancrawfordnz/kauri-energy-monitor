@@ -43,6 +43,9 @@ angular.module('offgridmonitoringApp')
 		            scaleLabel: {
 		              display: true,
 		              labelString: 'Battery Level (Wh)'
+		            },
+		            ticks: {
+		            	beginAtZero: true
 		            }
 		          },
 		          {
@@ -55,7 +58,8 @@ angular.module('offgridmonitoringApp')
 		              labelString: 'State of Charge (%)'
 		            },
 		            ticks: {
-		            	suggestedMax: 100
+		            	suggestedMax: 100,
+		            	beginAtZero: true
 		            }
 		          }
 		        ],

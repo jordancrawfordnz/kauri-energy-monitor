@@ -35,7 +35,8 @@ angular.module('offgridmonitoringApp')
 		              callback: function(tickData) {
 		                // Make ticks below 0 show as positive values.
 		                return Math.abs(tickData);
-		              }
+		              },
+		              beginAtZero: true
 		            }
 		          }
 		        ],

@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-xs-12 col-md-4 col-lg-3">
-		<page-filter sort-order="sortOrder" number-of-results="totalStates" amount-per-page="amountPerPage" current-page="currentPage" from="from" until="until" display-every="displayEvery" display-every-levels="displayEveryLevels" refresh="refreshSearch()"></page-filter>
+		<page-filter filter="filter" number-of-results="totalStates" current-page="currentPage" display-every-levels="displayEveryLevels" refresh="refreshSearch()"></page-filter>
 	</div>
 
 	<div class="col-xs-12 col-md-8 col-lg-9">
@@ -15,10 +15,10 @@
             		<div state-of-charge-graph states="states"></div>
               	</div>
             	<div ng-switch-when="energysourcegraph" class="tab-pane active">
-                	<div energy-source-graph states="states" building="building" is-reverse-order="sortOrder === 'desc'"></div>
+                	<div energy-source-graph states="states" building="building" is-reverse-order="filter.sortOrder === 'desc'"></div>
               	</div>
               	<div ng-switch-when="totalenergy" class="tab-pane active">
-              		<div total-energy-graph states="states" building="building" is-reverse-order="sortOrder === 'desc'"></div>
+              		<div total-energy-graph states="states" building="building" is-reverse-order="filter.sortOrder === 'desc'"></div>
               	</div>
             </div>
         </div>
@@ -59,7 +59,7 @@
 				      	</tr>
 				      	<!-- Each reading -->
 				      	<tr ng-repeat="state in states">
-				      		<td>{{(currentPage - 1) * amountPerPage + $index + 1}}</td>
+				      		<td>{{(currentPage - 1) * filter.amountPerPage + $index + 1}}</td>
 				      		<td>{{state.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}</td>
 				      		<td>{{(state.currentChargeLevel / state.batteryCapacity * 100) | number:2}}%
 				      		<td>{{state.currentChargeLevel | number:2}} Wh</td>

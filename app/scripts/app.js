@@ -85,6 +85,46 @@ angular
     });
   })
   .run(function($rootScope, LoopBackAuth, $location, People, Breadcrumbs) {
+    $rootScope.batteryDataFilter = {
+      amountPerPage : '50',
+      sortOrder : 'desc',
+      displayEvery : 6*60*60
+    };
+
+    $rootScope.displayEveryLevels = [
+      {
+        name : 'Original'
+      },
+      {
+        name : '30 Minutes',
+        period : 30*60
+      },
+      {
+        name : 'Hour',
+        period : 60*60
+      },
+      {
+        name : '3 Hours',
+        period : 3*60*60
+      },
+      {
+        name : '6 Hours',
+        period : 6*60*60
+      },
+      {
+        name : '12 Hours',
+        period : 12*60*60
+      },
+      {
+        name : 'Day',
+        period : 24*60*60
+      },
+      {
+        name : 'Week',
+        period : 7*24*60*60
+      }
+    ];
+
     $rootScope.dateTimeFormat = 'D/M/Y LTS';
     
     $rootScope.logout = function() {

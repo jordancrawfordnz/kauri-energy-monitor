@@ -31,12 +31,15 @@ angular.module('offgridmonitoringApp')
 		              display: true,
 		              labelString: 'Daily energy (Wh)'
 		            },
-		            ticks: {}
+		            ticks: {
+		            	beginAtZero: true
+		            }
 		          },
-		          { // TODO: Make this scale work the same as the main scale!
-		          	display: false,
+		          { display: false,
 		          	id: 'consumptionAxis',
-		          	ticks: {}
+		          	ticks: {
+		          		beginAtZero: true
+		          	}
 		          }
 		        ],
 		        xAxes: [

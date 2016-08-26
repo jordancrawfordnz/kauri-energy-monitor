@@ -13,11 +13,11 @@ angular.module('offgridmonitoringApp')
 	  return {
 	    restrict: 'E', // to be used via an element
 	    controller: ['$rootScope', '$scope', function($rootScope, $scope) {
-	    	if ($scope.from === undefined) {
-	    		$scope.from = null;
+	    	if ($scope.filter.from === undefined) {
+	    		$scope.filter.from = null;
 	    	}
-	    	if ($scope.until === undefined) {
-	    		$scope.until = null;
+	    	if ($scope.filter.until === undefined) {
+	    		$scope.filter.until = null;
 	    	}
 
 	    	$scope.datePickerOptions = {
@@ -48,20 +48,16 @@ angular.module('offgridmonitoringApp')
 
 	        // Recalculate the number of pages and reset the current page.
 		    $scope.resetPage = function() {
-		    	$scope.numberOfPages = Math.ceil($scope.numberOfResults / $scope.amountPerPage);
+		    	$scope.numberOfPages = Math.ceil($scope.numberOfResults / $scope.filter.amountPerPage);
 	          	$scope.currentPage = 1;
 		    };
-			$scope.$watchGroup(['numberOfResults', 'amountPerPage', 'displayEvery'], $scope.resetPage);
+			$scope.$watchGroup(['numberOfResults', 'filter.amountPerPage', 'filter.displayEvery'], $scope.resetPage);
 	    }],
 	    scope: {
-	    	sortOrder : '=sortOrder',
+	    	filter : '=filter',
 	    	numberOfResults : '=numberOfResults',
 	    	currentPage : '=currentPage',
-	    	amountPerPage : '=amountPerPage',
-	    	from : '=from',
-	    	until : '=until',
 	    	displayEveryLevels : '=displayEveryLevels',
-	    	displayEvery : '=displayEvery',
 	    	refresh : '&refresh'
 	    },
 	    templateUrl: 'views/pagefilter.html'

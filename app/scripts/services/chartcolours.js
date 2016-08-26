@@ -56,7 +56,7 @@ app.factory('ChartColours', function() {
             borderColor: ChartColours.hexColourToRGBA(colourToUse, 1),
             pointHoverBorderColor: ChartColours.hexColourToRGBA(colourToUse, 1),
             pointHoverBackgroundColor: ChartColours.hexColourToRGBA(colourToUse, 1),
-            backgroundColor: ChartColours.hexColourToRGBA(colourToUse, 0.2)
+            backgroundColor: ChartColours.hexColourToRGBA(colourToUse, 0.5)
         };
         return colourFields;
     };

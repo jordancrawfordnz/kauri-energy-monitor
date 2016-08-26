@@ -106,6 +106,11 @@ angular.module('offgridmonitoringApp')
       }).$promise.then(function(currentState) {
         _this.state = currentState;
         _this.chargeLevel = currentState.currentChargeLevel / currentState.batteryCapacity;
+        if (_this.chargeLevel > 1) {
+          _this.chargeLevel = 1;
+        } else if (_this.chargeLevel < 0) {
+          _this.chargeLevel = 0;
+        }
         setupEnergyFlowGraph();
         
         // If don't have any data on the last 24 hour's states.

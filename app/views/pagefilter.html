@@ -12,7 +12,7 @@
 				options="datePickerOptions"
 				placeholder="The start of collection."
 		 		name="from"
-		 		date="from">
+		 		date="filter.from">
 		</div>
 
 		<div class="form-group">
@@ -22,12 +22,12 @@
 		        options="datePickerOptions"
 		        placeholder="Now."
 		        name="until"
-		        date="until">
+		        date="filter.until">
 		</div>
 
 		<div class="form-group">
         	<label>Sort by</label>
-          	<select class="form-control" ng-model="sortOrder">
+          	<select class="form-control" ng-model="filter.sortOrder">
             	<option value="desc">Most recent first</option>
             	<option value="asc">Oldest first</option>
           	</select>
@@ -35,7 +35,7 @@
 
   		<div class="form-group" ng-if="displayEveryLevels">
         	<label>Frequency</label>
-          	<select class="form-control" ng-model="$parent.displayEvery" ng-options="level.period as 
+          	<select class="form-control" ng-model="$parent.filter.displayEvery" ng-options="level.period as 
           	level.name for level in displayEveryLevels"></select>
         </div>
 
@@ -60,7 +60,7 @@
 	 
   		<div class="form-group">
         	<label>Amount per page</label>
-          	<select class="form-control" ng-model="amountPerPage">
+          	<select class="form-control" ng-model="filter.amountPerPage">
             	<option value="10">10</option>
             	<option value="50">50</option>
             	<option value="100">100</option>
