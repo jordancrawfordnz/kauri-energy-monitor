@@ -78,12 +78,10 @@ angular.module('offgridmonitoringApp')
     });
 
     this.building.$promise.then(function(building) {
-      var bridge = building.bridges[0];
-      
       // Load the summary then re-load it every minute after that.
-      loadSummary(bridge);
+      _this.loadSummary();
       _this.refreshTimer = $interval(function() {
-        loadSummary(bridge);
+        _this.loadSummary();
       }, 60*1000);
     });
 
@@ -97,9 +95,14 @@ angular.module('offgridmonitoringApp')
       }
     });
 
+    // Refreshes all data used by this page.
+    this.refreshPage = function() {
+      this.loadSummary();
+      this.get24HourData();
+    };
+
     // Sets up the summary page.
-    function loadSummary(bridge) {
-      
+    this.loadSummary = function() {
       // Fetch down the current state.
       Building.currentState({
         id : $routeParams.buildingId
@@ -116,15 +119,15 @@ angular.module('offgridmonitoringApp')
         // If don't have any data on the last 24 hour's states.
         if (!_this.last24HourStates) {
           // Get the current 24 hour data and refresh this every 10 minutes.
-          get24HourData();
+          _this.get24HourData();
           _this.last24HourStates = $interval(function() {
-            get24HourData();
+            _this.get24HourData();
           }, 10*60*1000);
         }
       });
-    }
+    };
 
-    function get24HourData() {
+    this.get24HourData = function() {
       // Get the latest 24 hours worth of data.
         // Get 30 minutely data.
       var timeWorth = 24*60*60;
@@ -139,7 +142,7 @@ angular.module('offgridmonitoringApp')
       }).$promise.then(function(states) {
         _this.last24HourStates = states;
       });
-    }
+    };
 
     // Sets up the energy flow graph using the state and building data.
     function setupEnergyFlowGraph() {

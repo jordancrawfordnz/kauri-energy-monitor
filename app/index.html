@@ -38,9 +38,9 @@
       <div ng-include="'views/leftmenu.html'"></div>
 
       <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
+      <div class="content-wrapper" ng-cloak>
         <!-- Content Header (Page header) -->
-        <section class="content-header">
+        <section class="content-header" ng-if="showBreadcrumbs">
           <h1>
             {{Breadcrumbs.crumbs[Breadcrumbs.crumbs.length-1].name}}
             <small ng-if="Breadcrumbs.crumbs[Breadcrumbs.crumbs.length-1].description">{{Breadcrumbs.crumbs[Breadcrumbs.crumbs.length-1].description}}</small>

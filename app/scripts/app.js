@@ -36,7 +36,8 @@ angular
       .when('/:buildingId', {
         templateUrl: 'views/buildingsummary.html',
         controller: 'BuildingSummaryCtrl',
-        controllerAs: 'summary'
+        controllerAs: 'summary',
+        showBreadcrumbs: false
       })
       .when('/:buildingId/configuration', {
         templateUrl: 'views/buildingconfiguration.html',
@@ -85,6 +86,10 @@ angular
     });
   })
   .run(function($rootScope, LoopBackAuth, $location, People, Breadcrumbs) {
+    $rootScope.$on('$routeChangeStart', function(next, current) { 
+      $rootScope.showBreadcrumbs = current.$$route.showBreadcrumbs !== false;
+    });
+
     $rootScope.batteryDataFilter = {
       amountPerPage : '50',
       sortOrder : 'desc',

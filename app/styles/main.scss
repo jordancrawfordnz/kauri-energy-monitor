@@ -1,5 +1,13 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
 .buildings .name a {
 	color: black !important;
+}
+
+.building-summary .building-name {
+	margin-top: 0px;
 }
 
 .building-summary .battery-container {
@@ -46,4 +54,8 @@
 
 .clear { 
 	clear: both;
+}
+
+.building-summary .refresh-section {
+	text-align: right;
 }
