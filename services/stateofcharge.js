@@ -365,12 +365,12 @@ function processConsumption(building, currentState, consumptionNow, secondsSince
 }
 
 // Updates the details about a charging source.
-function processSource(building, currentState, sourceId, sensorValueNow, batteryVoltageNow, sensorValueLastReading, batteryVoltageLastReading, secondsSinceLastReading, reading) {
+function processSource(building, currentState, sourceId, powerNow, powerLastReading, secondsSinceLastReading, reading) {
 	StateOfCharge.setupSourceStateTemplate(currentState, sourceId);
 	var source = currentState.sources[sourceId];
-	if (sensorValueNow > 0) {
+	if (powerNow > 0) {
 		// If the sensor value is positive, the source is charging.
-		source.power = batteryVoltageNow * sensorValueNow; // record the current power from this source in watts.
+		source.power = powerNow;
 	} else {
 		source.power = 0;
 	}
@@ -385,8 +385,8 @@ function processSource(building, currentState, sourceId, sensorValueNow, battery
 	// Get the energy contribution of this source.
 	var chargeContribution;
 	var canExtrapolate = canExtrapolateFromLastReading(building, secondsSinceLastReading);
-	if (canExtrapolate && sensorValueLastReading > 0) {
-		chargeContribution = (sensorValueLastReading * batteryVoltageLastReading * secondsSinceLastReading) / 3600;
+	if (canExtrapolate && powerLastReading > 0) {
+		chargeContribution = (powerLastReading * secondsSinceLastReading) / 3600;
 	} else {
 		chargeContribution = 0;
 	}
@@ -443,10 +443,12 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 		var lastReadingBatteryVoltage = 0;
 		var lastReadingBatteryCurrent = 0;
 		var lastReadingLoadCurrent = 0;
+		var lastReadingBuildingPower = 0;
 		if (lastReading) {
 			lastReadingBatteryVoltage = lastReading.values[building.batteryVoltageSensorId];
 			lastReadingBatteryCurrent = lastReading.values[building.batteryCurrentSensorId];
 			lastReadingLoadCurrent = lastReading.values[building.loadCurrentSensorId];
+			lastReadingBuildingPower = lastReading.values[building.buildingPowerSensorId];
 		}
 		
 		// For each energy source, store the energy source ID and its current.
@@ -640,16 +642,26 @@ StateOfCharge.processReading = function(building, reading, lastReading, currentS
 			if (lastReadingEnergySourceCurrent > 0) {
 				lastReadingOtherCurrent -= lastReadingEnergySourceCurrent;
 			}
-			processSource(building, currentState, energySourceId, energySourceCurrent, batteryVoltage, lastReadingEnergySourceCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);			
+			processSource(building, currentState, energySourceId, energySourceCurrent * batteryVoltage, lastReadingEnergySourceCurrent * lastReadingBatteryVoltage, secondsSinceLastReading, reading);			
 		}
 		
 		// Fill in charging information about the charger.
 		otherCurrent -= loadCurrent;
 		lastReadingOtherCurrent -= lastReadingLoadCurrent;
-		processSource(building, currentState, 'charger', loadCurrent, batteryVoltage, lastReadingLoadCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
+
+		// If charging via the charger and have building power, add the two together to see the real amount of energy provided by the generator.
+		var chargerPowerNow = loadCurrent * batteryVoltage;
+		if (chargerPowerNow > 0 && buildingPower) {
+			chargerPowerNow += buildingPower;
+		}
+		var chargerPowerLastReading = lastReadingLoadCurrent * lastReadingBatteryVoltage;
+		if (chargerPowerLastReading > 0 && lastReadingBuildingPower) {
+			chargerPowerLastReading += lastReadingBuildingPower;
+		}
+		processSource(building, currentState, 'charger', chargerPowerNow, chargerPowerLastReading, secondsSinceLastReading, reading);
 
 		// Fill in details about the other source.
-		processSource(building, currentState, 'other', otherCurrent, batteryVoltage, lastReadingOtherCurrent, lastReadingBatteryVoltage, secondsSinceLastReading, reading);
+		processSource(building, currentState, 'other', otherCurrent * batteryVoltage, lastReadingOtherCurrent * lastReadingBatteryVoltage, secondsSinceLastReading, reading);
 
 		// Fill in details about house energy consumption.
 		if (buildingPower) {
