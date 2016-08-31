@@ -103,8 +103,8 @@ angular.module('offgridmonitoringApp')
 		        });
 
 		        var chartMax = ChartHelper.getYAxisMax(maximumValueSeen, 3000);
-		        $scope.energySourceChartOptions.scales.yAxes[0].ticks.max = chartMax;
-    			$scope.energySourceChartOptions.scales.yAxes[0].ticks.min = -chartMax;
+		        $scope.energySourceChartOptions.scales.yAxes[0].ticks.suggestedMax = chartMax;
+    			$scope.energySourceChartOptions.scales.yAxes[0].ticks.suggestedMin = -chartMax;
 		    };
 
 		    $scope.$watchCollection('states', $scope.refreshChart); // Refresh the chart when the states change.

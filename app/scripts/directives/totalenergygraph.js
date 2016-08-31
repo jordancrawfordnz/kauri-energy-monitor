@@ -122,8 +122,8 @@ angular.module('offgridmonitoringApp')
 		        });
 
 		        var chartMax = ChartHelper.getYAxisMax(maximumValueSeen, 3000);
-		        $scope.chartOptions.scales.yAxes[0].ticks.max = chartMax;
-	    		$scope.chartOptions.scales.yAxes[1].ticks.max = chartMax;
+		        $scope.chartOptions.scales.yAxes[0].ticks.suggestedMax = chartMax;
+	    		$scope.chartOptions.scales.yAxes[1].ticks.suggestedMin = chartMax;
 		    };
 
 		    $scope.$watchCollection('states', $scope.refreshChart); // Refresh the chart when the states change.
