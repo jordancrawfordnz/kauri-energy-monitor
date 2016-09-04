@@ -54,6 +54,14 @@
       "type": "string",
       "required": true
     },
+    "standardPowerAxis": {
+      "type": "number",
+      "required": true
+    },
+    "standardDailyEnergyAxis": {
+      "type": "number",
+      "required": true
+    },
     "statesAreRegenerating": {
       "type": "boolean"
     },
