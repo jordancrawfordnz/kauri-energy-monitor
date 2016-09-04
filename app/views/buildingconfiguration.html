@@ -170,6 +170,24 @@
               <div colour-selector model="buildingConfig.building.otherGenerationColour"></div>
             </div>
 
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.standardPowerAxis.$dirty && editBuildingForm.standardPowerAxis.$invalid}">
+              <label for="standardPowerAxis">Standard axis for power graphs</label>
+              <p>This is the power that is used as the Y axis for power graphs, unless a higher value is required.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.standardPowerAxis" name="standardPowerAxis" id="standardPowerAxis" required>
+                <span class="input-group-addon">Watts</span>
+              </div>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.standardDailyEnergyAxis.$dirty && editBuildingForm.standardDailyEnergyAxis.$invalid}">
+              <label for="standardDailyEnergyAxis">Standard axis for daily energy graphs</label>
+              <p>This is the daily energy in Wh that is used as the Y axis for daily energy graphs, unless a higher value is required.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="buildingConfig.building.standardDailyEnergyAxis" name="standardDailyEnergyAxis" id="standardDailyEnergyAxis" required>
+                <span class="input-group-addon">Wh</span>
+              </div>
+            </div>
+
           </div>
           <div class="box-footer">
             <button ng-disabled="editBuildingForm.$invalid" type="submit" ng-click="buildingConfig.saveBuilding()" class="btn btn-primary">Save</button>
