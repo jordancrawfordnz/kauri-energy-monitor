@@ -31,6 +31,11 @@ angular.module('offgridmonitoringApp')
 		              display: true,
 		              labelString: 'Daily energy (Wh)'
 		            },
+		            afterDataLimits : function(scale) {
+		              if ($scope.building) {
+		              	ChartHelper.setTickColour(scale, $scope.building.standardDailyEnergyAxis);
+		              }
+		            },
 		            ticks: {
 		            	beginAtZero: true
 		            }
@@ -121,9 +126,8 @@ angular.module('offgridmonitoringApp')
 		          	previousState = state;
 		        });
 
-		        var chartMax = ChartHelper.getYAxisMax(maximumValueSeen, 3000);
-		        $scope.chartOptions.scales.yAxes[0].ticks.suggestedMax = chartMax;
-	    		$scope.chartOptions.scales.yAxes[1].ticks.suggestedMin = chartMax;
+		        $scope.chartOptions.scales.yAxes[0].ticks.suggestedMax = $scope.building.standardDailyEnergyAxis;
+		        $scope.chartOptions.scales.yAxes[1].ticks.suggestedMax = $scope.building.standardDailyEnergyAxis;
 		    };
 
 		    $scope.$watchCollection('states', $scope.refreshChart); // Refresh the chart when the states change.

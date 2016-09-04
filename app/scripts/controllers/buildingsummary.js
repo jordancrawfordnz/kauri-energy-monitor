@@ -40,6 +40,11 @@ angular.module('offgridmonitoringApp')
       scales: {
         yAxes: [
           {
+            afterDataLimits : function(scale) {
+              if (_this.building) {
+                ChartHelper.setTickColour(scale, _this.building.standardPowerAxis); 
+              }
+            },
             scaleLabel: {
               display: true,
               labelString: 'Exponential Average Power (Watts)'
@@ -212,8 +217,7 @@ angular.module('offgridmonitoringApp')
         _this.energyFlowData.push([null, generationSeries.value]);
       });
 
-      var chartMax = ChartHelper.getYAxisMax(maximumValueSeen, 1000);
-      _this.energyFlowOptions.scales.yAxes[0].ticks.max = chartMax;
+      _this.energyFlowOptions.scales.yAxes[0].ticks.suggestedMax = _this.building.standardPowerAxis;
     }
 
   });

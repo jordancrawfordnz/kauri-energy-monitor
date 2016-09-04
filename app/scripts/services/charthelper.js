@@ -6,11 +6,14 @@ var app = angular.module('offgridmonitoringApp');
 app.factory('ChartHelper', function(ChartColours, $rootScope) {
    	var ChartHelper = {};
 
-    // Gets the maximum value to use based on the maximum value seen and the chosen interval.
-      // If given a maximum of 500 and an interval of 2000, this requires 1 interval, so 2000 is the maximum.
-    ChartHelper.getYAxisMax = function(maximumSeen, interval) {
-      var intervalsRequired = Math.floor(maximumSeen / interval) + 1;
-      return interval * intervalsRequired;
+    // Set the tick colour for chart to use a different colour when the axis is beyond its set limit.
+    ChartHelper.setTickColour = function(scale, axisLimit) {
+      var tickOptions = scale.options.ticks;
+      if (scale.max > axisLimit) {
+        tickOptions.fontColor = '#007EA8';
+      } else {
+        tickOptions.fontColor = null;
+      }
     };
 
     // Gets the time offset since midnight.

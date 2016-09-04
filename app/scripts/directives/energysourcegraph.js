@@ -31,6 +31,11 @@ angular.module('offgridmonitoringApp')
 		              display: true,
 		              labelString: 'Energy provided (Wh)'
 		            },
+                	afterDataLimits : function(scale) {
+		              if ($scope.building) {
+		              	ChartHelper.setTickColour(scale, $scope.building.standardDailyEnergyAxis);
+		              }
+		            },
 		            ticks: {
 		              callback: function(tickData) {
 		                // Make ticks below 0 show as positive values.
@@ -102,9 +107,8 @@ angular.module('offgridmonitoringApp')
 		          	previousState = state;
 		        });
 
-		        var chartMax = ChartHelper.getYAxisMax(maximumValueSeen, 3000);
-		        $scope.energySourceChartOptions.scales.yAxes[0].ticks.suggestedMax = chartMax;
-    			$scope.energySourceChartOptions.scales.yAxes[0].ticks.suggestedMin = -chartMax;
+		        $scope.energySourceChartOptions.scales.yAxes[0].ticks.suggestedMax = $scope.building.standardDailyEnergyAxis;
+				$scope.energySourceChartOptions.scales.yAxes[0].ticks.suggestedMin = -$scope.building.standardDailyEnergyAxis;
 		    };
 
 		    $scope.$watchCollection('states', $scope.refreshChart); // Refresh the chart when the states change.
