@@ -1,6 +1,9 @@
 var ProcessingHelper = {};
 module.exports = ProcessingHelper;
 
+ProcessingHelper.CHARGER_SENSOR_ID = 'charger';
+ProcessingHelper.OTHER_SENSOR_ID = 'other';
+
 // Returns a boolean. True if daily aging should be performed.
 	// timeSinceLastReading: The number of seconds since the last reading.
 	// timestamp: The timestamp of the reading being processed.

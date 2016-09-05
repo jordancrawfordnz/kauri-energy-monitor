@@ -93,44 +93,26 @@ EnergyFlow.updateEnergyFlowStates = function(currentState, building, sensorData,
 	// Update 'isBatteryCharging' to be true if the battery current is positive.
 	currentState.isBatteryCharging = sensorData.now.batteryCurrent > 0;
 
-	var otherCurrent = sensorData.now.batteryCurrent;
-	var lastReadingOtherCurrent = sensorData.lastReading.batteryCurrent;
-	
-	// Fill in charging information about user sources.
+	// Fill in charging information about energy sources.
 	building.energySources.forEach(function(energySource) {
 		var energySourceCurrent = sensorData.now.energySourceCurrents[energySource.id];
 		var lastReadingEnergySourceCurrent = sensorData.lastReading.energySourceCurrents[energySource.id];
 
-		if (energySourceCurrent > 0) {
-			otherCurrent -= energySourceCurrent;
-		}
-		if (lastReadingEnergySourceCurrent > 0) {
-			lastReadingOtherCurrent -= lastReadingEnergySourceCurrent;
-		}
 		var sourcePower = energySourceCurrent * sensorData.now.batteryVoltage;
 		var lastReadingSourcePower = lastReadingEnergySourceCurrent * sensorData.lastReading.batteryVoltage;
+
+		if (energySource.currentSensorId === ProcessingHelper.CHARGER_SENSOR_ID) {
+			// If charging via the charger and have building power, add the two together to see the real amount of energy provided by the generator.
+			if (sourcePower > 0 && sensorData.now.buildingPower) {
+				sourcePower += sensorData.now.buildingPower;
+			}
+			if (lastReadingSourcePower > 0 && sensorData.lastReading.buildingPower) {
+				lastReadingSourcePower += sensorData.lastReading.buildingPower;
+			}
+		}
+
 		EnergyFlow.processSource(building, currentState, energySource.id, sourcePower, lastReadingSourcePower, secondsSinceLastReading, timestamp);
 	});
-
-	// Fill in charging information about the charger.
-	otherCurrent -= sensorData.now.loadCurrent;
-	lastReadingOtherCurrent -= sensorData.lastReading.loadCurrent;
-
-	// If charging via the charger and have building power, add the two together to see the real amount of energy provided by the generator.
-	var chargerPowerNow = sensorData.now.loadCurrent * sensorData.now.batteryVoltage;
-	if (chargerPowerNow > 0 && sensorData.now.buildingPower) {
-		chargerPowerNow += sensorData.now.buildingPower;
-	}
-	var chargerPowerLastReading = sensorData.lastReading.loadCurrent * sensorData.lastReading.batteryVoltage;
-	if (chargerPowerLastReading > 0 && sensorData.lastReading.buildingPower) {
-		chargerPowerLastReading += sensorData.lastReading.buildingPower;
-	}
-	EnergyFlow.processSource(building, currentState, 'charger', chargerPowerNow, chargerPowerLastReading, secondsSinceLastReading, timestamp);
-
-	// Fill in details about the other source.
-	var otherSourcePower = otherCurrent * sensorData.now.batteryVoltage;
-	var lastReadingOtherSourcePower = lastReadingOtherCurrent * sensorData.lastReading.batteryVoltage;
-	EnergyFlow.processSource(building, currentState, 'other', otherSourcePower, lastReadingOtherSourcePower, secondsSinceLastReading, timestamp);
 
 	// Fill in details about house energy consumption.
 	if (sensorData.now.buildingPower) {

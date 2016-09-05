@@ -298,27 +298,70 @@ ReadingProcessing.getSensorData = function(reading, lastReading, building) {
 			sensorData.lastReading.loadCurrent = lastReading.values[building.loadCurrentSensorId];
 		}
 
+		// Determine the other source.
+		var otherCurrent = sensorData.now.batteryCurrent - sensorData.now.loadCurrent;
+		var lastReadingOtherCurrent = sensorData.lastReading.batteryCurrent - sensorData.lastReading.loadCurrent;
+		var otherSourceId;
+
 		// For each energy source, store the energy source ID and its current.
 		var haveAllReadings = true;
 		building.energySources.forEach(function(energySource) {
 			if (!energySource.currentSensorId) {
 				// If the sensor isn't defined then we are missing some data we need.
 				haveAllReadings = false;
+			} else if (energySource.currentSensorId === ProcessingHelper.OTHER_SENSOR_ID) {
+				otherSourceId = energySource.id; // fill this in later once the other current is known.
 			} else {
-				// Get the current values for this sensor now and in the past.
-				var currentReading = reading.values[energySource.currentSensorId];
-				var lastCurrentReading = 0;
-				if (lastReading) {
-					lastCurrentReading = lastReading.values[energySource.currentSensorId];
+				var sensorIdToUse;
+				if (energySource.currentSensorId === ProcessingHelper.CHARGER_SENSOR_ID) {
+					// Fill in from the load current sensor.
+					sensorIdToUse = building.loadCurrentSensorId;
+				} else {
+					sensorIdToUse = energySource.currentSensorId;
 				}
-				if (!currentReading === undefined) { // (only requires the 'now' reading to be present)
+
+				// Get the current values for this sensor now and in the past.
+				var currentReading = reading.values[sensorIdToUse];
+				if (currentReading < 0) {
+					currentReading = 0;
+				}
+
+				if (currentReading === undefined) { // (only requires the 'now' reading to be present)
 					haveAllReadings = false;
 					return;
 				}
+				
+				var lastCurrentReading = 0;
+				if (lastReading) {
+					lastCurrentReading = lastReading.values[sensorIdToUse];
+					if (lastCurrentReading < 0) {
+						lastCurrentReading = 0;
+					}
+				}
+				
+				// Subtract this current from the 'other' currents (except for the charger, this is already subtracted).
+				if (energySource.currentSensorId !== ProcessingHelper.CHARGER_SENSOR_ID) {
+					otherCurrent -= currentReading;
+					lastReadingOtherCurrent -= lastCurrentReading;	
+				}
+
+				// Set the sensor data.
 				sensorData.now.energySourceCurrents[energySource.id] = currentReading;
 				sensorData.lastReading.energySourceCurrents[energySource.id] = lastCurrentReading;
 			}
 		});
+
+		// Fill in the 'other' source.
+		if (otherSourceId) {
+			if (otherCurrent < 0) {
+				otherCurrent = 0;
+			}
+			sensorData.now.energySourceCurrents[otherSourceId] = otherCurrent;
+			if (lastReadingOtherCurrent < 0) {
+				lastReadingOtherCurrent = 0;
+			}
+			sensorData.lastReading.energySourceCurrents[otherSourceId] = lastReadingOtherCurrent;
+		}
 
 		// Check we have all the required readings for additional sensors.
 		if (!haveAllReadings) {
