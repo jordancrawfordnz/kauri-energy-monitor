@@ -1,6 +1,6 @@
 var randomstring = require("randomstring");
 var Promise = require('promise');
-var StateOfCharge = require('../../services/stateofcharge.js');
+var ReadingProcessing = require('../../services/readingprocessing.js');
 
 module.exports = function(Bridge) {
 	Bridge.disableRemoteMethod('__create__readings');
@@ -76,11 +76,11 @@ module.exports = function(Bridge) {
 	    					currentStateNeedsCreating = true;
 	
 	    					// Use the state template as the starting state.
-	    					currentState = StateOfCharge.getStateTemplate(building);
+	    					currentState = ReadingProcessing.getStateTemplate(building);
 	    				}
 
 	    				// Process the readings.
-	    				StateOfCharge.processReadingsSerially(building, createReadingResults, latestReading, currentState)
+	    				ReadingProcessing.processReadingsSerially(building, createReadingResults, latestReading, currentState)
 		    			.then(function(processReadingResult) {
 		    				var saveCurrentStatePromise = new Promise(function(resolve, reject) {
 		    					if (currentStateNeedsCreating) {

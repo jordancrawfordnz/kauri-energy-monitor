@@ -1,7 +1,7 @@
 var Promise = require('promise');
 
 module.exports = function(Building) {
-	var StateOfCharge = require('../../services/stateofcharge.js');
+	var ReadingProcessing = require('../../services/readingprocessing.js');
 
 	Building.disableRemoteMethod('__updateById__exports');
 
@@ -72,7 +72,7 @@ module.exports = function(Building) {
 						building = updatedBuilding.toJSON(); // make the building a pure JSON object.
 						
 						// Process each page serially in the background.
-						StateOfCharge.processAllReadings(building).then(function(result) {
+						ReadingProcessing.processAllReadings(building).then(function(result) {
 							removeProcessingState(updatedBuilding, result);							
 						}, function(error) {
 							console.log('Error while processing state.');
