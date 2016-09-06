@@ -59,3 +59,41 @@
 .building-summary .refresh-section {
 	text-align: right;
 }
+
+@media (min-width: 992px) {
+    .pull-right-md {
+        float: right;
+    }
+}
+
+.states .row-selected {
+	background-color: #DCEBFA !important;
+}
+
+.state-detail .none-selected-message {
+	padding: 10px;
+}
+
+.states .state-table {
+	overflow: auto;
+	max-height: 1000px;
+}
+
+.content-wrapper {
+	margin-top: 100px;
+}
+
+@media (min-width: 768px) {
+	.content-wrapper {
+		margin-top: 50px;
+	}
+}
+
+.main-sidebar {
+	position: fixed;
+}
+
+.main-header {
+	position: fixed;
+	width: 100%;
+}

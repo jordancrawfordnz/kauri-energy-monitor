@@ -1,96 +1,178 @@
-<div class="row">
-	<div class="col-xs-12 col-md-4 col-lg-3">
-		<page-filter filter="filter" number-of-results="totalStates" current-page="currentPage" display-every-levels="displayEveryLevels" refresh="refreshSearch()"></page-filter>
+<div class="states">
+	<div class="row">
+		<div class="col-xs-12 col-md-4 col-lg-3">
+			<page-filter filter="filter" number-of-results="totalStates" current-page="currentPage" display-every-levels="displayEveryLevels" refresh="refreshSearch()"></page-filter>
+		</div>
+
+		<div class="col-xs-12 col-md-8 col-lg-9">
+	        <div class="nav-tabs-custom">
+	        	<ul class="nav nav-tabs">
+	        		<li ng-class="{'active' : tabId === activeDetailTab}" ng-repeat="(tabId, tabName) in detailTabs">
+	        			<a ng-click="$parent.activeDetailTab = tabId">{{tabName}}</a>
+	        		</li>
+	            </ul>
+	            <div class="tab-content" ng-switch="activeDetailTab">
+	            	<div ng-switch-when="socgraph" class="tab-pane active">
+	            		<div state-of-charge-graph states="states"></div>
+	              	</div>
+	            	<div ng-switch-when="energysourcegraph" class="tab-pane active">
+	                	<div energy-source-graph states="states" building="building" is-reverse-order="filter.sortOrder === 'desc'"></div>
+	              	</div>
+	              	<div ng-switch-when="totalenergy" class="tab-pane active">
+	              		<div total-energy-graph states="states" building="building" is-reverse-order="filter.sortOrder === 'desc'"></div>
+	              	</div>
+	            </div>
+	        </div>
+	    </div>
 	</div>
+	<div class="row">
 
-	<div class="col-xs-12 col-md-8 col-lg-9">
-        <div class="nav-tabs-custom">
-        	<ul class="nav nav-tabs">
-        		<li ng-class="{'active' : tabId === activeDetailTab}" ng-repeat="(tabId, tabName) in detailTabs">
-        			<a ng-click="$parent.activeDetailTab = tabId">{{tabName}}</a>
-        		</li>
-            </ul>
-            <div class="tab-content" ng-switch="activeDetailTab">
-            	<div ng-switch-when="socgraph" class="tab-pane active">
-            		<div state-of-charge-graph states="states"></div>
-              	</div>
-            	<div ng-switch-when="energysourcegraph" class="tab-pane active">
-                	<div energy-source-graph states="states" building="building" is-reverse-order="filter.sortOrder === 'desc'"></div>
-              	</div>
-              	<div ng-switch-when="totalenergy" class="tab-pane active">
-              		<div total-energy-graph states="states" building="building" is-reverse-order="filter.sortOrder === 'desc'"></div>
-              	</div>
-            </div>
-        </div>
-    </div>
+	    <div class="col-xs-12 col-md-4 pull-right-md state-detail">
+	    	<div class="box">
+	    		<div class="box-header with-border">
+		    		<h3 class="box-title">
+		    			Detail
+		    		</h3>
+		    	</div>
+	    		<div class="box-body table-responsive no-padding">
+		    		<div ng-if="!currentState" class="none-selected-message">
+		    			Click a state to show its full details.
+		    		</div>
+		    		<div ng-if="currentState">
+			    		<table class="table table-hover">
+			    			<thead>
+			    				<tr>
+			    					<th>Propery</th>
+			    					<th>Value</th>
+			    				</tr>
+			    			</thead>
+			    			<tbody>
+				    			<tr>
+				    				<td>Time</td>
+				    				<td>{{currentState.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+				    			</tr>
+				    			<tr>
+				    				<td>State of Charge</td>
+				    				<td>{{(currentState.currentChargeLevel / currentState.batteryCapacity * 100) | number:2}}%
+				    			</tr>
+				    			<tr>
+									<td>Current Charge Level</td>
+									<td>{{currentState.currentChargeLevel | number:2}} Wh</td>
+								</tr>
+							    <tr>
+							    	<td>Battery Capacity</td>
+							    	<td>{{currentState.batteryCapacity | number:2}} Wh</td>
+							    </tr>
+							    <tr>
+							    	<td>Current energy in since last 0%</td>
+							    	<td>{{currentState.currentEnergyInSinceLastC0 | number:2}} Wh</td>
+							    </tr>
+							    <tr>
+							    	<td>Current energy out since last 0%</td>
+							    	<td>{{currentState.currentEnergyOutSinceLastC0 | number:2}} Wh</td>
+							    </tr>
+							    <tr>
+							    	<td>Previous energy in since last 0%</td>
+							    	<td>{{currentState.previousEnergyInSinceLastC0 | number:2}} Wh</td>
+							    </tr>
+							    <tr>
+							    	<td>Previous energy out since last 0%</td>
+							    	<td>{{currentState.previousEnergyOutSinceLastC0 | number:2}} Wh</td>
+							    </tr>
+							    <tr>
+							    	<td>Charge Efficiency</td>
+							    	<td>{{currentState.chargeEfficiency * 100 | number:2}}%</td>
+							    </tr>
+							    <tr>
+							    	<td>Voltage status</td>
+							    	<td ng-if="currentState.batteryLevelLowSince">Low voltage since {{currentState.batteryLevelLowSince | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+							      	<td ng-if="!currentState.batteryLevelLowSince">Normal</td>
+							    </tr>
+							    <tr>
+							    	<td>Is charging</td>
+							    	<td>{{currentState.isBatteryCharging ? "Yes" : "No"}}</td>
+							    </tr>
+							    <tr>
+							    	<td>Empty level established</td>
+							    	<td>{{currentState.emptyLevelEstablished ? "Yes" : "No"}}</td>
+							    </tr>
+							    <tr>
+							    	<td>Hourly consumption</td>
+							    	<td>{{currentState.consumption.hourlyTotal | number:2}} Wh</td>
+							    </tr>
+							    <tr>
+							    	<td>Daily consumption</td>
+							    	<td>{{currentState.consumption.dailyTotal | number:2}} Wh</td>
+							    </tr>
+							    <tr>
+							    	<td>Average consumption power</td>
+							    	<td>{{currentState.consumption.averagePower | number:2}} Watts</td>
+							    </tr>
+							    <tr ng-repeat="(energySourceId, energySourceName) in energySources">
+								    <td>{{energySourceName}} power</td>
+							    	<td>{{currentState.sources[energySourceId].power | number:2}} Watts</td>
+								</tr>
+								<tr ng-repeat="(energySourceId, energySourceName) in energySources">
+								    <td>{{energySourceName}} average power</td>
+							    	<td>{{currentState.sources[energySourceId].averagePower | number:2}} Watts</td>
+								</tr>
+								<tr ng-repeat="(energySourceId, energySourceName) in energySources">
+								    <td>{{energySourceName}} hourly charge</td>
+							    	<td>{{currentState.sources[energySourceId].hourlyCharge | number:2}} Wh</td>
+								</tr>
+								<tr ng-repeat="(energySourceId, energySourceName) in energySources">
+								    <td>{{energySourceName}} daily charge</td>
+							    	<td>{{currentState.sources[energySourceId].dailyCharge | number:2}} Wh</td>
+								</tr>
+				    		</tbody>
+			    		</table>
+			    	</div>
+		    	</div>
+	    	</div>
+	    </div>
 
-	<div class="col-xs-12">
-		<div class="box" ng-if="building">
-		  	<div class="box-header with-border">
-		    	<h3 class="box-title">
-		    		Results
-		    		<small>{{states.length | number}} states<span ng-if="totalStates"> of {{totalStates | number}}</span></small>
-		    	</h3>
-		  	</div>
-		  	<div class="box-body table-responsive no-padding">
-			    <table class="table table-hover">
-			    	<tbody>
-				    	<tr>
-				        	<th>Index</th>
-				        	<th>Time</th>
-				        	<th>State of Charge</th>
-				        	<th>Current Charge Level</th>
-				        	<th>Battery Capacity</th>
-				        	<th>Current energy in since last 0%</th>
-				        	<th>Current energy out since last 0%</th>
-				        	<th>Previous energy in since last 0%</th>
-				        	<th>Previous energy out since last 0%</th>
-				        	<th>Charge Efficiency</th>
-				        	<th>Voltage status</th>
-				        	<th>Is charging</th>
-				        	<th>Empty level established</th>
-				        	<th>Hourly consumption</th>
-				        	<th>Daily consumption</th>
-				        	<th>Average consumption power</th>
-				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} power</th>
-				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} average power</th>
-				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} hourly charge</th>
-				        	<th ng-repeat="energySourceName in energySources">{{energySourceName}} daily charge</th>
-				      	</tr>
-				      	<!-- Each reading -->
-				      	<tr ng-repeat="state in states">
-				      		<td>{{(currentPage - 1) * filter.amountPerPage + $index + 1}}</td>
-				      		<td>{{state.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}</td>
-				      		<td>{{(state.currentChargeLevel / state.batteryCapacity * 100) | number:2}}%
-				      		<td>{{state.currentChargeLevel | number:2}} Wh</td>
-				      		<td>{{state.batteryCapacity | number:2}} Wh</td>
-				      		<td>{{state.currentEnergyInSinceLastC0 | number:2}} Wh</td>
-				      		<td>{{state.currentEnergyOutSinceLastC0 | number:2}} Wh</td>
-				      		<td>{{state.previousEnergyInSinceLastC0 | number:2}} Wh</td>
-				      		<td>{{state.previousEnergyOutSinceLastC0 | number:2}} Wh</td>
-				      		<td>{{state.chargeEfficiency * 100 | number:2}}%</td>
-				      		<td ng-if="state.batteryLevelLowSince">Low voltage since {{state.batteryLevelLowSince | amFromUnix | amDateFormat:dateTimeFormat}}</td>
-				      		<td ng-if="!state.batteryLevelLowSince">Normal</td>
-				      		<td>{{state.isBatteryCharging ? "Yes" : "No"}}</td>
-				      		<td>{{state.emptyLevelEstablished ? "Yes" : "No"}}</td>
-				      		<td>{{state.consumption.hourlyTotal | number:2}} Wh</td>
-				      		<td>{{state.consumption.dailyTotal | number:2}} Wh</td>
-				      		<td>{{state.consumption.averagePower | number:2}} Watts</td>
-	 				      	<td ng-repeat="(energySourceId, energySourceName) in energySources">
-				      			{{state.sources[energySourceId].power | number:2}} Watts
-				      		</td>
-				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
-				      			{{state.sources[energySourceId].averagePower | number:2}} Watts
-				      		</td>
-				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
-				      			{{state.sources[energySourceId].hourlyCharge | number:2}} Wh
-				      		</td>
-				      		<td ng-repeat="(energySourceId, energySourceName) in energySources">
-				      			{{state.sources[energySourceId].dailyCharge | number:2}} Wh
-				      		</td>
-				      	</tr>
-				    </tbody>
-				</table>
+		<div class="col-xs-12 col-sm-12 col-md-8">
+			<div class="box" ng-if="building">
+			  	<div class="box-header with-border">
+			    	<h3 class="box-title">
+			    		Results
+			    		<small>{{states.length | number}} states<span ng-if="totalStates"> of {{totalStates | number}}</span></small>
+			    	</h3>
+			  	</div>
+			  	<div class="box-body table-responsive no-padding">
+				    <div class="state-table">
+					    <table class="table table-hover">
+				    		<thead>
+					    		<tr>
+					    			<th>Index</th>
+						        	<th>Time</th>
+						        	<th>State of Charge</th>
+						        	<th>Current Charge Level</th>
+						        	<th>Battery Capacity</th>
+						        	<th>Charge Efficiency</th>
+						        	<th>Voltage status</th>
+						        	<th>Is charging</th>
+						        	<th>Empty level established</th>
+				    			</tr>
+				    		</thead>
+				    		<tbody>
+						    	<!-- Each reading -->
+						      	<tr ng-repeat="state in states" ng-click="onRowClick(state)" ng-class="{'row-selected' : state.isSelected}">
+						      		<td>{{(currentPage - 1) * filter.amountPerPage + $index + 1}}</td>
+						      		<td>{{state.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+						      		<td>{{(state.currentChargeLevel / state.batteryCapacity * 100) | number:2}}%
+						      		<td>{{state.currentChargeLevel | number:2}} Wh</td>
+						      		<td>{{state.batteryCapacity | number:2}} Wh</td>
+						      		<td>{{state.chargeEfficiency * 100 | number:2}}%</td>
+						      		<td ng-if="state.batteryLevelLowSince">Low voltage since {{state.batteryLevelLowSince | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+						      		<td ng-if="!state.batteryLevelLowSince">Normal</td>
+						      		<td>{{state.isBatteryCharging ? "Yes" : "No"}}</td>
+						      		<td>{{state.emptyLevelEstablished ? "Yes" : "No"}}</td>
+						      	</tr>
+						    </tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

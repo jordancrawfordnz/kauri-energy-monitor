@@ -84,4 +84,17 @@ angular.module('offgridmonitoringApp')
     };
     $scope.$watchGroup(['currentPage', 'filter.sortOrder', 'filter.from', 'filter.until', 'filter.amountPerPage', 'filter.displayEvery'], $scope.refreshSearch);
 
+    $scope.onRowClick = function(state) {
+      if ($scope.currentState === state) {
+        $scope.currentState.isSelected = false;
+        $scope.currentState = null;
+        return;
+      }
+      if ($scope.currentState) {
+        $scope.currentState.isSelected = false;
+      }
+      state.isSelected = true;
+      $scope.currentState = state;
+    };
+
   });
