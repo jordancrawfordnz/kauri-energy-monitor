@@ -14,6 +14,14 @@
       "type": "string",
       "required": true
     },
+    "isRenewable": {
+      "type": "boolean",
+      "required": true
+    },
+    "sortIndex": {
+      "type": "number",
+      "required": true
+    },
     "averageHourlyGeneration": {
       "type": "array"
     }
