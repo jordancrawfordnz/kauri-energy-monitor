@@ -84,17 +84,30 @@ angular.module('offgridmonitoringApp')
     };
     $scope.$watchGroup(['currentPage', 'filter.sortOrder', 'filter.from', 'filter.until', 'filter.amountPerPage', 'filter.displayEvery'], $scope.refreshSearch);
 
+    $scope.onRowLeave = function() {
+      if (!$scope.isClicked) {
+        $scope.currentState = null; 
+      }
+    };
+
+    $scope.onRowHover = function(state) {
+      if (!$scope.isClicked) {
+        $scope.currentState = state;
+      }
+    };
+
     $scope.onRowClick = function(state) {
-      if ($scope.currentState === state) {
-        $scope.currentState.isSelected = false;
-        $scope.currentState = null;
-        return;
+      if ($scope.currentState === state && $scope.isClicked) {
+        $scope.isClicked = false;
+        state.isSelected = false;
+      } else {
+        if ($scope.currentState) {
+          $scope.currentState.isSelected = false;
+        }
+        $scope.isClicked = true;
+        state.isSelected = true;
+        $scope.currentState = state;
       }
-      if ($scope.currentState) {
-        $scope.currentState.isSelected = false;
-      }
-      state.isSelected = true;
-      $scope.currentState = state;
     };
 
   });

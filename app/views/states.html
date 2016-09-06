@@ -36,7 +36,8 @@
 		    	</div>
 	    		<div class="box-body table-responsive no-padding">
 		    		<div ng-if="!currentState" class="none-selected-message">
-		    			Click a state to show its full details.
+		    			Hover over a state to quickly show its details.<br>
+		    			Click on a state to lock the view to its details.
 		    		</div>
 		    		<div ng-if="currentState">
 			    		<table class="table table-hover">
@@ -157,7 +158,7 @@
 				    		</thead>
 				    		<tbody>
 						    	<!-- Each reading -->
-						      	<tr ng-repeat="state in states" ng-click="onRowClick(state)" ng-class="{'row-selected' : state.isSelected}">
+						      	<tr ng-repeat="state in states" ng-class="{'row-selected' : state.isSelected}" ng-click="onRowClick(state)" ng-mouseover="onRowHover(state)" ng-mouseleave="onRowLeave()">
 						      		<td>{{(currentPage - 1) * filter.amountPerPage + $index + 1}}</td>
 						      		<td>{{state.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}</td>
 						      		<td>{{(state.currentChargeLevel / state.batteryCapacity * 100) | number:2}}%
