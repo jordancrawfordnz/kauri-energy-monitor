@@ -140,7 +140,9 @@ angular.module('offgridmonitoringApp')
     // Creates an empty energy source.
     this.newEnergySource = function() {
       this.energySources.push({
-        data : {},
+        data : {
+          isRenewable : false
+        },
         hasBeenSaved : false
       });
     };
