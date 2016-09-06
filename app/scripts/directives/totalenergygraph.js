@@ -81,7 +81,7 @@ angular.module('offgridmonitoringApp')
 
 		        angular.forEach(allSourceOrder, function(energySource) {
 		        	$scope.chartData.push(energySource.data);
-		          	$scope.chartDatasets.push(ChartHelper.getEnergySourceDatasetTemplate(energySource.label, energySource.colour));
+		          	$scope.chartDatasets.push(ChartHelper.getEnergySourceDatasetTemplate(energySource.name, energySource.chartColour));
 		        });
 
 		        var consumptionData = [];
@@ -108,7 +108,6 @@ angular.module('offgridmonitoringApp')
 		            	fillInMidnightZero = true;
 		          	}
 		          	$scope.chartLabels.push(state.timestamp);
-
 		          	angular.forEach(allEnergySources, function(energySource, energySourceId) {
 		            	var sourceData = state.sources[energySourceId];
 		            	if (sourceData) {
@@ -121,7 +120,7 @@ angular.module('offgridmonitoringApp')
 		              		energySource.data.push(sourceData.dailyCharge);
 		            	}
 		          	});
-
+		          	
 		          	if (fillInMidnightZero) {
 		          		consumptionData.push(0);
 		          	}

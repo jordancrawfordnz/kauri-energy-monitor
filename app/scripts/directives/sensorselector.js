@@ -17,6 +17,20 @@ angular.module('offgridmonitoringApp')
 	    	$scope.building.$promise.then(function() {
 	    		$scope.options = [];
 		    	
+	    		if ($scope.chargerAllowed) {
+	    			$scope.options.push({
+	    				value : 'charger',
+	    				text : 'Charger (when load current is positive)'
+	    			});
+	    		}
+
+	    		if ($scope.otherAllowed) {
+	    			$scope.options.push({
+	    				value : 'other',
+	    				text : 'Other (remaining energy generation)'
+	    			});
+	    		}
+
 		    	// Get all sensors.
 		    	angular.forEach($scope.building.bridges, function(bridge) {
 		    		angular.forEach(bridge.sensors, function(sensor) {
@@ -30,7 +44,9 @@ angular.module('offgridmonitoringApp')
 	    },
 	    scope: {
 	    	building : '=building', // building should include bridges and sensors.
-	    	model : '=model'
+	    	model : '=model',
+	    	chargerAllowed : '=chargerAllowed', // boolean. if this option can be set to 'charger'
+	    	otherAllowed : '=otherAllowed' // boolean. if this option can be set to 'other'
 	    },
 	    templateUrl: 'views/selectordropdown.html'
 	  };

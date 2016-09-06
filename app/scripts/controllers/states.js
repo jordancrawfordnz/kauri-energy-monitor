@@ -44,8 +44,6 @@ angular.module('offgridmonitoringApp')
 
     $scope.energySources = {};
     $scope.building.$promise.then(function(building) {
-      $scope.energySources.charger = building.chargerEnergySourceName;
-      $scope.energySources.other = building.otherEnergySourceName;
       angular.forEach(building.energySources, function(energySource) {
         $scope.energySources[energySource.id] = energySource.name;
       });

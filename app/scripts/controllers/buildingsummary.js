@@ -164,14 +164,10 @@ angular.module('offgridmonitoringApp')
         colour : _this.building.houseConsumptionColour
       });
       
-      // Add energy source data.
-      energyFlowData.generation.push({
-        name : _this.building.chargerEnergySourceName,
-        value : _this.state.sources.charger.averagePower,
-        colour : _this.building.chargerGenerationColour
-      });
+      // Sort energy sources.
+      ChartHelper.sortEnergySources(_this.building.energySources);
 
-      // Add custom sources.
+      // Add energy source data.
       angular.forEach(_this.building.energySources, function(energySource) {
         var sourceState = _this.state.sources[energySource.id];
         if (sourceState) {
@@ -181,13 +177,6 @@ angular.module('offgridmonitoringApp')
             colour : energySource.chartColour
           });
         }
-      });
-
-      // Add other source.
-      energyFlowData.generation.push({
-        name : _this.building.otherEnergySourceName,
-        value : _this.state.sources.other.averagePower,
-        colour : _this.building.otherGenerationColour
       });
 
       // === Setup energy flow data into the chart.js format.

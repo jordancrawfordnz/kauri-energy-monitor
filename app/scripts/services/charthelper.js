@@ -67,42 +67,46 @@ app.factory('ChartHelper', function(ChartColours, $rootScope) {
       };
     };
 
-    // Returns an object of: {order : [], sources : []}.
-    ChartHelper.getEnergySourceDetails = function(building) {
-      // Setup the known sources.
-      var renewableEnergySources = {
-        other : {
-          data : [],
-          label: building.otherEnergySourceName,
-          colour: building.otherGenerationColour,
-          isRenewable: true
-        }
-      };
-      var renewableSourceOrder = [renewableEnergySources.other];
-      
-      var nonRenewableEnergySources = {
-        charger : {
-          data : [],
-          label: building.chargerEnergySourceName,
-          colour: building.chargerGenerationColour
-        }
-      };
-      var nonRenewableSourceOrder = [nonRenewableEnergySources.charger];
+    // Sorts energy sources in place.
+    ChartHelper.sortEnergySources = function(energySources) {
+      energySources.sort(function(a, b) {
+        return a.sortIndex - b.sortIndex;
+      });
+    };
 
-      // Setup the remaining energy sources,
+    // Returns an object of: {order : [], sources : []}.
+    ChartHelper.getEnergySourceDetails = function(building, nonRenewableAtBottom) {
+      var renewableSourceOrder = [];
+      var nonRenewableSourceOrder = [];
+      var allEnergySources = {};
+
+      // Setup the energy sources,
       angular.forEach(building.energySources, function(source) {
-        renewableEnergySources[source.id] = {
-          data : [],
-          label: source.name,
-          colour: source.chartColour,
-          isRenewable: true
-        };
-        renewableSourceOrder.unshift(renewableEnergySources[source.id]); // Make this source to go the front.
+        source.data = [];
+        
+        allEnergySources[source.id] = source;
+        if (source.isRenewable) {
+          renewableSourceOrder.push(allEnergySources[source.id]);
+        } else {
+          nonRenewableSourceOrder.push(allEnergySources[source.id]);
+        }
       });
 
-      // Join the sources together.
-      var allEnergySources = $.extend({}, renewableEnergySources, nonRenewableEnergySources);
-      var allSourceOrder = $.merge($.merge([], nonRenewableSourceOrder), renewableSourceOrder);
+      var allSourceOrder;
+      if (nonRenewableAtBottom) {
+        // Sort the renewable and non-renewable energy sources using their sort indexes. 
+        ChartHelper.sortEnergySources(renewableSourceOrder);
+        ChartHelper.sortEnergySources(nonRenewableSourceOrder);
+
+        // Combine the lists.
+        allSourceOrder = $.merge($.merge([], nonRenewableSourceOrder), renewableSourceOrder);
+      } else {
+        // Combine non-renewable and renewable sources.
+        allSourceOrder = $.merge($.merge([], nonRenewableSourceOrder), renewableSourceOrder);
+
+        // Sort the energy sources using their sort indexes.
+        ChartHelper.sortEnergySources(allSourceOrder);
+      }
       
       return {
         order : allSourceOrder,

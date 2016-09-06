@@ -62,7 +62,7 @@ angular.module('offgridmonitoringApp')
 		    	$scope.energySourceChartLabels = [];
 
 		       	// == Get all energy sources
-		       	var energySourceDetails = ChartHelper.getEnergySourceDetails($scope.building);
+		       	var energySourceDetails = ChartHelper.getEnergySourceDetails($scope.building, true);
 		       	var allEnergySources= energySourceDetails.sources;
 		       	var allSourceOrder = energySourceDetails.order;
 
@@ -72,7 +72,7 @@ angular.module('offgridmonitoringApp')
 
 		        angular.forEach(allSourceOrder, function(energySource) {
 		        	$scope.energySourceChartData.push(energySource.data);
-		          	$scope.energySourceChartDatasets.push(ChartHelper.getEnergySourceDatasetTemplate(energySource.label, energySource.colour));
+		          	$scope.energySourceChartDatasets.push(ChartHelper.getEnergySourceDatasetTemplate(energySource.name, energySource.chartColour));
 		        });
 
 		        // == Fill in graph data with information from the states.
