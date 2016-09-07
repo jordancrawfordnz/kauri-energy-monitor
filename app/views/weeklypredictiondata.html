@@ -1,0 +1,18 @@
+<canvas id="line" class="chart chart-line" chart-data="averageConsumptionData"
+	height="{{height}}" chart-labels="averageConsumptionLabels" chart-options="averageConsumptionOptions"
+	chart-dataset-override="averageConsumptionDatasetOverride">
+</canvas>
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>Day of week</th>
+			<th ng-repeat="hourIndex in hourIndexes">{{getHourText(hourIndex)}}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat="(dayIndex, dayData) in predictionPattern.data.days">
+			<td>{{getDayText(dayIndex)}}</td>
+			<td ng-repeat="(hourIndex, hourTotal) in dayData">{{hourTotal | number:0}}</td>
+		</tr>
+	</tbody>
+</table>
