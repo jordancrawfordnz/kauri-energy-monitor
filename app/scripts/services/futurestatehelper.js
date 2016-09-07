@@ -18,9 +18,9 @@ app.factory('FutureStateHelper', function(ChartColours, $rootScope) {
       number = hourIndex + 1 - 12;
     }
     if (hourIndex < 11 || hourIndex === 23) {
-      return number + ' am';
+      return number + 'am';
     } else {
-      return number + ' pm';
+      return number + 'pm';
     }
   };
 

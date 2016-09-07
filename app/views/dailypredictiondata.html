@@ -3,15 +3,17 @@
 	chart-dataset-override="averageConsumptionDatasetOverride">
 </canvas>
 <h4>Total hourly energy for each hour of the day (Wh)</h4>
-<table class="table table-hover">
-	<thead>
-		<tr>
-			<th ng-repeat="hourIndex in hourIndexes">{{getHourText(hourIndex)}}</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td ng-repeat="(hourIndex, hourTotal) in predictionPattern.data.hours">{{hourTotal | number:0}}</td>
-		</tr>
-	</tbody>
-</table>
+<div class="scroll-table-container">
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th ng-repeat="hourIndex in hourIndexes">{{getHourText(hourIndex)}}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td ng-repeat="(hourIndex, hourTotal) in predictionPattern.data.hours">{{hourTotal | number:0}}</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
