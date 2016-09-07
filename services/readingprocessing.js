@@ -148,7 +148,7 @@ ReadingProcessing.processAllReadings = function(building) {
 							resolve(pageResult);
 						} else {
 							// Provide details from this page to the next page.
-							processPage(building, bridge, page + 1, processResult.lastReading, processResult.currentState).then(function(recurseResult) {
+							processPage(processResult.building, bridge, page + 1, processResult.lastReading, processResult.currentState).then(function(recurseResult) {
 								// Add to the result of the next page.
 								pageResult.numberOfSuccessfulReadings += recurseResult.numberOfSuccessfulReadings;
 								pageResult.numberOfFailedReadings += recurseResult.numberOfFailedReadings;
@@ -170,7 +170,9 @@ Process an entire array of readings serially.
 	startState: The current state before processing readings.
 
 	Returns: A Promise which Resolves:
-		{ lastReading : [the last reading processed], currentState : [the current state after processing] }
+		{ lastReading : [the last reading processed],
+		  currentState : [the current state after processing],
+		  building : [the building instance] }
 */
 ReadingProcessing.processReadingsSerially = function(building, readings, initialLastReading, startState) {
 	// Why serially? The state relies on the previous values state.
@@ -203,12 +205,38 @@ ReadingProcessing.processReadingsSerially = function(building, readings, initial
 		});
 	}
 
-	return runProcessReading(0, initialLastReading, startState).then(function(finishState) {
-		return {
-			lastReading: readings[readings.length - 1],
-			currentState: finishState,
-			numberOfFailedReadings: numberOfFailedReadings
-		};
+	return new Promise(function(resolve, reject) {
+		runProcessReading(0, initialLastReading, startState).then(function(finishState) {
+			var toReturn = {
+				lastReading: readings[readings.length - 1],
+				currentState: finishState,
+				numberOfFailedReadings: numberOfFailedReadings
+			}
+			if (building.needsSave) {
+				delete building.needsSave;
+				var Building = app.models.Building;
+				Building.upsert(building, function(saveBuildingError) {
+					if (saveBuildingError) {
+						reject(saveBuildingError);
+					} else {
+						// Get a full copy of the building with energy sources.
+						Building.findById(building.id, {
+     						include : ['energySources']
+     					}, function(getBuildingError, savedBuilding) {
+     						if (getBuildingError) {
+     							reject(getBuildingError);
+     						} else {
+								toReturn.building = savedBuilding.toJSON();
+								resolve(toReturn);
+     						}
+     					});
+					}
+				});
+			} else {
+				toReturn.building = building;
+				resolve(toReturn);
+			}
+		}, reject);
 	});
 };
 

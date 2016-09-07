@@ -22,6 +22,10 @@
       "type": "number",
       "required": true
     },
+    "predictionPatternType": {
+      "type": "string",
+      "required": true
+    },
     "predictionPattern": {
       "type": "object"
     }

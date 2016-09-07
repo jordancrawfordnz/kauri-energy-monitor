@@ -82,13 +82,13 @@ EnergyFlow.processSource = function(building, currentState, energySource, powerN
 // Gets the hour of the day from 0 to 23, 0 represents 0000 to 0100, 23 represents 2300 to 0000
 EnergyFlow.getPredictionHourIndex = function(timestamp) {
 	// TODO: Support timezones and DST.
-	return moment.unix(timestamp).day();
+	return moment.unix(timestamp).hour();
 };
 
 // Gets the day of the week, 0 represents Sunday, 6 represents Saturday.
 EnergyFlow.getPredictionDayIndex = function(timestamp) {
 	// TODO: Support timezones and DST.
-	return moment.unix(timestamp).hour();
+	return moment.unix(timestamp).day();
 };
 
 /*
@@ -113,7 +113,7 @@ EnergyFlow.updatePredictionPattern = function(predictionPattern, newValue, predi
 		case 'weekly': { // weekly cycles keep track of the average power over each hour of the week.
 			var data = predictionPattern.data;
 			var hourIndex = EnergyFlow.getPredictionHourIndex(timestamp);
-			var dayIndex = EnergyFlow.getPredictionHourIndex(timestamp);
+			var dayIndex = EnergyFlow.getPredictionDayIndex(timestamp);
 			if (!data.days) {
 				data.days = {};
 			}
@@ -122,7 +122,7 @@ EnergyFlow.updatePredictionPattern = function(predictionPattern, newValue, predi
 				today = {};
 				data.days[dayIndex] = today;
 			}
-			today[dayIndex] = EnergyFlow.calculateNewRollingAverage(today[dayIndex], newValue, rollingAveragePeriod);
+			today[hourIndex] = EnergyFlow.calculateNewRollingAverage(today[dayIndex], newValue, rollingAveragePeriod);
 		}
 	}
 };
