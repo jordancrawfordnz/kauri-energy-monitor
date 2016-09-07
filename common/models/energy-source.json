@@ -14,10 +14,6 @@
       "type": "string",
       "required": true
     },
-    "isRenewable": {
-      "type": "boolean",
-      "required": true
-    },
     "sortIndex": {
       "type": "number",
       "required": true
@@ -25,6 +21,9 @@
     "predictionPatternType": {
       "type": "string",
       "required": true
+    },
+    "isRenewable": {
+      "type": "boolean"
     },
     "predictionPattern": {
       "type": "object"
