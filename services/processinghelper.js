@@ -23,10 +23,10 @@ ProcessingHelper.shouldRunEndOfHourJobs = function(timeSinceLastReading, timesta
 	// timestamp: The timestamp of the reading being processed.
 	// oneReadingAfter: Whether to count end of day jobs as happening the reading after the day switches.
 ProcessingHelper.shouldRunEndOfDayJobs = function(timeSinceLastReading, timestamp, oneReadingAfter) {
-	// TODO: Timezone support?
 	if (oneReadingAfter) {
 		timestamp--;
 	}
+	// TODO: Support building defined timezones and DST.
 	var outBy = (timestamp - 60*60*12) % (60*60*24); // match on midday GMT which is midnight in +12 NZ.
 	// Either the timestamp is perfectly on midnight or midnight was missed.
 	return outBy === 0 || outBy < timeSinceLastReading;

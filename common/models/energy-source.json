@@ -22,8 +22,8 @@
       "type": "number",
       "required": true
     },
-    "averageHourlyGeneration": {
-      "type": "array"
+    "predictionPattern": {
+      "type": "object"
     }
   },
   "validations": [],

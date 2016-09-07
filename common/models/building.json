@@ -49,8 +49,8 @@
     "statesAreRegenerating": {
       "type": "boolean"
     },
-    "averageHourOfWeekConsumption": {
-      "type": "array"
+    "predictionPattern": {
+      "type": "object"
     },
     "lastRegeneration": {
       "type": "object"
