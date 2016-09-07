@@ -38,6 +38,11 @@ angular.module('offgridmonitoringApp')
         path : 'configuration'
       },
       {
+        name : 'Future State',
+        icon : 'clock-o',
+        path : 'future'
+      },
+      {
         name : 'Battery State',
         icon : 'battery-three-quarters',
         path : 'states'

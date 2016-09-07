@@ -60,6 +60,10 @@ angular
         templateUrl: 'views/export.html',
         controller: 'ExportCtrl'
       })
+      .when('/:buildingId/future', {
+        templateUrl: 'views/future.html',
+        controller: 'FutureStateCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
