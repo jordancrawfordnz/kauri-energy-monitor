@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:weeklyPredictionData
+ * @name offgridmonitoringApp.directive:dailyPredictionData
  * @description
- * # weeklyPredictionData
- * Shows the data and a graph for a weekly prediction.
+ * # dailyPredictionData
+ * Shows the data and a graph for a daily prediction.
  */
 
 angular.module('offgridmonitoringApp')
-	.directive('weeklyPredictionData', function() {
+	.directive('dailyPredictionData', function() {
 	  return {
 	    restrict: 'A', // to be used via an attribute
 	    controller: ['$scope', 'FutureStateHelper', 'ChartColours', function($scope, FutureStateHelper, ChartColours) {
@@ -22,17 +22,15 @@ angular.module('offgridmonitoringApp')
 		    $scope.averageConsumptionData = [
 		    	[]
 		    ];
-
 		    $scope.averageConsumptionOptions = FutureStateHelper.dataChartOptions;
 
 		    $scope.$watch('predictionPattern', function() {
 		    	// Fill in prediction data.
+		    	console.log($scope.predictionPattern);
 		      	if ($scope.predictionPattern) {
-			        angular.forEach($scope.predictionPattern.data.days, function(dayData, dayIndex) {
-			        	angular.forEach(dayData, function(hourTotal, hourIndex) {
-			            	$scope.averageConsumptionLabels.push(FutureStateHelper.getWeeklyPredictionPatternText(dayIndex, hourIndex));
-			            	$scope.averageConsumptionData[0].push(hourTotal);
-			          	});
+			        angular.forEach($scope.predictionPattern.data.hours, function(hourTotal, hourIndex) {
+		        		$scope.averageConsumptionLabels.push(FutureStateHelper.getHourText(hourIndex));
+		            	$scope.averageConsumptionData[0].push(hourTotal);
 			        });
 
 			        // Use the proper chart colour.
@@ -49,6 +47,6 @@ angular.module('offgridmonitoringApp')
 	    	colour : '=colour',
 	    	height : '=height'
 	    },
-	    templateUrl: 'views/weeklypredictiondata.html'
+	    templateUrl: 'views/dailypredictiondata.html'
 	  };
 	});

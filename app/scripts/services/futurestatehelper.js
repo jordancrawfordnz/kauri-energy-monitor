@@ -10,6 +10,7 @@ app.factory('FutureStateHelper', function(ChartColours, $rootScope) {
   FutureStateHelper.daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   FutureStateHelper.getHourText = function(hourIndex) {
+    hourIndex = parseInt(hourIndex);
     var number;
     if (hourIndex < 12) {
       number = hourIndex + 1;
@@ -28,7 +29,37 @@ app.factory('FutureStateHelper', function(ChartColours, $rootScope) {
   };
 
   FutureStateHelper.getWeeklyPredictionPatternText = function(dayIndex, hourIndex) {
-    return FutureStateHelper.getDayText(dayIndex) + ' ' + FutureStateHelper.getHourText(parseInt(hourIndex));
+    return FutureStateHelper.getDayText(dayIndex) + ' ' + FutureStateHelper.getHourText(hourIndex);
+  };
+
+  FutureStateHelper.dataChartOptions = {
+      tooltips: {
+        callbacks : {
+          title : function(tooltips, data) {
+              return tooltips[0].xLabel;
+            },
+            label : function(tooltipItem, data) {
+              var value = Math.abs(tooltipItem.yLabel).toFixed(0) + 'Wh'; 
+              return value;
+            }
+        }
+      },
+      scales: {
+        yAxes: [
+            {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              ticks : {
+                beginAtZero: true
+              },
+              scaleLabel: {
+                display: true,
+                labelString: 'Hourly energy (Wh)'
+              }
+          }
+        ]
+      }
   };
 
   return FutureStateHelper;
