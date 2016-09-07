@@ -276,9 +276,17 @@
                 </div>
               </div>
 
-              <label for="chartColour">Chart colour</label>
-              <p>This is the colour to display the source with in graphs.</p>
-              <div colour-selector model="energySource.data.chartColour"></div>
+              <div class="form-group">
+                <label for="chartColour">Chart colour</label>
+                <p>This is the colour to display the source with in graphs.</p>
+                <div colour-selector model="energySource.data.chartColour"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="chartColour">Prediction Type</label>
+                <p>This defines the type of prediction model to use. This is used in future state estimations.</p>
+                <div prediction-type-selector model="energySource.data.predictionPatternType"></div>
+              </div>
               
               <br>
               <button ng-if="energySource.hasBeenSaved" ng-disabled="energySourceForm.$invalid" type="submit" ng-click="buildingConfig.saveEnergySource(energySource)" class="btn btn-primary">Save</button>
