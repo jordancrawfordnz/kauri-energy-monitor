@@ -162,6 +162,58 @@ ReadingProcessing.processAllReadings = function(building) {
 	}
 };
 
+// Updates a JSON building object including energy sources but only if flagged as needing a save.
+	// Returns a promise that resolves with an updated JSON building including energy sources.
+ReadingProcessing.updateFullBuildingIfNeeded = function(building) {
+	var Building = app.models.Building;
+	var EnergySource = app.models.EnergySource;
+	return new Promise(function(resolve, reject) {
+		var updatePromises = [];
+		if (building.needsSave) {
+			updatePromises.push(new Promise(function(saveBuildingResolve, saveBuildingReject) {
+				delete building.needsSave; // delete the 'needsSave' flag from the building.
+				Building.upsert(building, function(saveBuildingError) {
+					if (saveBuildingError) {
+						saveBuildingReject(saveBuildingError);
+					} else {
+						saveBuildingResolve();
+					}
+				});
+			}));
+		}
+
+		// Check if any of the energy sources need an update.
+		building.energySources.forEach(function(energySource) {
+			if (energySource.needsSave) {
+				updatePromises.push(new Promise(function(saveEnergySourceResolve, saveEnergySourceReject) {
+					delete energySource.needsSave;
+					EnergySource.upsert(energySource, function(saveEnergySourceError) {
+						if (saveEnergySourceError) {
+							saveEnergySourceReject(saveEnergySourceError);
+						} else {
+							saveEnergySourceResolve();
+						}
+					});
+				}));
+			}
+		});
+
+		// Once all buildings and energy sources have saved.
+		Promise.all(updatePromises).then(function() {
+			// Get a full copy of the building with energy sources.
+			Building.findById(building.id, {
+				include : ['energySources']
+			}, function(getBuildingError, savedBuilding) {
+				if (getBuildingError) {
+					reject(getBuildingError);
+				} else {
+					resolve(savedBuilding.toJSON());
+				}
+			});
+		}, reject);
+	});
+};
+
 /*
 Process an entire array of readings serially.
 	building: The building all the readings belong to.
@@ -212,30 +264,10 @@ ReadingProcessing.processReadingsSerially = function(building, readings, initial
 				currentState: finishState,
 				numberOfFailedReadings: numberOfFailedReadings
 			}
-			if (building.needsSave) {
-				delete building.needsSave;
-				var Building = app.models.Building;
-				Building.upsert(building, function(saveBuildingError) {
-					if (saveBuildingError) {
-						reject(saveBuildingError);
-					} else {
-						// Get a full copy of the building with energy sources.
-						Building.findById(building.id, {
-     						include : ['energySources']
-     					}, function(getBuildingError, savedBuilding) {
-     						if (getBuildingError) {
-     							reject(getBuildingError);
-     						} else {
-								toReturn.building = savedBuilding.toJSON();
-								resolve(toReturn);
-     						}
-     					});
-					}
-				});
-			} else {
-				toReturn.building = building;
+			ReadingProcessing.updateFullBuildingIfNeeded(building).then(function(updatedBuilding) {
+				toReturn.building = updatedBuilding;
 				resolve(toReturn);
-			}
+			}, reject);
 		}, reject);
 	});
 };

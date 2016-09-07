@@ -40,45 +40,6 @@ EnergyFlow.setupSourceStateTemplate = function(state, sourceName) {
 	}
 };
 
-// Updates the details about a charging source.
-EnergyFlow.processSource = function(building, currentState, energySource, powerNow, powerLastReading, secondsSinceLastReading, timestamp) {
-	
-	EnergyFlow.setupSourceStateTemplate(currentState, energySource.id);
-	var source = currentState.sources[energySource.id];
-	if (powerNow > 0) {
-		// If the sensor value is positive, the source is charging.
-		source.power = powerNow;
-	} else {
-		source.power = 0;
-	}
-
-	// Get the energy contribution of this source.
-	var chargeContribution;
-	var canExtrapolate = ProcessingHelper.canExtrapolateFromLastReading(building, secondsSinceLastReading);
-	if (canExtrapolate && powerLastReading > 0) {
-		chargeContribution = (powerLastReading * secondsSinceLastReading) / 3600;
-	} else {
-		chargeContribution = 0;
-	}
-
-	if (canExtrapolate) {
-		// Re-calculate the average power of the source.
-		source.averagePower = EnergyFlow.calculateNewExponentialAverage(source.averagePower, source.power);
-	}
-
-	// Reset the daily and hourly charge if needed.
-	if (ProcessingHelper.shouldRunEndOfHourJobs(secondsSinceLastReading, timestamp, true)) {
-		source.hourlyCharge = 0;
-		// TODO: Update the prediction pattern.
-	}
-	if (ProcessingHelper.shouldRunEndOfDayJobs(secondsSinceLastReading, timestamp, true)) {
-		source.dailyCharge = 0;
-	}
-	
-	source.dailyCharge += chargeContribution; // record the total energy from this source for today in Wh.
-	source.hourlyCharge += chargeContribution; // record the total energy from this source for this hour in Wh.
-};
-
 // Gets the hour of the day from 0 to 23, 0 represents 0000 to 0100, 23 represents 2300 to 0000
 EnergyFlow.getPredictionHourIndex = function(timestamp) {
 	// TODO: Support timezones and DST.
@@ -109,9 +70,9 @@ EnergyFlow.updatePredictionPattern = function(predictionPattern, newValue, predi
 		predictionPattern.data = {};
 	}
 
+	var data = predictionPattern.data;
 	switch (predictionType) {
 		case 'weekly': { // weekly cycles keep track of the average power over each hour of the week.
-			var data = predictionPattern.data;
 			var hourIndex = EnergyFlow.getPredictionHourIndex(timestamp);
 			var dayIndex = EnergyFlow.getPredictionDayIndex(timestamp);
 			if (!data.days) {
@@ -123,10 +84,74 @@ EnergyFlow.updatePredictionPattern = function(predictionPattern, newValue, predi
 				data.days[dayIndex] = today;
 			}
 			today[hourIndex] = EnergyFlow.calculateNewRollingAverage(today[dayIndex], newValue, rollingAveragePeriod);
+			break;
+		}
+		case 'daily': {
+			var hourIndex = EnergyFlow.getPredictionHourIndex(timestamp);
+			if (!data.hours) {
+				data.hours = {};
+			}
+			data.hours[hourIndex] = EnergyFlow.calculateNewRollingAverage(data.hours[hourIndex], newValue, rollingAveragePeriod);
+			break;
+		}
+		case 'hourly': {
+			data.average = EnergyFlow.calculateNewExponentialAverage(data.average, newValue);
+			break;
 		}
 	}
 };
 
+// Updates the details about a charging source.
+EnergyFlow.processSource = function(building, currentState, energySource, powerNow, powerLastReading, secondsSinceLastReading, timestamp) {
+	
+	EnergyFlow.setupSourceStateTemplate(currentState, energySource.id);
+	var source = currentState.sources[energySource.id];
+	if (powerNow > 0) {
+		// If the sensor value is positive, the source is charging.
+		source.power = powerNow;
+	} else {
+		source.power = 0;
+	}
+
+	// Get the energy contribution of this source.
+	var chargeContribution;
+	var canExtrapolate = ProcessingHelper.canExtrapolateFromLastReading(building, secondsSinceLastReading);
+	if (canExtrapolate && powerLastReading > 0) {
+		chargeContribution = (powerLastReading * secondsSinceLastReading) / 3600;
+	} else {
+		chargeContribution = 0;
+	}
+
+	if (canExtrapolate) {
+		// Re-calculate the average power of the source.
+		source.averagePower = EnergyFlow.calculateNewExponentialAverage(source.averagePower, source.power);
+	}
+
+	// Reset the daily and hourly charge if needed.
+	if (ProcessingHelper.shouldRunEndOfHourJobs(secondsSinceLastReading, timestamp, true)) {
+		// Update the sources prediction pattern.
+		var predictionPattern = energySource.predictionPattern;
+		if (!predictionPattern) {
+			predictionPattern = {};
+			energySource.predictionPattern = predictionPattern;
+		}
+		EnergyFlow.updatePredictionPattern(
+			predictionPattern,
+			source.hourlyCharge,
+			energySource.predictionPatternType,
+			EnergyFlow.ENERGY_SOURCE_POWER_DAILY_ROLLING_AVERAGE_PERIOD,
+			timestamp);
+		energySource.needsSave = true;
+
+		source.hourlyCharge = 0;
+	}
+	if (ProcessingHelper.shouldRunEndOfDayJobs(secondsSinceLastReading, timestamp, true)) {
+		source.dailyCharge = 0;
+	}
+	
+	source.dailyCharge += chargeContribution; // record the total energy from this source for today in Wh.
+	source.hourlyCharge += chargeContribution; // record the total energy from this source for this hour in Wh.
+};
 
 // Updates the details about the house consumption.
 EnergyFlow.processConsumption = function(building, currentState, consumptionNow, secondsSinceLastReading, timestamp) {
@@ -149,7 +174,12 @@ EnergyFlow.processConsumption = function(building, currentState, consumptionNow,
 			predictionPattern = {};
 			building.predictionPattern = predictionPattern;
 		}
-		EnergyFlow.updatePredictionPattern(predictionPattern, consumption.hourlyTotal, EnergyFlow.CONSUMPTION_PREDICTION_TYPE, EnergyFlow.CONSUMPTION_POWER_WEEKLY_ROLLING_AVERAGE_PERIOD, timestamp);
+		EnergyFlow.updatePredictionPattern(
+			predictionPattern,
+			consumption.hourlyTotal,
+			EnergyFlow.CONSUMPTION_PREDICTION_TYPE,
+			EnergyFlow.CONSUMPTION_POWER_WEEKLY_ROLLING_AVERAGE_PERIOD,
+			timestamp);
 		building.needsSave = true; // signal that the building should be saved.
 
 		consumption.hourlyTotal = 0;
