@@ -15,6 +15,6 @@ angular.module('offgridmonitoringApp')
 	    scope: {
 	    	predictionPattern : '=predictionPattern'
 	    },
-	    template: '<h3>{{predictionPattern.data.average | number:2}} Wh per hour</h3>'
+	    templateUrl: 'views/hourlypredictiondata.html'
 	  };
 	});
