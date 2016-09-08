@@ -3,6 +3,7 @@ module.exports = ProcessingHelper;
 
 ProcessingHelper.CHARGER_SENSOR_ID = 'charger';
 ProcessingHelper.OTHER_SENSOR_ID = 'other';
+ProcessingHelper.SECONDS_IN_HOUR = 3600;
 
 // Returns a boolean. True if daily aging should be performed.
 	// timeSinceLastReading: The number of seconds since the last reading.
@@ -39,4 +40,14 @@ ProcessingHelper.canExtrapolateFromLastReading = function(building, secondsSince
 	} else {
 		return secondsSinceLastReading < building.minutesBetweenReadingsToIgnore*60; // extrapolate only if less than the amount of minutes between readings to ignore.
 	}
+};
+
+// Returns the Unix timestamp to the nearest hour.
+ProcessingHelper.getTimestampToNearestHour = function(timestamp) {
+	return timestamp - (timestamp % ProcessingHelper.SECONDS_IN_HOUR);
+};
+
+// Takes a timestamp representing a time like 2:00:10pm, scales it back to 2:00:00pm, then subtracts 1 to get 1:59:59pm.
+ProcessingHelper.getTimestampAtEndOfLastHour = function(timestamp) {
+	return ProcessingHelper.getTimestampToNearestHour(timestamp) - 1;
 };

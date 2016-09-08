@@ -42,6 +42,20 @@ EnergyFlow.setupSourceStateTemplate = function(state, sourceName) {
 };
 
 // Gets the hour of the day from 0 to 23, 0 represents 0000 to 0100, 23 represents 2300 to 0000
+	// This finds the index to use when the average to be calculated is for the hour before the avaliable timestamp.
+	// This goes back to to the end of the last hour before determining the index.
+EnergyFlow.getPredictionHourIndexFromProcessingTime = function(timestampBeingProcessed) {
+	return EnergyFlow.getPredictionHourIndex(ProcessingHelper.getTimestampAtEndOfLastHour(timestampBeingProcessed));
+};
+
+// Gets the day of the week, 0 represents Sunday, 6 represents Saturday.
+	// This finds the index to use when the average to be calculated is for the hour before the avaliable timestamp.
+	// This goes back to to the end of the last hour before determining the index.
+EnergyFlow.getPredictionDayIndexFromProcessingTime = function(timestampBeingProcessed) {
+	return EnergyFlow.getPredictionDayIndex(ProcessingHelper.getTimestampAtEndOfLastHour(timestampBeingProcessed));
+};
+
+// Gets the hour of the day from 0 to 23, 0 represents 0000 to 0100, 23 represents 2300 to 0000
 EnergyFlow.getPredictionHourIndex = function(timestamp) {
 	// TODO: Support timezones and DST.
 	return moment.unix(timestamp).hour();
@@ -145,8 +159,8 @@ EnergyFlow.updatePredictionPattern = function(predictionPattern, newValue, predi
 	}
 	var data = predictionPattern.data;
 
-	var hourIndex = EnergyFlow.getPredictionHourIndex(timestamp);
-	var dayIndex = EnergyFlow.getPredictionDayIndex(timestamp);
+	var hourIndex = EnergyFlow.getPredictionHourIndexFromProcessingTime(timestamp);
+	var dayIndex = EnergyFlow.getPredictionDayIndexFromProcessingTime(timestamp);
 
 	EnergyFlow.setPredictionMultiplier(predictionPattern, newValue, dayIndex, hourIndex);
 			
