@@ -23,15 +23,19 @@ angular.module('offgridmonitoringApp')
 		    	[]
 		    ];
 
+		    $scope.dayTotals = {};
+
 		    $scope.averageConsumptionOptions = FutureStateHelper.dataChartOptions;
 
 		    $scope.$watch('predictionPattern', function() {
 		    	// Fill in prediction data.
 		      	if ($scope.predictionPattern) {
 			        angular.forEach($scope.predictionPattern.data.days, function(dayData, dayIndex) {
+			        	$scope.dayTotals[dayIndex] = 0;
 			        	angular.forEach(dayData, function(hourTotal, hourIndex) {
 			            	$scope.averageConsumptionLabels.push(FutureStateHelper.getWeeklyPredictionPatternText(dayIndex, hourIndex));
 			            	$scope.averageConsumptionData[0].push(hourTotal);
+			            	$scope.dayTotals[dayIndex] += hourTotal;
 			          	});
 			        });
 

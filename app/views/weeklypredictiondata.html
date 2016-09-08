@@ -9,14 +9,16 @@
 			<tr>
 				<th>Day of week</th>
 				<th ng-repeat="hourIndex in hourIndexes">{{getHourText(hourIndex)}}</th>
+				<th>Daily Total</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr ng-repeat="(dayIndex, dayData) in predictionPattern.data.days">
 				<td>{{getDayText(dayIndex)}}</td>
 				<td ng-repeat="(hourIndex, hourTotal) in dayData">{{hourTotal | number:0}}</td>
+				<td>{{dayTotals[dayIndex] | number:0}}</td>
 			</tr>
 		</tbody>
 	</table>
 </div>
-<h4>Current Prediction Multiplier: {{predictionPattern.data.predictionMultiplier | number:2}}</h4>
+<h4>The last hour was about {{predictionPattern.data.predictionMultiplier | number:1}}x the average.</h4>

@@ -8,13 +8,15 @@
 		<thead>
 			<tr>
 				<th ng-repeat="hourIndex in hourIndexes">{{getHourText(hourIndex)}}</th>
+				<th>Daily Total</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
 				<td ng-repeat="(hourIndex, hourTotal) in predictionPattern.data.hours">{{hourTotal | number:0}}</td>
+				<td>{{total | number:0}}</td>
 			</tr>
 		</tbody>
 	</table>
 </div>
-<h4>Current Prediction Multiplier: {{predictionPattern.data.predictionMultiplier | number:2}}</h4>
+<h4>The last hour was about {{predictionPattern.data.predictionMultiplier | number:1}}x the average.</h4>

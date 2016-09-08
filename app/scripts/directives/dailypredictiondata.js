@@ -26,11 +26,12 @@ angular.module('offgridmonitoringApp')
 
 		    $scope.$watch('predictionPattern', function() {
 		    	// Fill in prediction data.
-		    	console.log($scope.predictionPattern);
-		      	if ($scope.predictionPattern) {
+		    	if ($scope.predictionPattern) {
+		    		$scope.total = 0;
 			        angular.forEach($scope.predictionPattern.data.hours, function(hourTotal, hourIndex) {
 		        		$scope.averageConsumptionLabels.push(FutureStateHelper.getHourText(hourIndex));
 		            	$scope.averageConsumptionData[0].push(hourTotal);
+		            	$scope.total += hourTotal;
 			        });
 
 			        // Use the proper chart colour.
