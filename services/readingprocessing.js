@@ -492,6 +492,11 @@ ReadingProcessing.processReading = function(building, reading, lastReading, curr
 			
 			EnergyFlow.updateEnergyFlowStates(currentState, building, sensorData, reading.timestamp, secondsSinceLastReading);
 
+			// Fill in future state predictions every half an hour.
+			if (ProcessingHelper.shouldRunEndOfHalfHourJobs(timeSinceLastReading, reading.timestamp, true)) {
+				StatePredictions.predictFutureStates(building, currentState, reading.timestamp);
+			}
+
 			// Update the state timestamp to be up to date with the reading's timestamp.
 			currentState.timestamp = reading.timestamp;
 			currentState.readingId = reading.id;

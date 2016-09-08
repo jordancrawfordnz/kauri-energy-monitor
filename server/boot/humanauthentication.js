@@ -89,6 +89,20 @@ module.exports = function enableHumanAuthentication(server) {
             }
             return reject();
         });
+    } else if (context.modelName === 'FutureState') { // Check the current user is an owner of the Building for the FutureState.
+        var FutureState = context.model;
+        FutureState.findById(context.modelId, {include : {building : 'people'} }, function(error, futureStateInstance) {
+            if (!error && futureStateInstance) {
+                futureStateInstance = futureStateInstance.toJSON();
+                
+                if (futureStateInstance.building && futureStateInstance.building.people) {
+                    if (isPersonBuildingOwner(futureStateInstance.building.people, userId)) {
+                        return callback(null, true); // allow the user access.
+                    }   
+                }
+            }
+            return reject();
+        });
     } else if (context.modelName === 'Bridge') { // Check the current user is an owner of the Bridge's building.
     	var Bridge = context.model;
 

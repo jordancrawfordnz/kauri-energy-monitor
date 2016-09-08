@@ -64,5 +64,9 @@
   "EnergySource": {
     "dataSource": "db",
     "public": true
+  },
+  "FutureState": {
+    "dataSource": "db",
+    "public": true
   }
 }
