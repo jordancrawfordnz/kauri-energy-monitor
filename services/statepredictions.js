@@ -106,6 +106,6 @@ StatePredictions.predictFutureStates = function(building, currentState, timestam
 	}
 
 	// Save the future state.
-		// TODO:
-	console.log(futureStates);
+
+	return futureStates;
 };

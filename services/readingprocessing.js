@@ -163,6 +163,28 @@ ReadingProcessing.processAllReadings = function(building) {
 	}
 };
 
+// Updates the stored future states by clearing the existing states and adding new ones.
+ReadingProcessing.updateFutureStates = function(futureStates) {
+	var FutureState = app.models.FutureState;
+	return new Promise(function(resolve, reject) {
+		// Clear all future states.
+		FutureState.destroyAll(function(destroyAllError) {
+			if (destroyAllError) {
+				reject(destroyAllError);
+			} else {
+				// Add all future states.
+				FutureState.create(futureStates, function(createError, createResult) {
+					if (createError) {
+						reject(createError);
+					} else {
+						resolve(createResult);
+					}
+				});
+			}
+		});
+	});
+};
+
 // Updates a JSON building object including energy sources but only if flagged as needing a save.
 	// Returns a promise that resolves with an updated JSON building including energy sources.
 ReadingProcessing.updateFullBuildingIfNeeded = function(building) {
@@ -231,27 +253,27 @@ ReadingProcessing.processReadingsSerially = function(building, readings, initial
 	// Why serially? The state relies on the previous values state.
 		// As processReadings returns a promise, processReading could perform additional async tasks.
 	var numberOfFailedReadings = 0;
-	function runProcessReading(readingIndex, lastReading, currentState) {
+	function runProcessReading(readingIndex, lastReading, currentProcessResult) {
 		return new Promise(function(resolve, reject) {
 			// Base case.
 			if (readingIndex >= readings.length) {
-				resolve(currentState);
+				resolve(currentProcessResult);
 			} else {
 				var currentReading = readings[readingIndex];
 				
 				// Get this result.
-				ReadingProcessing.processReading(building, currentReading, lastReading, currentState).then(function(newState) {
+				ReadingProcessing.processReading(building, currentReading, lastReading, currentProcessResult).then(function(processReadingResult) {
 					// Run the next value with the result.
-					runProcessReading(readingIndex + 1, currentReading, newState).then(function(newState) {
+					runProcessReading(readingIndex + 1, currentReading, processReadingResult).then(function(processReadingResult) {
 						// The result from lower levels.
-						resolve(newState);
+						resolve(processReadingResult);
 					}, reject);
 				}, function() {
 					// This process failed. Run the next reading with the same data.
 					numberOfFailedReadings++;
-					runProcessReading(readingIndex + 1, lastReading, currentState).then(function(newState) {
+					runProcessReading(readingIndex + 1, lastReading, currentProcessResult).then(function(processReadingResult) {
 						// The result from lower levels.
-						resolve(newState);
+						resolve(processReadingResult);
 					}, reject);
 				});
 			}
@@ -259,15 +281,26 @@ ReadingProcessing.processReadingsSerially = function(building, readings, initial
 	}
 
 	return new Promise(function(resolve, reject) {
-		runProcessReading(0, initialLastReading, startState).then(function(finishState) {
+		runProcessReading(0, initialLastReading, {
+			state : startState
+		}).then(function(processReadingResult) {
 			var toReturn = {
 				lastReading: readings[readings.length - 1],
-				currentState: finishState,
+				currentState: processReadingResult.state,
 				numberOfFailedReadings: numberOfFailedReadings
+			};
+			var updateFutureStatesPromise;
+			if (processReadingResult.futureStates) {
+				updateFutureStatesPromise = ReadingProcessing.updateFutureStates(processReadingResult.futureStates);
+			} else {
+				updateFutureStatesPromise = Promise.resolve();
 			}
-			ReadingProcessing.updateFullBuildingIfNeeded(building).then(function(updatedBuilding) {
-				toReturn.building = updatedBuilding;
-				resolve(toReturn);
+
+			updateFutureStatesPromise.then(function() {
+				ReadingProcessing.updateFullBuildingIfNeeded(building).then(function(updatedBuilding) {
+					toReturn.building = updatedBuilding;
+					resolve(toReturn);
+				}, reject);
 			}, reject);
 		}, reject);
 	});
@@ -445,11 +478,16 @@ Processes a single reading.
 	building: The building this reading belongs to.
 	reading: The reading to process.
 	lastReading: The reading immediately before this one. Undefined if this is the first reading.
-	currentState: The current state of charge (allowed to edit, should clone if don't want edited).
-	Returns: A promise. On resolve, returns the new state.
+	currentProcessResult: The current process result. This is an object with the same return type as this function.
+	Returns: A promise. On resolve, returns an object like:
+		{
+			state: the new state,
+			futureStates: an array of future states to save. This is only present if generated.
+		}
 */
-ReadingProcessing.processReading = function(building, reading, lastReading, currentState) {
+ReadingProcessing.processReading = function(building, reading, lastReading, currentProcessResult) {
 	var State = app.models.State;
+	var currentState = currentProcessResult.state;
 	return new Promise(function(resolve, reject) {
 		// Apply the 'onlyProcessAfter' and 'onlyProcessUntil' logic on incoming live data.
 		if (building.onlyProcessAfter && reading.timestamp < building.onlyProcessAfter) {
@@ -495,7 +533,10 @@ ReadingProcessing.processReading = function(building, reading, lastReading, curr
 			
 			// Fill in future state predictions every half an hour.
 			if (ProcessingHelper.shouldRunEndOfHalfHourJobs(secondsSinceLastReading, reading.timestamp, true)) {
-				StatePredictions.predictFutureStates(building, currentState, reading.timestamp);
+				var futureStates = StatePredictions.predictFutureStates(building, currentState, reading.timestamp);
+				if (futureStates && futureStates.length > 0) {
+					currentProcessResult.futureStates = futureStates;
+				}
 			}
 
 			// Update the state timestamp to be up to date with the reading's timestamp.
@@ -517,12 +558,12 @@ ReadingProcessing.processReading = function(building, reading, lastReading, curr
 					if (error) {
 						reject(error);
 					} else {
-						resolve(currentState);
+						resolve(currentProcessResult);
 					}
 				});
 			} else {
 				// Resolve the state immediately if it doesn't need to be saved.
-				resolve(currentState);
+				resolve(currentProcessResult);
 			}
 		}, reject);
 	});
