@@ -12,12 +12,14 @@ app.factory('FutureStateHelper', function(ChartColours, $rootScope) {
   FutureStateHelper.getHourText = function(hourIndex) {
     hourIndex = parseInt(hourIndex);
     var number;
-    if (hourIndex < 12) {
-      number = hourIndex + 1;
+    if (hourIndex === 0) {
+      number = 12;
+    } else if (hourIndex < 13) {
+      number = hourIndex;
     } else {
-      number = hourIndex + 1 - 12;
+      number = hourIndex - 12;
     }
-    if (hourIndex < 11 || hourIndex === 23) {
+    if (hourIndex < 12) {
       return number + 'am';
     } else {
       return number + 'pm';
