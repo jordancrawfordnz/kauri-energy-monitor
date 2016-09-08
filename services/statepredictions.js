@@ -21,9 +21,16 @@ StatePredictions.HOUR_MULTIPULE = 0.5;
 
 */
 StatePredictions.predictFutureStates = function(building, currentState, timestamp) {
+		// TODO: Don't forget about when the battery is ALREADY charged, don't consider it almost charged! It has to go from not charged to being charged!
+			// Same with empty. The state actually has to change!
+
+	// Don't make any predictions in the prelim phase.
+	if (!currentState.emptyLevelEstablished) {
+		return;
+	}
 	// Round the timestamp to the start of the half hour period.
 	timestamp = ProcessingHelper.getTimestampToNearestHalfHour(timestamp);
-
+	
 	// Setup the initial future state based off the current state.
 	var currentFutureState = {};
 	currentFutureState.batteryCapacity = currentState.batteryCapacity; // keep the battery capacity the same throughout the prediction.
@@ -36,7 +43,7 @@ StatePredictions.predictFutureStates = function(building, currentState, timestam
 	};
 	currentFutureState.sources = {};
 
-	angular.forEach(building.energySources, function(energySource) {
+	building.energySources.forEach(function(energySource) {
 		var sourceCurrentState = currentState.sources[energySource.id];
 		if (!sourceCurrentState) {
 			return;
@@ -44,16 +51,16 @@ StatePredictions.predictFutureStates = function(building, currentState, timestam
 		var sourceFutureState = {};
 		sourceFutureState.dailyCharge = sourceCurrentState.dailyCharge;
 		sourceFutureState.hourlyCharge = sourceCurrentState.hourlyCharge;
-
+		
 		currentFutureState.sources[energySource.id] = sourceFutureState;
 	});
 
-	console.log('current future state');
-	console.log(currentFutureState);
 	var futureStates = [];
 
 	// Itterate through each HOURS_TO_PREDICT in half an hour blocks.
-	for (var currentHour = 0; currentHour < StatePredictions.HOURS_TO_PREDICT; currentHour++) {		
+	for (var currentHour = 0; currentHour < StatePredictions.HOURS_TO_PREDICT * (1/StatePredictions.HOUR_MULTIPULE); currentHour++) {		
+		currentFutureState.timestamp = timestamp;
+
 		// Get the day and hour index.
 		var dayIndex = EnergyFlow.getPredictionDayIndexFromEndOfLastHour(timestamp);
 		var hourIndex = EnergyFlow.getPredictionHourIndexFromEndOfLastHalfHour(timestamp);
@@ -69,7 +76,7 @@ StatePredictions.predictFutureStates = function(building, currentState, timestam
 
 		// Fill in generation details over the period and get the total generation.
 		var totalPeriodGeneration = 0;
-		angular.forEach(building.energySources, function(energySource) {
+		building.energySources.forEach(function(energySource) {
 			var source = currentFutureState.sources[energySource.id];
 			var generationContribution = EnergyFlow.getPredictedEnergy(energySource.predictionPattern, dayIndex, hourIndex) * StatePredictions.HOUR_MULTIPULE;
 			source.dailyCharge += generationContribution;
@@ -93,9 +100,9 @@ StatePredictions.predictFutureStates = function(building, currentState, timestam
 
 		// Move forward by half an hour.
 		timestamp += ProcessingHelper.SECONDS_IN_HOUR * StatePredictions.HOUR_MULTIPULE;
-
+		
 		// Copy and store the future state.
-		futureStates.push($.extend({}, currentFutureState));
+		futureStates.push(Object.assign({}, currentFutureState));
 	}
 
 	// Save the future state.

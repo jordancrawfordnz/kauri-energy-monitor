@@ -4,6 +4,7 @@ var moment = require('moment');
 var StateOfCharge = require('./stateofcharge.js');
 var EnergyFlow = require('./energyflow.js');
 var ProcessingHelper = require('./processinghelper.js');
+var StatePredictions = require('./statepredictions.js');
 
 var ReadingProcessing = {};
 module.exports = ReadingProcessing;
@@ -491,9 +492,9 @@ ReadingProcessing.processReading = function(building, reading, lastReading, curr
 			StateOfCharge.updateStateOfCharge(powerChangeSinceLastReading, currentState, batteryState, building, reading.timestamp, secondsSinceLastReading);
 			
 			EnergyFlow.updateEnergyFlowStates(currentState, building, sensorData, reading.timestamp, secondsSinceLastReading);
-
+			
 			// Fill in future state predictions every half an hour.
-			if (ProcessingHelper.shouldRunEndOfHalfHourJobs(timeSinceLastReading, reading.timestamp, true)) {
+			if (ProcessingHelper.shouldRunEndOfHalfHourJobs(secondsSinceLastReading, reading.timestamp, true)) {
 				StatePredictions.predictFutureStates(building, currentState, reading.timestamp);
 			}
 
