@@ -160,7 +160,7 @@ EnergyFlow.updatePredictionPattern = function(predictionPattern, newValue, predi
 				today = {};
 				data.days[dayIndex] = today;
 			}
-			today[hourIndex] = EnergyFlow.calculateNewRollingAverage(today[dayIndex], newValue, rollingAveragePeriod);
+			today[hourIndex] = EnergyFlow.calculateNewRollingAverage(today[hourIndex], newValue, rollingAveragePeriod);
 			break;
 		}
 		case 'daily': {
