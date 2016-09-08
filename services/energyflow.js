@@ -8,8 +8,9 @@ module.exports = EnergyFlow;
 
 EnergyFlow.CONSUMPTION_POWER_WEEKLY_ROLLING_AVERAGE_PERIOD = 3; // Consumption patterns averaged over three weeks.
 EnergyFlow.CONSUMPTION_PREDICTION_TYPE = 'weekly';
-
 EnergyFlow.ENERGY_SOURCE_POWER_DAILY_ROLLING_AVERAGE_PERIOD = 14; // Generation patterns averaged over two weeks.
+EnergyFlow.MAX_PREDICTION_MULTIPLIER = 1.5;
+EnergyFlow.MIN_PREDICTION_MULTIPLIER = 0.5;
 
 // Adjusts the current average with an exponential average.
 EnergyFlow.calculateNewExponentialAverage = function(currentAverage, newValue) {
@@ -52,6 +53,79 @@ EnergyFlow.getPredictionDayIndex = function(timestamp) {
 	return moment.unix(timestamp).day();
 };
 
+// Gets the raw predicted energy figure for a prediction pattern using a dayIndex and hourIndex.
+	// This is raw because it doesn't take the the prediction multiplier into account.
+EnergyFlow.getRawPredictedEnergy = function(predictionPattern, dayIndex, hourIndex) {
+	if (!predictionPattern || !predictionPattern.type || !predictionPattern.data) {
+		return 0; // if not a valid prediction pattern, assume no energy.
+	}
+	var data = predictionPattern.data;
+	switch (predictionPattern.type) {
+		case 'weekly': {
+			var day = data.days[dayIndex];
+			if (!day) {
+				return 0;
+			}
+			var hourTotal = day[hourIndex];
+			if (hourTotal === undefined) {
+				return 0;
+			} else {
+				return hourTotal;
+			}
+		}
+		case 'daily': {
+			var hourTotal = data.hours[hourIndex];
+			if (hourTotal === undefined) {
+				return 0;
+			} else {
+				return hourTotal;
+			}
+		}
+		case 'hourly': {
+			if (data.average === undefined) {
+				return 0;
+			} else {
+				return data.average;
+			}
+		}
+		default: {
+			return 0;
+		}
+	}
+};
+
+// Gets the predicted energy from a prediction pattern for a dayIndex and hourIndex.
+	// This means a simple API can be used by requesting services without needing to implement the logic for each prediction type.
+	// Returns the predicted energy total to use for the hour in Wh.
+EnergyFlow.getPredictedEnergy = function(predictionPattern, dayIndex, hourIndex) {
+	if (!predictionPattern || !predictionPattern.data || predictionPattern.data.predictionMultiplier === undefined) {
+		return 0; // if not a valid prediction pattern, assume no energy.
+	}
+	var rawPrediction = EnergyFlow.getRawPredictedEnergy(predictionPattern, dayIndex, hourIndex);
+	return predictionPattern.data.predictionMultiplier * rawPrediction;
+};
+
+// Set the prediction multiplier.
+		// This is the multiplier that would need to be applied to the original prediction of this hour to get to the real prediction.
+		// This can be used as an indiciation of how to predict the next hour.
+EnergyFlow.setPredictionMultiplier = function(predictionPattern, newValue, dayIndex, hourIndex) {
+	var previousPredictionOfHour = EnergyFlow.getRawPredictedEnergy(predictionPattern, dayIndex, hourIndex);
+	var data = predictionPattern.data;
+	var predictionMultiplier;
+	if (previousPredictionOfHour === 0) {
+		predictionMultiplier = 1;
+	} else {
+		predictionMultiplier = newValue / previousPredictionOfHour;	
+		// Cap the prediction multiplier to avoid extreme predictions from invalid data.
+		if (predictionMultiplier < EnergyFlow.MIN_PREDICTION_MULTIPLIER) {
+			predictionMultiplier = EnergyFlow.MIN_PREDICTION_MULTIPLIER;
+		} else if (predictionMultiplier > EnergyFlow.MAX_PREDICTION_MULTIPLIER) {
+			predictionMultiplier = EnergyFlow.MAX_PREDICTION_MULTIPLIER;
+		}
+	}
+	data.predictionMultiplier = predictionMultiplier;
+};
+
 /*
 	Updates the prediction pattern object for an energy source or building.
 	- predictionPattern: Object. The current pattern. This should not be null or undefined.
@@ -69,12 +143,15 @@ EnergyFlow.updatePredictionPattern = function(predictionPattern, newValue, predi
 	if (!predictionPattern.data) {
 		predictionPattern.data = {};
 	}
-
 	var data = predictionPattern.data;
+
+	var hourIndex = EnergyFlow.getPredictionHourIndex(timestamp);
+	var dayIndex = EnergyFlow.getPredictionDayIndex(timestamp);
+
+	EnergyFlow.setPredictionMultiplier(predictionPattern, newValue, dayIndex, hourIndex);
+			
 	switch (predictionType) {
 		case 'weekly': { // weekly cycles keep track of the average power over each hour of the week.
-			var hourIndex = EnergyFlow.getPredictionHourIndex(timestamp);
-			var dayIndex = EnergyFlow.getPredictionDayIndex(timestamp);
 			if (!data.days) {
 				data.days = {};
 			}
@@ -87,7 +164,6 @@ EnergyFlow.updatePredictionPattern = function(predictionPattern, newValue, predi
 			break;
 		}
 		case 'daily': {
-			var hourIndex = EnergyFlow.getPredictionHourIndex(timestamp);
 			if (!data.hours) {
 				data.hours = {};
 			}
