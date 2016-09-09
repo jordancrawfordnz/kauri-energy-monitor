@@ -8,7 +8,7 @@
  * Displays estimations of the future state of the system and the source data for these estimations.
  */
 angular.module('offgridmonitoringApp')
-  .controller('FutureStateCtrl', function ($scope, Building, $routeParams, Breadcrumbs, Breadcrumb, ChartColours, FutureStateHelper) {
+  .controller('FutureStateCtrl', function ($scope, Building, $routeParams, Breadcrumbs, Breadcrumb, ChartColours, FutureStateHelper, FutureState) {
   	var _this = this;
 
     $scope.building = Building.findById({
@@ -23,5 +23,9 @@ angular.module('offgridmonitoringApp')
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
     });
     Breadcrumbs.add(new Breadcrumb('Future State', '/' + $routeParams.buildingId + '/future', 'Estimations of the future state of the system and the data that powers it.'));
+
+    // Get all the Future States.
+      // TODO: Error on able to get future states.
+    $scope.futureStates = FutureState.find();
 
   });

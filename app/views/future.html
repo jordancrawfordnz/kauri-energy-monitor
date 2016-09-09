@@ -1,4 +1,39 @@
 <div class="row">
+	<div class="col-md-4" ng-if="futureStates">
+		<div class="box box-solid">
+			<div class="box-header with-border">
+				<h3 class="box-title">
+					Future States
+				</h3>
+			</div>
+			<div class="box-body">
+				<div class="scroll-table-container">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Time</th>
+								<th>State of Charge</th>
+								<th>Current Charge Level</th>
+									<!-- TODO: Values for consumption and generation throughout the hour / day. -->
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="futureState in futureStates">
+			    				<td>{{futureState.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+								<td>{{(futureState.currentChargeLevel / futureState.batteryCapacity * 100) | number:2}}%</td>
+								<td>{{futureState.currentChargeLevel | number:2}} Wh</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-8">
+		Graphs
+	</div>
+
 	<div class="col-md-12" ng-if="building.predictionPattern">
 	    <div class="box box-solid">
 	        <div class="box-header with-border">
