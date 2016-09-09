@@ -48,6 +48,7 @@ StatePredictions.predictFutureStates = function(building, currentState, timestam
 	
 	// Setup the initial future state based off the current state.
 	var currentFutureState = {};
+	currentFutureState.buildingId = building.id;
 	currentFutureState.batteryCapacity = currentState.batteryCapacity; // keep the battery capacity the same throughout the prediction.
 	currentFutureState.currentChargeLevel = currentState.currentChargeLevel; // start with the current charge level.
 	

@@ -121,6 +121,11 @@
       "type": "belongsTo",
       "model": "State",
       "foreignKey": ""
+    },
+    "futureStates": {
+      "type": "hasMany",
+      "model": "FutureState",
+      "foreignKey": ""
     }
   },
   "acls": [
