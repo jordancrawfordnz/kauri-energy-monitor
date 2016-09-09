@@ -64,6 +64,10 @@ angular
         templateUrl: 'views/future.html',
         controller: 'FutureStateCtrl'
       })
+      .when('/:buildingId/patterns', {
+        templateUrl: 'views/predictionpatterns.html',
+        controller: 'PredictionPatternCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

@@ -39,8 +39,13 @@ angular.module('offgridmonitoringApp')
       },
       {
         name : 'Future State',
-        icon : 'clock-o',
+        icon : 'magic',
         path : 'future'
+      },
+      {
+        name : 'Prediction Patterns',
+        icon : 'clock-o',
+        path : 'patterns'
       },
       {
         name : 'Battery State',
