@@ -268,6 +268,33 @@ module.factory(
           method: "PUT"
         },
 
+        // INTERNAL. Use Building.futureStates.findById() instead.
+        "prototype$__findById__futureStates": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/futureStates/:fk",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.futureStates.destroyById() instead.
+        "prototype$__destroyById__futureStates": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/futureStates/:fk",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Building.futureStates.updateById() instead.
+        "prototype$__updateById__futureStates": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/futureStates/:fk",
+          method: "PUT"
+        },
+
         // INTERNAL. Use Building.bridges() instead.
         "prototype$__get__bridges": {
           isArray: true,
@@ -415,6 +442,31 @@ module.factory(
         // INTERNAL. Use Building.energySources.count() instead.
         "prototype$__count__energySources": {
           url: urlBase + "/Buildings/:id/energySources/count",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.futureStates() instead.
+        "prototype$__get__futureStates": {
+          isArray: true,
+          url: urlBase + "/Buildings/:id/futureStates",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.futureStates.create() instead.
+        "prototype$__create__futureStates": {
+          url: urlBase + "/Buildings/:id/futureStates",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Building.futureStates.destroyAll() instead.
+        "prototype$__delete__futureStates": {
+          url: urlBase + "/Buildings/:id/futureStates",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Building.futureStates.count() instead.
+        "prototype$__count__futureStates": {
+          url: urlBase + "/Buildings/:id/futureStates/count",
           method: "GET"
         },
 
@@ -3196,6 +3248,307 @@ module.factory(
         R.energySources.updateById = function() {
           var TargetResource = $injector.get("EnergySource");
           var action = TargetResource["::updateById::Building::energySources"];
+          return action.apply(R, arguments);
+        };
+    /**
+     * @ngdoc object
+     * @name lbServices.Building.futureStates
+     * @header lbServices.Building.futureStates
+     * @object
+     * @description
+     *
+     * The object `Building.futureStates` groups methods
+     * manipulating `FutureState` instances related to `Building`.
+     *
+     * Call {@link lbServices.Building#futureStates Building.futureStates()}
+     * to query all related instances.
+     */
+
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building#futureStates
+         * @methodOf lbServices.Building
+         *
+         * @description
+         *
+         * Queries futureStates of Building.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `filter` – `{object=}` - 
+         *
+         * @param {function(Array.<Object>,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Array.<Object>} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `FutureState` object.)
+         * </em>
+         */
+        R.futureStates = function() {
+          var TargetResource = $injector.get("FutureState");
+          var action = TargetResource["::get::Building::futureStates"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.futureStates#count
+         * @methodOf lbServices.Building.futureStates
+         *
+         * @description
+         *
+         * Counts futureStates of Building.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `where` – `{object=}` - Criteria to match model instances
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * Data properties:
+         *
+         *  - `count` – `{number=}` - 
+         */
+        R.futureStates.count = function() {
+          var TargetResource = $injector.get("FutureState");
+          var action = TargetResource["::count::Building::futureStates"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.futureStates#create
+         * @methodOf lbServices.Building.futureStates
+         *
+         * @description
+         *
+         * Creates a new instance in futureStates of this model.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `FutureState` object.)
+         * </em>
+         */
+        R.futureStates.create = function() {
+          var TargetResource = $injector.get("FutureState");
+          var action = TargetResource["::create::Building::futureStates"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.futureStates#createMany
+         * @methodOf lbServices.Building.futureStates
+         *
+         * @description
+         *
+         * Creates a new instance in futureStates of this model.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Array.<Object>,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Array.<Object>} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `FutureState` object.)
+         * </em>
+         */
+        R.futureStates.createMany = function() {
+          var TargetResource = $injector.get("FutureState");
+          var action = TargetResource["::createMany::Building::futureStates"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.futureStates#destroyAll
+         * @methodOf lbServices.Building.futureStates
+         *
+         * @description
+         *
+         * Deletes all futureStates of this model.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * This method returns no data.
+         */
+        R.futureStates.destroyAll = function() {
+          var TargetResource = $injector.get("FutureState");
+          var action = TargetResource["::delete::Building::futureStates"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.futureStates#destroyById
+         * @methodOf lbServices.Building.futureStates
+         *
+         * @description
+         *
+         * Delete a related item by id for futureStates.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `fk` – `{*}` - Foreign key for futureStates
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * This method returns no data.
+         */
+        R.futureStates.destroyById = function() {
+          var TargetResource = $injector.get("FutureState");
+          var action = TargetResource["::destroyById::Building::futureStates"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.futureStates#findById
+         * @methodOf lbServices.Building.futureStates
+         *
+         * @description
+         *
+         * Find a related item by id for futureStates.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `fk` – `{*}` - Foreign key for futureStates
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `FutureState` object.)
+         * </em>
+         */
+        R.futureStates.findById = function() {
+          var TargetResource = $injector.get("FutureState");
+          var action = TargetResource["::findById::Building::futureStates"];
+          return action.apply(R, arguments);
+        };
+
+        /**
+         * @ngdoc method
+         * @name lbServices.Building.futureStates#updateById
+         * @methodOf lbServices.Building.futureStates
+         *
+         * @description
+         *
+         * Update a related item by id for futureStates.
+         *
+         * @param {Object=} parameters Request parameters.
+         *
+         *  - `id` – `{*}` - PersistedModel id
+         *
+         *  - `fk` – `{*}` - Foreign key for futureStates
+         *
+         * @param {Object} postData Request data.
+         *
+         * This method expects a subset of model properties as request parameters.
+         *
+         * @param {function(Object,Object)=} successCb
+         *   Success callback with two arguments: `value`, `responseHeaders`.
+         *
+         * @param {function(Object)=} errorCb Error callback with one argument:
+         *   `httpResponse`.
+         *
+         * @returns {Object} An empty reference that will be
+         *   populated with the actual data once the response is returned
+         *   from the server.
+         *
+         * <em>
+         * (The remote method definition does not provide any description.
+         * This usually means the response is a `FutureState` object.)
+         * </em>
+         */
+        R.futureStates.updateById = function() {
+          var TargetResource = $injector.get("FutureState");
+          var action = TargetResource["::updateById::Building::futureStates"];
           return action.apply(R, arguments);
         };
 
@@ -10872,6 +11225,65 @@ module.factory(
         "createChangeStream": {
           url: urlBase + "/FutureStates/change-stream",
           method: "POST"
+        },
+
+        // INTERNAL. Use Building.futureStates.findById() instead.
+        "::findById::Building::futureStates": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/futureStates/:fk",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.futureStates.destroyById() instead.
+        "::destroyById::Building::futureStates": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/futureStates/:fk",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Building.futureStates.updateById() instead.
+        "::updateById::Building::futureStates": {
+          params: {
+          'fk': '@fk'
+          },
+          url: urlBase + "/Buildings/:id/futureStates/:fk",
+          method: "PUT"
+        },
+
+        // INTERNAL. Use Building.futureStates() instead.
+        "::get::Building::futureStates": {
+          isArray: true,
+          url: urlBase + "/Buildings/:id/futureStates",
+          method: "GET"
+        },
+
+        // INTERNAL. Use Building.futureStates.create() instead.
+        "::create::Building::futureStates": {
+          url: urlBase + "/Buildings/:id/futureStates",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Building.futureStates.createMany() instead.
+        "::createMany::Building::futureStates": {
+          isArray: true,
+          url: urlBase + "/Buildings/:id/futureStates",
+          method: "POST"
+        },
+
+        // INTERNAL. Use Building.futureStates.destroyAll() instead.
+        "::delete::Building::futureStates": {
+          url: urlBase + "/Buildings/:id/futureStates",
+          method: "DELETE"
+        },
+
+        // INTERNAL. Use Building.futureStates.count() instead.
+        "::count::Building::futureStates": {
+          url: urlBase + "/Buildings/:id/futureStates/count",
+          method: "GET"
         },
       }
     );

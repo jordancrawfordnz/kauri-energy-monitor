@@ -25,5 +25,5 @@ angular.module('offgridmonitoringApp')
     Breadcrumbs.add(new Breadcrumb('Future State', '/' + $routeParams.buildingId + '/future', 'Estimations of the future state of the system.'));
 
     // Get all the Future States.
-    $scope.futureStates = FutureState.find();
+    $scope.futureStates = Building.futureStates({ id : $routeParams.buildingId });
   });
