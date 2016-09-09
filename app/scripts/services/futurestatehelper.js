@@ -64,5 +64,14 @@ app.factory('FutureStateHelper', function(ChartColours, $rootScope) {
       }
   };
 
+  FutureStateHelper.predictionEvents = {
+    fullyCharged : {
+      name : 'Fully charged'
+    },
+    empty : {
+      name : 'Empty'
+    }
+  };
+
   return FutureStateHelper;
 });

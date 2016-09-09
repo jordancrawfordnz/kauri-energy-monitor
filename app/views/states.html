@@ -98,6 +98,11 @@
 							    	<td>{{currentState.emptyLevelEstablished ? "Yes" : "No"}}</td>
 							    </tr>
 							    <tr>
+							    	<td>Next Future Event</td>
+							    	<td ng-if="!currentState.nextEvent">None</td>
+							    	<td ng-if="currentState.nextEvent">{{predictionEvents[currentState.nextEvent.type].name}} at {{currentState.nextEvent.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+							    </tr>
+							    <tr>
 							    	<td>Hourly consumption</td>
 							    	<td>{{currentState.consumption.hourlyTotal | number:2}} Wh</td>
 							    </tr>

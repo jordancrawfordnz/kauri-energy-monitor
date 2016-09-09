@@ -8,7 +8,7 @@
  * Provides a paginated view of states and a graph of state over time.
  */
 angular.module('offgridmonitoringApp')
-  .controller('StatesCtrl', function ($rootScope, $scope, $routeParams, Building, Breadcrumb, Breadcrumbs, State, Timestamp, ChartColours) {
+  .controller('StatesCtrl', function ($rootScope, $scope, $routeParams, Building, Breadcrumb, Breadcrumbs, State, Timestamp, ChartColours, FutureStateHelper) {
     /*
       Allows:
         - select a date range to display
@@ -25,6 +25,8 @@ angular.module('offgridmonitoringApp')
       'totalenergy' : 'Daily Total Energy'
     };
     $scope.activeDetailTab = 'socgraph';
+
+    $scope.predictionEvents = FutureStateHelper.predictionEvents;
 
     $scope.filter = $rootScope.batteryDataFilter;
     $scope.debounceTime = 500;
