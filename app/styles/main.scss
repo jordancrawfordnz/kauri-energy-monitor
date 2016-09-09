@@ -52,6 +52,17 @@
 	margin-top: 0px;
 }
 
+.building-summary .future-state {
+	text-align: center;
+	float: left;
+	margin: 30px;
+	margin-top: 50px;
+}
+
+.building-summary .future-state .prediction-headline {
+	font-size: 30px;
+}
+
 .clear { 
 	clear: both;
 }
@@ -91,6 +102,8 @@
 
 .main-sidebar {
 	position: fixed;
+	overflow: scroll;
+	height: 100%;
 }
 
 .main-header {
@@ -100,4 +113,9 @@
 
 .scroll-table-container {
 	overflow: scroll;
+}
+
+.no-padding-margin {
+	margin: 0px;
+	padding: 0px;
 }

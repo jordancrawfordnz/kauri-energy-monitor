@@ -8,8 +8,12 @@
  * Displays a summary of key indicators about a building.
  */
 angular.module('offgridmonitoringApp')
-  .controller('BuildingSummaryCtrl', function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours, ChartHelper) {
-  	var _this = this;
+  .controller('BuildingSummaryCtrl',
+    function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours, ChartHelper, FutureStateHelper) {
+  	
+    var _this = this;
+
+    this.predictionEvents = FutureStateHelper.predictionEvents;
 
     this.building = Building.findById({
       id : $routeParams.buildingId,
