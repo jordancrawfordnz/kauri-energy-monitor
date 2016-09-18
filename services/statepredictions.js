@@ -36,9 +36,6 @@ StatePredictions.isBatteryFullInFutureState = function(futureState) {
 
 */
 StatePredictions.predictFutureStates = function(building, currentState, timestamp) {
-		// TODO: Don't forget about when the battery is ALREADY charged, don't consider it almost charged! It has to go from not charged to being charged!
-			// Same with empty. The state actually has to change!
-
 	// Don't make any predictions in the prelim phase.
 	if (!currentState.emptyLevelEstablished) {
 		return;
@@ -118,8 +115,8 @@ StatePredictions.predictFutureStates = function(building, currentState, timestam
 			
 			// Update the generation totals.
 			var generationContribution = EnergyFlow.getPredictedEnergy(energySource.predictionPattern, dayIndex, hourIndex) * StatePredictions.HOUR_MULTIPULE;
-			source.dailyCharge += generationContribution;
 			source.hourlyCharge += generationContribution;
+				// daily charge is updated below.
 			totalPeriodGeneration += generationContribution;
 		});
 
@@ -131,8 +128,29 @@ StatePredictions.predictFutureStates = function(building, currentState, timestam
 			netBatteryChange *= currentState.chargeEfficiency;
 		}
 
-		// Update the future state.
-		currentFutureState.currentChargeLevel += netBatteryChange;
+		// If not all the energy could flow into the battery without it getting full.
+		var unusedEnergy = currentFutureState.currentChargeLevel + netBatteryChange - currentFutureState.batteryCapacity;
+		if (unusedEnergy > 0) {
+			currentFutureState.currentChargeLevel = currentFutureState.batteryCapacity;
+
+			// Determine the proportion of total energy used.
+			var proportionOfTotalEnergyUsed = (netBatteryChange - unusedEnergy) / netBatteryChange;
+
+			// Multiply the hourly energy totals of each source by the proportionOfTotalEnergyUsed.
+			building.energySources.forEach(function(energySource) {
+				var source = currentFutureState.sources[energySource.id];
+				source.hourlyCharge *= proportionOfTotalEnergyUsed;
+			});
+		} else {
+			// Update the future state.
+			currentFutureState.currentChargeLevel += netBatteryChange;
+		}
+
+		// Include the sources hourly charge total in the daily charge total.
+		building.energySources.forEach(function(energySource) {
+			var source = currentFutureState.sources[energySource.id];
+			source.dailyCharge += source.hourlyCharge;
+		});
 
 		// Check for any critical events if one hasn't already been found.
 		var predictionFullyCharged = StatePredictions.isBatteryFullInFutureState(currentFutureState);
