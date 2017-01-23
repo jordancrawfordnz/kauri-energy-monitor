@@ -1,0 +1,54 @@
+<!-- TODO: Grab the controller code from buildingconfiguration -->
+
+<div class="col-md-6">
+  <!-- State generation status. -->
+  <div class="box box-primary">
+    <div class="box-header with-border">
+      <h3 class="box-title">Data processing</h3>
+    </div>
+    <div class="box-body">
+      <p>
+        Re-generate all existing data if a key parameter changes. This will clear all calibration points and states and this process may take several minutes.
+      </p>
+      <span ng-if="buildingConfig.regenerationStatus === undefined">
+        <strong>Loading current state...</strong>
+      </span>
+      <span ng-if="buildingConfig.regenerationStatus !== undefined && buildingConfig.regenerationStatus.statesAreRegenerating">
+        <h4><span class="fa fa-circle-o-notch fa-spin fa-fw"></span> Processing data.</h4>
+        The processing status will update automatically.
+      </span>
+      <span ng-if="buildingConfig.regenerationStatus !== undefined && !buildingConfig.regenerationStatus.statesAreRegenerating">
+        <h4><span class="fa fa-check"></span> Processing live data.</h4>
+        <button ng-disabled="editBuildingForm.regenerationStatus.statesAreRegenerating" ng-click="buildingConfig.regenerateStates()" class="btn btn-primary"><span class="fa fa-refresh"></span> Re-process data</button>
+
+        <span ng-if="buildingConfig.regenerationStatus.lastRegeneration">
+          <h4>Last re-process status</h4>
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <td>Started at</td>
+                <td>{{buildingConfig.regenerationStatus.lastRegeneration.startTime | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+              </tr>
+              <tr>
+                <td>Finished at</td>
+                <td>{{buildingConfig.regenerationStatus.lastRegeneration.finishTime | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+              </tr>
+              <tr>
+                <td>Time taken</td>
+                <td>{{buildingConfig.regenerationStatus.lastRegeneration.totalTime | number}} seconds</td>
+              </tr>
+              <tr>
+                <td>Successful readings</td>
+                <td>{{buildingConfig.regenerationStatus.lastRegeneration.numberOfSuccessfulReadings | number}} readings.</td>
+              </tr>
+              <tr>
+                <td>Failed readings</td>
+                <td>{{buildingConfig.regenerationStatus.lastRegeneration.numberOfFailedReadings | number}} readings.</td>
+              </tr>
+            </tbody>
+          </table>
+        </span>
+      </span>
+    </div>
+  </div>
+</div>

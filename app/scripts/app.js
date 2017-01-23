@@ -94,7 +94,7 @@ angular
     });
   })
   .run(function($rootScope, LoopBackAuth, $location, People, Breadcrumbs) {
-    $rootScope.$on('$routeChangeStart', function(next, current) { 
+    $rootScope.$on('$routeChangeStart', function(next, current) {
       $rootScope.showBreadcrumbs = current.$$route.showBreadcrumbs !== false;
     });
 
@@ -139,7 +139,7 @@ angular
     ];
 
     $rootScope.dateTimeFormat = 'D/M/Y LTS';
-    
+
     $rootScope.logout = function() {
       LoopBackAuth.clearUser();
       LoopBackAuth.clearStorage();
@@ -160,8 +160,8 @@ angular
         });
       }
     };
-  
-    // Try get the user's details.    
+
+    // Try get the user's details.
     getUserDetails();
     $rootScope.$on('login', getUserDetails);
 

@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-xs-6">
             <h1 class="building-name">
-                Pauaeke
+                {{summary.building.name}}
                 <small>
                     <div ng-if="summary.state.timestamp">
                         <span am-time-ago="summary.state.timestamp | amFromUnix"></span>
@@ -36,7 +36,7 @@
                         <!-- Battery level information -->
                         <div class="battery-info">
                             <span class="percentage">{{summary.chargeLevel * 100 | number : 0}}%</span>
-                            
+
                             <h3 class="charging-state">
                                 <i class="fa" ng-class="{'fa-arrow-up' : summary.state.isBatteryCharging, 'fa-arrow-down' : !summary.state.isBatteryCharging}"></i>
                                 {{summary.state.isBatteryCharging ? 'Charging' : 'Discharging'}}

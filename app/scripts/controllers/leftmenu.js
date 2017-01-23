@@ -20,7 +20,7 @@ angular.module('offgridmonitoringApp')
 
     this.generalNavigation = [
       {
-        name : 'My Buildings',
+        name : 'Buildings',
         icon : 'building',
         path : ''
       }
@@ -75,7 +75,7 @@ angular.module('offgridmonitoringApp')
 
     this.isPerBuildingNavigationSelected = function(navItem, building) {
       if (navItem.path === '') {
-        return $location.$$path === '/' + building.id; 
+        return $location.$$path === '/' + building.id;
       }
       else {
         return $location.$$path === '/' + building.id + '/' + navItem.path;

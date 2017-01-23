@@ -10,7 +10,7 @@
 angular.module('offgridmonitoringApp')
   .controller('BuildingSummaryCtrl',
     function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours, ChartHelper, FutureStateHelper) {
-  	
+
     var _this = this;
 
     this.predictionEvents = FutureStateHelper.predictionEvents;
@@ -46,7 +46,7 @@ angular.module('offgridmonitoringApp')
           {
             afterDataLimits : function(scale) {
               if (_this.building) {
-                ChartHelper.setTickColour(scale, _this.building.standardPowerAxis); 
+                ChartHelper.setTickColour(scale, _this.building.standardPowerAxis);
               }
             },
             scaleLabel: {
@@ -76,7 +76,7 @@ angular.module('offgridmonitoringApp')
       if (level < 0) {
         return 0;
       }
-      
+
       return level;
     };
 
@@ -124,7 +124,7 @@ angular.module('offgridmonitoringApp')
           _this.chargeLevel = 0;
         }
         setupEnergyFlowGraph();
-        
+
         // If don't have any data on the last 24 hour's states.
         if (!_this.last24HourStates) {
           // Get the current 24 hour data and refresh this every 10 minutes.
@@ -167,7 +167,7 @@ angular.module('offgridmonitoringApp')
         value : _this.state.consumption.averagePower,
         colour : _this.building.houseConsumptionColour
       });
-      
+
       // Sort energy sources.
       ChartHelper.sortEnergySources(_this.building.energySources);
 
