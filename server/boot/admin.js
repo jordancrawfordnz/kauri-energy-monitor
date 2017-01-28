@@ -15,7 +15,7 @@ module.exports = function setupAdmin(server) {
     if (count < 1) {
       // Create admin user.
       People.create([
-        { email: 'defaultuser@example.com', password: 'changeme', name: 'Default User'}
+        { email: 'default@example.com', password: 'changeme', name: 'Default User'}
       ], function(err, users) {
         if (err) {
           console.log('An error occured adding default people.');

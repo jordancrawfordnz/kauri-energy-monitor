@@ -28,6 +28,9 @@ module.exports = function(Building) {
 		app.models.People.findById(ctx.req.accessToken.userId, function(err, person) {
 			if (!err && person) {
 				modelInstance.people.add(person);
+				next();
+			} else {
+				next(err);
 			}
 		});
 	});
