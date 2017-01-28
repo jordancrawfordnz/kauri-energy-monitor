@@ -1,41 +1,38 @@
-<div class="buildings" ng-controller="BuildingsCtrl as buildings">
-	<div class="row">
-	  <div ng-repeat="building in buildings.buildings" class="col-sm-6 col-md-4">
-	    <div class="thumbnail">
-	      <div class="caption">
-	        <h3 class="name"><a ng-href="/{{building.id}}">{{building.name}}</a></h3>
-
-	        Building owners:
-	        <ul>
-	        	<li ng-repeat="owner in building.people">{{owner.name}}</li>
-	        </ul>
-	      </div>
-	    </div>
-	  </div>
-	</div>
-</div>
-
 <!-- TODO: Add edit, delete, add functunality. -->
 
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-  Launch demo modal
-</button>
+<div class="buildings" ng-controller="BuildingsCtrl as buildings">
+  <p>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+      <span class="glyphicon glyphicon-plus"/> New
+    </button>
+  </p>
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+  <div class="row">
+    <div ng-repeat="building in buildings.buildings" class="col-sm-6 col-md-4">
+      <div class="thumbnail">
+        <div class="caption">
+          <h3 class="name"><a ng-href="/{{building.id}}">{{building.name}}</a></h3>
+
+          Building owners:
+          <ul>
+          	<li ng-repeat="owner in building.people">{{owner.name}}</li>
+          </ul>
+        </div>
       </div>
-      <div class="modal-body">
-        <building-configuration></building-configuration>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+    </div>
+  </div>
+
+  <!-- Create building -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">New Building</h4>
+        </div>
+        <div class="modal-body">
+          <building-configuration building="{ standardDailyEnergyAxis: 10000, standardPowerAxis: 1500 }" on-save-success="buildings.newBuildingCreated()"></building-configuration>
+        </div>
       </div>
     </div>
   </div>

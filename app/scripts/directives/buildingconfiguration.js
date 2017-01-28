@@ -14,7 +14,8 @@ angular.module('offgridmonitoringApp')
 	    restrict: 'E', // to be used via an element only.
 	    controller: 'BuildingConfigCtrl',
 	    scope: {
-	    	building : '=building'
+	    	building : '=building',
+				onSaveSuccess : '&onSaveSuccess'
 	    },
 	    templateUrl: 'views/buildingconfiguration.html'
 	  };

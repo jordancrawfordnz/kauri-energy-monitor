@@ -16,9 +16,9 @@ angular.module('offgridmonitoringApp')
 	    	$scope.hourIndexes = FutureStateHelper.hourIndexes;
 		    $scope.getHourText = FutureStateHelper.getHourText;
 		    $scope.getDayText = FutureStateHelper.getDayText;
-		    
+
 	    	$scope.averageConsumptionLabels = [];
-    
+
 		    $scope.averageConsumptionData = [
 		    	[]
 		    ];
