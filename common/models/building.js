@@ -21,6 +21,17 @@ module.exports = function(Building) {
 		});
 	}
 
+	// On creating a person, add the current person as an owner.
+		// Originally intended to do this as an 'after save' but fetching the accessToken proved difficult.
+	Building.afterRemote('create', function(ctx, modelInstance, next) {
+		var app = Building.app;
+		app.models.People.findById(ctx.req.accessToken.userId, function(err, person) {
+			if (!err && person) {
+				modelInstance.people.add(person);
+			}
+		});
+	});
+
 	/*
 		Re-generates the entire state of the system by:
 			- deleting all existing State's for the building
