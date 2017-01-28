@@ -1,5 +1,5 @@
 module.exports = function enableBridgeAuthentication(server) {
-    var Role = server.models.Role;
+  var Role = server.models.Role;
 	Role.registerResolver('authenticatedBridge', function(role, context, callback) {
     // Reject's an un-authenticated bridge.
     function reject(err) {
@@ -16,7 +16,7 @@ module.exports = function enableBridgeAuthentication(server) {
     // Check if the bridge model is being acessed.
     if (context.modelName === 'Bridge') {
         var providedBridgeSecret = context.remotingContext.req.query.bridgeSecret;
-        
+
         // Need a bridge secret to authenticate.
         if (providedBridgeSecret) {
             // Fetch this bridge.

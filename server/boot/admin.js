@@ -1,51 +1,50 @@
 module.exports = function setupAdmin(server) {
-  	// setup the admin role.
-  	var Role = server.models.Role;
-  	var People = server.models.People;
+  // Sets up an admin user.
+  var Role = server.models.Role;
+  var People = server.models.People;
+  var RoleMapping = server.models.RoleMapping;
 
-  		// TODO: Don't do this in production.
-  	// Check if there are any people.
-  	People.count(function(err, count) {
-  		if (err) {
-  			console.log('An error occured getting the count of people.');
-  			console.log(err);
-  		}
+  // Check if there are any people.
+  People.count(function(err, count) {
+    if (err) {
+      console.log('An error occured getting the count of people.');
+      console.log(err);
+    }
 
-  		// If no users, setup an admin user.
-  		if (count < 1) {
-			// Create admin user.
-		  		// TODO: Support changing user passwords / add here in encrypted form.
-			People.create([
-			    { email: 'jordan@crawford.kiwi', password: '8nyW6p6LTzQ7WahAj8Tk', name: 'Jordan Crawford'}
-			], function(err, users) {
-				if (err) {
-					console.log('An error occured adding default people.');
-					console.log(err);
-					return;
-				}
+    // If no users, setup an admin user.
+    if (count < 1) {
+      // Create admin user.
+      People.create([
+        { email: 'defaultuser@example.com', password: 'changeme', name: 'Default User'}
+      ], function(err, users) {
+        if (err) {
+          console.log('An error occured adding default people.');
+          console.log(err);
+          return;
+        }
 
-				// Create an admin role.
-				Role.create({
-			    	name: 'admin'
-				}, function(err, role) {
-			    	if (err) {
-			    		console.log('An error occured creating the admin role.');
-						console.log(err);
-						return;
-			    	}
-				   	
-				    // Make Jordan an admin.
-				    role.principals.create({
-				    	principalType: 'USER',
-				    	principalId: users[0].id
-				    }, function(err, principal) {
-				        if (err) {
-							console.log('An error occured while making Jordan an admin.');
-							console.log(err);
-				        }
-				    });
-				});
-			});
-  		}
-  	});
+        // Create an admin role.
+        Role.create({
+              name: 'admin'
+        }, function(err, role) {
+          if (err) {
+            console.log('An error occured creating the admin role.');
+            console.log(err);
+            return;
+          }
+
+          // Make the default user an admin.
+          role.principals.create({
+            principalType: RoleMapping.USER,
+            principalId: users[0].id
+          }, function(err, principal) {
+            if (err) {
+              console.log('An error occured while making the default user an admin.');
+              console.log(err);
+            }
+          });
+        });
+      });
+    }
+  });
 };

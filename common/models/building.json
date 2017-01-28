@@ -10,34 +10,6 @@
       "type": "string",
       "required": true
     },
-    "lowVoltageTriggerTime": {
-      "type": "number",
-      "required": true
-    },
-    "lowVoltageLevel": {
-      "type": "number",
-      "required": true
-    },
-    "dailyAgingPercentage": {
-      "type": "number",
-      "required": true
-    },
-    "tolerancePercentage": {
-      "type": "number",
-      "required": true
-    },
-    "highPowerThreshold": {
-      "type": "number",
-      "required": true
-    },
-    "recalculateChargeEfficiencyCapacityMultiplier": {
-      "type": "number",
-      "required": true
-    },
-    "houseConsumptionColour": {
-      "type": "string",
-      "required": true
-    },
     "standardPowerAxis": {
       "type": "number",
       "required": true
@@ -45,6 +17,27 @@
     "standardDailyEnergyAxis": {
       "type": "number",
       "required": true
+    },
+    "lowVoltageTriggerTime": {
+      "type": "number"
+    },
+    "lowVoltageLevel": {
+      "type": "number"
+    },
+    "dailyAgingPercentage": {
+      "type": "number"
+    },
+    "tolerancePercentage": {
+      "type": "number"
+    },
+    "highPowerThreshold": {
+      "type": "number"
+    },
+    "recalculateChargeEfficiencyCapacityMultiplier": {
+      "type": "number"
+    },
+    "houseConsumptionColour": {
+      "type": "string"
     },
     "statesAreRegenerating": {
       "type": "boolean"
@@ -138,14 +131,15 @@
     {
       "accessType": "*",
       "principalType": "ROLE",
-      "principalId": "buildingOwner",
+      "principalId": "admin",
       "permission": "ALLOW"
     },
     {
-      "accessType": "*",
+      "accessType": "EXECUTE",
       "principalType": "ROLE",
-      "principalId": "admin",
-      "permission": "ALLOW"
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "create"
     }
   ],
   "methods": {}

@@ -70,10 +70,10 @@ module.exports = function(Building) {
 							return;
 						}
 						building = updatedBuilding.toJSON(); // make the building a pure JSON object.
-						
+
 						// Process each page serially in the background.
 						ReadingProcessing.processAllReadings(building).then(function(result) {
-							removeProcessingState(updatedBuilding, result);							
+							removeProcessingState(updatedBuilding, result);
 						}, function(error) {
 							console.log('Error while processing state.');
 							console.log(error);

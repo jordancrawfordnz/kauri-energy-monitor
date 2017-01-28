@@ -3,7 +3,7 @@ module.exports = function clearGeneratingBuildings(server) {
 
   	// Gets buildings that have 'statesAreRegenerating' set.
   	Building.find({
-  		where : { 
+  		where : {
   			statesAreRegenerating : true
   		}
   	}, function(getBuildingsError, buildingsRegeneratingStates) {

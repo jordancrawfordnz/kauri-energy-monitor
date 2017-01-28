@@ -80,21 +80,21 @@ Processes all readings.
 ReadingProcessing.processAllReadings = function(building) {
 	var State = app.models.State;
 	var Building = app.models.Building;
-	
+
 	var amountPerPage = 10000;
 	var Reading = app.models.Reading;
 	var startTime = Math.floor(Date.now() / 1000);
 	return new Promise(function(resolve, reject) {
 		// TODO: Use only one bridge for a building.
 		var bridge = building.bridges[0];
-		
+
 		var currentState = ReadingProcessing.getStateTemplate(building);
 		processPage(building, bridge, 0, null, currentState).then(function(result) {
 			var finishTime = Math.floor(Date.now() / 1000);
 			result.startTime = startTime;
 			result.finishTime = finishTime;
 			result.totalTime = finishTime - startTime;
-			
+
 			if (result.numberOfSuccessfulReadings === 0) {
 				// Don't save the current state if there are no successful readings.
 				resolve(result);
@@ -260,7 +260,7 @@ ReadingProcessing.processReadingsSerially = function(building, readings, initial
 				resolve(currentProcessResult);
 			} else {
 				var currentReading = readings[readingIndex];
-				
+
 				// Get this result.
 				ReadingProcessing.processReading(building, currentReading, lastReading, currentProcessResult).then(function(processReadingResult) {
 					// Run the next value with the result.
@@ -351,6 +351,32 @@ ReadingProcessing.analyseVoltage = function(building, currentState, timestamp, s
 	return toReturn;
 };
 
+// Checks a building has the configuration required to allow reading processing.
+	// Returns true if it does.
+ReadingProcessing.buildingHasProcessingParams = function(building) {
+	var hasRequiredFields = true;
+
+	[
+		"lowVoltageTriggerTime",
+		"lowVoltageLevel",
+		"dailyAgingPercentage",
+		"tolerancePercentage",
+		"highPowerThreshold",
+		"recalculateChargeEfficiencyCapacityMultiplier",
+		"houseConsumptionColour",
+		"batteryVoltageSensor",
+		"batteryCurrentSensor",
+		"buildingPowerSensor",
+		"loadCurrentSensor"
+	].forEach(function(fieldName) {
+		if (!building[fieldName]) {
+			hasRequiredFields = false;
+		}
+	});
+
+	return hasRequiredFields;
+};
+
 /*
 Populates an array of sensor data filled in with current reading and last reading's data, including user specified energy sources.
 	Returns a Promise that resolves an object of the form:
@@ -424,7 +450,7 @@ ReadingProcessing.getSensorData = function(reading, lastReading, building) {
 					haveAllReadings = false;
 					return;
 				}
-				
+
 				var lastCurrentReading = 0;
 				if (lastReading) {
 					lastCurrentReading = lastReading.values[sensorIdToUse];
@@ -432,11 +458,11 @@ ReadingProcessing.getSensorData = function(reading, lastReading, building) {
 						lastCurrentReading = 0;
 					}
 				}
-				
+
 				// Subtract this current from the 'other' currents (except for the charger, this is already subtracted).
 				if (energySource.currentSensorId !== ProcessingHelper.CHARGER_SENSOR_ID) {
 					otherCurrent -= currentReading;
-					lastReadingOtherCurrent -= lastCurrentReading;	
+					lastReadingOtherCurrent -= lastCurrentReading;
 				}
 
 				// Set the sensor data.
@@ -508,6 +534,11 @@ ReadingProcessing.processReading = function(building, reading, lastReading, curr
 			return;
 		}
 
+		if (!ReadingProcessing.buildingHasProcessingParams(building)) {
+			reject('Processing parameters for the building are missing.');
+			return;
+		}
+
 		// Get the sensor data which collects the important data from reading and lastReading plus checks for errors.
 		ReadingProcessing.getSensorData(reading, lastReading, building).then(function(sensorData) {
 			var powerChangeSinceLastReading;
@@ -528,9 +559,9 @@ ReadingProcessing.processReading = function(building, reading, lastReading, curr
 
 			// Update the state of charge.
 			StateOfCharge.updateStateOfCharge(powerChangeSinceLastReading, currentState, batteryState, building, reading.timestamp, secondsSinceLastReading);
-			
+
 			EnergyFlow.updateEnergyFlowStates(currentState, building, sensorData, reading.timestamp, secondsSinceLastReading);
-			
+
 			// Fill in future state predictions every half an hour.
 			if (ProcessingHelper.shouldRunEndOfHalfHourJobs(secondsSinceLastReading, reading.timestamp, true)) {
 				var futureStates = StatePredictions.predictFutureStates(building, currentState, reading.timestamp);
