@@ -33,10 +33,36 @@ angular.module('offgridmonitoringApp')
       $rootScope.$broadcast('refreshBuildings');
     };
 
+    this.showBuildingDeleteConfirmation = function(building) {
+      this.deleteConfirmationBuilding = building;
+
+      $("#deleteBuildingConfirmationModal").modal().show();
+    };
+
+    this.deleteBuilding = function(building) {
+      Building.deleteById({
+        id: building.id
+      }).$promise.then(function(result) {
+        this.buildingDeleteError = false;
+        this.buildingDeleteSuccess = true;
+
+        $timeout(function() {
+          this.buildingDeleteSuccess = false;
+        }.bind(this), 5*1000);
+
+        this.onBuildingChange();
+      }.bind(this), function() {
+        this.buildingDeleteError = true;
+        this.buildingDeleteSuccess = false;
+
+        $timeout(function() {
+          this.buildingDeleteError = false;
+        }.bind(this), 5*1000);
+      }.bind(this));
+    };
+
     this.createNewBuilding = function() {
       // Close the modal.
-      $("#createBuildingModal").modal('toggle');
-
       var savedNewBuilding = Building.create(this.newBuilding);
       savedNewBuilding.$promise.then(function() {
         this.buildingCreateError = false;
