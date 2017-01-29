@@ -2,6 +2,10 @@
   display: none !important;
 }
 
+body, .login-box-body {
+  background-color: #ecf0f5;
+}
+
 .buildings .name a {
 	color: black !important;
 }
@@ -63,7 +67,7 @@
 	font-size: 30px;
 }
 
-.clear { 
+.clear {
 	clear: both;
 }
 
