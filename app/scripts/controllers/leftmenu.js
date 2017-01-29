@@ -17,6 +17,7 @@ angular.module('offgridmonitoringApp')
     };
     initialiseBuildings();
     $scope.$on('login', initialiseBuildings);
+    $scope.$on('refreshBuildings', initialiseBuildings);
 
     this.generalNavigation = [
       {

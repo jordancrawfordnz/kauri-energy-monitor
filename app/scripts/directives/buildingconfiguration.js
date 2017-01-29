@@ -9,14 +9,18 @@
  */
 
 angular.module('offgridmonitoringApp')
-	.directive('buildingConfiguration', function() {
-	  return {
-	    restrict: 'E', // to be used via an element only.
-	    controller: 'BuildingConfigCtrl',
-	    scope: {
-	    	building : '=building',
-				onSaveSuccess : '&onSaveSuccess'
-	    },
-	    templateUrl: 'views/buildingconfiguration.html'
-	  };
-	});
+  .directive('buildingConfiguration', function() {
+    return {
+      restrict: 'E', // to be used via an element only.
+      scope: {
+        building : '=building',
+        isValid : '=isValid'
+      },
+      controller: ['$scope', function($scope) {
+        $scope.$watch('editBuildingForm.$valid', function(validity) {
+          $scope.isValid = validity;
+        });
+      }],
+      templateUrl: 'views/buildingconfiguration.html'
+    };
+  });

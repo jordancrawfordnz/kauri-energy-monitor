@@ -1,18 +1,7 @@
-<!-- Building error messages -->
-<div class="callout callout-danger" ng-if="buildingSaveError">
-  <h4>Building {{wasCreate ? "creation" : "save"}} failed</h4>
-  <p>There was a problem while {{wasCreate ? "creating" : "saving"}} the building. Please try again.</p>
-</div>
-
-<div class="callout callout-success" ng-if="buildingSaveSuccess">
-  <h4>Building {{wasCreate ? "created" : "saved"}} successfully</h4>
-  <p>The building has been {{wasCreate ? "created" : "saved"}} successfully.</p>
-</div>
-
 <!-- Building parameters -->
 <form role="form" name="editBuildingForm" novalidate>
     <div class="box-body">
-      <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.name.$dirty && editBuildingForm.name.$invalid}">
+      <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.name.$invalid}">
         <label for="name">Name</label>
         <input class="form-control" type="text" ng-model="building.name" name="name" id="name" required>
       </div>
@@ -35,6 +24,4 @@
         </div>
       </div>
     </div>
-    <button ng-disabled="editBuildingForm.$invalid" type="submit" ng-click="saveBuilding()" class="btn btn-primary pull-right">{{isCreate() ? "Create" : "Save"}}</button>
-    <br><br>
 </form>
