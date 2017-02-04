@@ -1,27 +1,26 @@
-<!-- Building parameters -->
-<form role="form" name="editBuildingForm" novalidate>
-    <div class="box-body">
-      <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.name.$invalid}">
-        <label for="name">Name</label>
-        <input class="form-control" type="text" ng-model="building.name" name="name" id="name" required>
-      </div>
+<div ng-repeat="message in messages">
+  <div class="alert alert-dismissible", ng-class="{'alert-danger': !message.isSuccess, 'alert-success': message.isSuccess}">
+    <button type="button" ng-click="message.remove()" class="close" aria-hidden="true">×</button>
+    <h4><i class="icon fa" ng-class="{'fa-warning': !message.isSuccess, 'fa-check': message.isSuccess}"></i> {{message.title}}</h4>
+    {{message.body}}
+  </div>
+</div>
 
-      <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.standardPowerAxis.$dirty && editBuildingForm.standardPowerAxis.$invalid}">
-        <label for="standardPowerAxis">Standard axis for power graphs</label>
-        <p>This is the power that is used as the Y axis for power graphs, unless a higher value is required.</p>
-        <div class="input-group">
-          <input class="form-control" type="number" ng-model="building.standardPowerAxis" name="standardPowerAxis" id="standardPowerAxis" required>
-          <span class="input-group-addon">Watts</span>
-        </div>
-      </div>
-
-      <div class="form-group" ng-class="{ 'has-error' : editBuildingForm.standardDailyEnergyAxis.$dirty && editBuildingForm.standardDailyEnergyAxis.$invalid}">
-        <label for="standardDailyEnergyAxis">Standard axis for daily energy graphs</label>
-        <p>This is the daily energy in Wh that is used as the Y axis for daily energy graphs, unless a higher value is required.</p>
-        <div class="input-group">
-          <input class="form-control" type="number" ng-model="building.standardDailyEnergyAxis" name="standardDailyEnergyAxis" id="standardDailyEnergyAxis" required>
-          <span class="input-group-addon">Wh</span>
-        </div>
-      </div>
+<div class="nav-tabs-custom">
+  <ul class="nav nav-tabs">
+    <li ng-class="{'active' : tabId === activeDetailTab}" ng-repeat="(tabId, tabName) in detailTabs">
+      <a ng-click="$parent.activeDetailTab = tabId">{{tabName}}</a>
+    </li>
+  </ul>
+  <div class="tab-content" ng-switch="activeDetailTab">
+    <div ng-switch-when="building" class="tab-pane active">
+      <core-building-config building="building" save-building="saveBuilding()" showSuccess="showSuccess(title, body)" showError="showError(title, body)"></core-building-config>
     </div>
-</form>
+    <div ng-switch-when="collection" class="tab-pane active">
+      <!-- TODO -->
+    </div>
+    <div ng-switch-when="processing" class="tab-pane active">
+      <!-- TODO -->
+    </div>
+  </div>
+</div>

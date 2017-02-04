@@ -2,38 +2,78 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:BuildingConfigCtrl
+ * @name offgridmonitoringApp.controller:BuildingConfigurationCtrl
  * @description
- * # BuildingConfigCtrl
- * Allows users to create or edit core building parameters.
+ * # BuildingConfigurationCtrl
+ * Allows a user to edit config options related to a building.
  */
-angular.module('offgridmonitoringApp').controller('BuildingConfigCtrl', function ($rootScope, $scope, Building, $timeout) {
-  $scope.isCreate = function() {
-    return !$scope.building.id;
+angular.module('offgridmonitoringApp').controller('BuildingConfigurationCtrl',
+  function ($routeParams, $rootScope, $scope, Building, Breadcrumbs, Breadcrumb, $timeout) {
+
+  var buildingId = $routeParams.buildingId;
+
+  $scope.detailTabs = {
+    'building' : 'Building',
+    'collection' : 'Data Collection',
+    'processing' : 'Data Processing'
+  };
+  $scope.activeDetailTab = 'building';
+
+  function getBuilding() {
+    $scope.building = Building.findById({
+      id : buildingId
+    });
+  }
+
+  // === Page Setup ===
+  getBuilding();
+
+  // Setup breadcrumbs.
+  Breadcrumbs.addPlaceholder('Building', $scope.building.$promise, function(building) {
+    return new Breadcrumb(building.name, '/' + buildingId);
+  });
+
+  Breadcrumbs.add(new Breadcrumb('Configuration', '/' + buildingId + '/configuration', 'Configure the building parameters and bridges.'));
+
+  $scope.messages = [];
+
+  $scope.showMessage = function(messageOptions) {
+    messageOptions.remove = function() {
+      $scope.messages.splice($scope.messages.indexOf(messageOptions), 1);
+    };
+
+    if (messageOptions.removeAfter) {
+      $timeout(function() {
+        messageOptions.remove();
+      }, messageOptions.removeAfter);
+    }
+
+    $scope.messages.push(messageOptions);
+  };
+
+  $scope.showError = function(title, body) {
+    $scope.showMessage({
+      title: title,
+      body: body,
+      isSuccess: false
+    });
+  };
+
+  $scope.showSuccess = function(title, body) {
+    $scope.showMessage({
+      title: title,
+      body: body,
+      isSuccess: true,
+      removeAfter: 5000
+    });
   };
 
   $scope.saveBuilding = function() {
-    var saveBuildingPromise;
-    if (!$scope.isCreate()) {
-      saveBuildingPromise = $scope.building.$save();
-    } else {
-      $scope.building = Building.create($scope.building);
-      saveBuildingPromise = $scope.building.$promise;
-    }
-
-    saveBuildingPromise.then(function(data) {
-      $scope.buildingSaveError = false;
-      $scope.buildingSaveSuccess = true;
-      $scope.wasCreate = $scope.isCreate();
-      $timeout(function() {
-        $scope.buildingSaveSuccess = false;
-      }, 5*1000);
-
-      $scope.onSaveSuccess(data);
+    $scope.building.$save().then(function() {
+      $scope.showSuccess("Building saved successfully", "Your changes to the building have been saved successfully.");
+      $rootScope.$broadcast('refreshBuildings');
     }, function() {
-      // Display error message.
-      $scope.buildingSaveError = true;
-      $scope.buildingSaveSuccess = false;
+      $scope.showError("Saving building failed", "An error occured while trying to save changes to the building. Please try again.");
     });
   };
 });

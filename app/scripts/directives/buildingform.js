@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:buildingConfiguration
+ * @name offgridmonitoringApp.directive:buildingForm
  * @description
- * # buildingConfiguration
- * Displays options for a new or an existing building.
+ * # buildingForm
+ * Provides a form for core building options. e.g.: the name of the building and graph display parameters.
  */
 
 angular.module('offgridmonitoringApp')
-  .directive('buildingConfiguration', function() {
+  .directive('buildingForm', function() {
     return {
       restrict: 'E', // to be used via an element only.
       scope: {
@@ -21,6 +21,6 @@ angular.module('offgridmonitoringApp')
           $scope.isValid = validity;
         });
       }],
-      templateUrl: 'views/buildingconfiguration.html'
+      templateUrl: 'views/buildingform.html'
     };
   });

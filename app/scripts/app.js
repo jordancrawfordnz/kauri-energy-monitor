@@ -41,7 +41,7 @@ angular
       })
       .when('/:buildingId/configuration', {
         templateUrl: 'views/buildingconfiguration.html',
-        controller: 'BuildingConfigCtrl'
+        controller: 'BuildingConfigurationCtrl'
       })
       .when('/:buildingId/reading', {
         templateUrl: 'views/readings.html',
