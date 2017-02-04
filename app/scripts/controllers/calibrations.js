@@ -14,7 +14,7 @@ angular.module('offgridmonitoringApp')
         - select a date range to display
         - paginated view of recalibrations
         - define a sort order, most recent first or oldest first.
-        
+
       The page starts at 1 which will map to page 0 in API calls.
     */
     $scope.filter = $rootScope.batteryDataFilter;
@@ -32,7 +32,7 @@ angular.module('offgridmonitoringApp')
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
     });
 
-    Breadcrumbs.add(new Breadcrumb('Calibration Points', '/' + $routeParams.buildingId + '/recalibrations', 'See a paginated view of battery status recalibrations for a date range.'));
+    Breadcrumbs.add(new Breadcrumb('Calibration Points', '/' + $routeParams.buildingId + '/recalibrations', 'See a paginated view of battery state recalibrations for a date range.'));
 
     // Re-counts the number of results in the search when the filters change.
     $scope.recountSearch = function() {
