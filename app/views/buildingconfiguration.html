@@ -14,10 +14,10 @@
   </ul>
   <div class="tab-content" ng-switch="activeDetailTab">
     <div ng-switch-when="building" class="tab-pane active">
-      <core-building-config building="building" save-building="saveBuilding()" showSuccess="showSuccess(title, body)" showError="showError(title, body)"></core-building-config>
+      <core-building-config building="building" save-building="saveBuilding()" show-success="showSuccess(title, body)" show-error="showError(title, body)"></core-building-config>
     </div>
     <div ng-switch-when="collection" class="tab-pane active">
-      <!-- TODO -->
+      <collection-config building="building" save-building="saveBuilding()" show-success="showSuccess(title, body)" show-error="showError(title, body)"></collection-config>
     </div>
     <div ng-switch-when="processing" class="tab-pane active">
       <!-- TODO -->
