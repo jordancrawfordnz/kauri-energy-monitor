@@ -6,7 +6,7 @@
   </div>
 </div>
 
-<div class="nav-tabs-custom">
+<div class="nav-tabs-custom" ng-if="building">
   <ul class="nav nav-tabs">
     <li ng-class="{'active' : tabId === activeDetailTab}" ng-repeat="(tabId, tabName) in detailTabs">
       <a ng-click="$parent.activeDetailTab = tabId">{{tabName}}</a>
@@ -20,7 +20,11 @@
       <collection-config building="building" save-building="saveBuilding()" show-success="showSuccess(title, body)" show-error="showError(title, body)"></collection-config>
     </div>
     <div ng-switch-when="processing" class="tab-pane active">
-      <!-- TODO -->
+      <processing-config building="building" save-building="saveBuilding()" show-success="showSuccess(title, body)" show-error="showError(title, body)"></processing-config>
     </div>
   </div>
+</div>
+
+<div ng-if="!building">
+  Loading building...
 </div>

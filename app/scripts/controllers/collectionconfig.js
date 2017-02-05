@@ -5,7 +5,7 @@
  * @name offgridmonitoringApp.controller:CollectionConfigCtrl
  * @description
  * # CollectionConfigCtrl
- * A tab for the building configuration page to allow users to set data config options.
+ * A tab for the building configuration page to allow users to set data collection options.
  */
 angular.module('offgridmonitoringApp').controller('CollectionConfigCtrl', function ($scope, Building) {
   $scope.bridges = Building.bridges({

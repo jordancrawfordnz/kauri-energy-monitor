@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:collectionConfig
+ * @name offgridmonitoringApp.directive:processingConfig
  * @description
- * # collectionConfig
- * A tab for the building configuration page to allow users to set data collection options.
+ * # processingConfig
+ * A tab for the building configuration page to allow users to set data processing options.
  */
 
 angular.module('offgridmonitoringApp')
-  .directive('collectionConfig', function() {
+  .directive('processingConfig', function() {
     return {
       restrict: 'E', // to be used via an element only.
       scope: {
@@ -18,7 +18,7 @@ angular.module('offgridmonitoringApp')
         showSuccess : '&showSuccess',
         saveBuilding : '&saveBuilding'
       },
-      controller: 'CollectionConfigCtrl',
-      templateUrl: 'views/collectionconfig.html'
+      controller: 'ProcessingConfigCtrl',
+      templateUrl: 'views/processingconfig.html'
     };
   });
