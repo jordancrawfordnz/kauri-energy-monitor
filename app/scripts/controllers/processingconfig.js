@@ -40,6 +40,13 @@ angular.module('offgridmonitoringApp').controller('ProcessingConfigCtrl', functi
     }
   });
 
+  $scope.bridgesWithSensors = Building.bridges({
+    id: $scope.building.id,
+    filter : {
+      include : ['sensors']
+    }
+  });
+
   $scope.saveProcessingOptions = function() {
     // Update the 'onlyProcessAfter' and 'onlyProcessUntil' values from the moment objects.
     if ($scope.onlyProcessAfterObject) {
@@ -54,6 +61,10 @@ angular.module('offgridmonitoringApp').controller('ProcessingConfigCtrl', functi
       $scope.building.onlyProcessUntil = null;
     }
 
+    $scope.saveBuilding();
+  };
+
+  $scope.saveBatteryOptions = function() {
     $scope.saveBuilding();
   };
 });

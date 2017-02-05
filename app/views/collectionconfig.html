@@ -9,7 +9,7 @@
       No bridges. Add one?
       <!-- TODO: Allow bridge adding -->
     </div>
-    <div ng-repeat="bridge in bridges">
+    <div ng-repeat="bridge in bridgesWithSensors">
       <div class="thumbnail">
         <div class="caption">
           <h3>{{bridge.name}}</h3>
@@ -25,8 +25,8 @@
                 </tr>
                 <tr ng-repeat="sensor in bridge.sensors">
                   <td>{{sensor.name}}</td>
-                  <td>{{buildingConfig.sensorTypes[sensor.type].electricity}}</td>
-                  <td>{{buildingConfig.sensorTypes[sensor.type].type}}</td>
+                  <td>{{sensorTypes[sensor.type].electricity}}</td>
+                  <td>{{sensorTypes[sensor.type].type}}</td>
                 </tr>
               </tbody>
             </table>
