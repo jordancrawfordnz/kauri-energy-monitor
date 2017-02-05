@@ -62,7 +62,6 @@ angular.module('offgridmonitoringApp')
     };
 
     this.createNewBuilding = function() {
-      // Close the modal.
       var savedNewBuilding = Building.create(this.newBuilding);
       savedNewBuilding.$promise.then(function() {
         this.buildingCreateError = false;

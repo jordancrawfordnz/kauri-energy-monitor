@@ -1,0 +1,8 @@
+<form role="form" name="editBridgeForm" novalidate>
+  <div class="box-body">
+    <div class="form-group" ng-class="{ 'has-error' : editBridgeForm.name.$invalid}">
+      <label for="name">Name</label>
+      <input class="form-control" type="text" ng-model="bridge.name" name="name" id="name" required>
+    </div>
+  </div>
+</form>
