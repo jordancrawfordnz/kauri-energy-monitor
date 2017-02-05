@@ -7,7 +7,7 @@
  * # ProcessingConfigCtrl
  * A tab for the building configuration page to allow users to set data processing options.
  */
-angular.module('offgridmonitoringApp').controller('ProcessingConfigCtrl', function ($rootScope, $scope, Building, SensorTypes, $interval) {
+angular.module('offgridmonitoringApp').controller('ProcessingConfigCtrl', function ($rootScope, $scope, Building, SensorTypes, $interval, $q) {
   $scope.dateTimeFormat = $rootScope.dateTimeFormat;
 
   $scope.datePickerOptions = {
@@ -71,6 +71,8 @@ angular.module('offgridmonitoringApp').controller('ProcessingConfigCtrl', functi
   });
 
   // === Data Setup ===
+  $scope.energySources = [];
+
   $scope.bridgesWithSensors = Building.bridges({
     id: $scope.building.id,
     filter : {
@@ -82,6 +84,17 @@ angular.module('offgridmonitoringApp').controller('ProcessingConfigCtrl', functi
     statesAreRegenerating : $scope.building.statesAreRegenerating,
     lastRegeneration : $scope.building.lastRegeneration
   }
+
+  Building.energySources({
+    id : $scope.building.id
+  }).$promise.then(function(energySources) {
+    angular.forEach(energySources, function(energySourceData) {
+      $scope.energySources.push({
+        data : energySourceData,
+        hasBeenSaved : true
+      });
+    });
+  });
 
   // === UI Commands ===
   $scope.regenerateStates = function() {
@@ -115,5 +128,70 @@ angular.module('offgridmonitoringApp').controller('ProcessingConfigCtrl', functi
 
   $scope.saveEnergyFlowOptions = function() {
     $scope.saveBuilding();
+  };
+
+  // Creates an empty energy source.
+  $scope.newEnergySource = function() {
+    $scope.energySources.push({
+      data : {
+        isRenewable : false
+      },
+      hasBeenSaved : false
+    });
+  };
+
+  $scope.handleEnergySourcePromise = function(promise, energySource, messageOptions) {
+    promise.then(function(energySourceData) {
+      energySource.data = energySourceData;
+      energySource.hasBeenSaved = true;
+      $scope.showSuccess({ title: messageOptions.successTitle, body: messageOptions.successBody });
+    }, function() {
+      $scope.showFailure({ title: messageOptions.failureTitle, body: messageOptions.failureBody });
+    });
+  };
+
+  // Saves an energy source that has already been created.
+  $scope.saveEnergySource = function(energySource) {
+    $scope.handleEnergySourcePromise(energySource.data.$save(), energySource, {
+      successTitle: "Energy source saved successfully",
+      failureTitle: "Energy source not saved",
+      failureBody: "Please try again."
+    });
+  };
+
+  // Performs a creation operation on an energy source.
+  $scope.createEnergySource = function(energySource) {
+    $scope.handleEnergySourcePromise(Building.energySources.create({
+      id : $scope.building.id
+    }, energySource.data).$promise, energySource, {
+      successTitle: "Energy source created successfully",
+      failureTitle: "Energy source not created",
+      failureBody: "Please try again."
+    });
+  };
+
+  // Performs a deletion operation on an energy source.
+  $scope.deleteEnergySource = function(energySource) {
+    var index = $scope.energySources.indexOf(energySource);
+
+    if (index !== -1) {
+      var deletePromise;
+
+      if (energySource.hasBeenSaved) {
+        deletePromise = energySource.data.$delete();
+        deletePromise.then(function() {
+          $scope.showSuccess({ title: "Energy source deleted successfully" });
+        }, function() {
+          $scope.showFailure({ title: "Energy source not deleted", body: "Please try again." });
+        });
+      } else {
+        deletePromise = $q.when(true);
+      }
+
+      deletePromise.then(function() {
+        // Remove the energy source from the list.
+        $scope.energySources.splice(index, 1);
+      });
+    }
   };
 });
