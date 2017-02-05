@@ -18,7 +18,27 @@
 
 <div class="row">
   <div class="col-md-6" ng-repeat="bridge in bridgesWithSensors">
-    <bridge bridge="bridge"></bridge>
+    <div class="thumbnail">
+      <div class="caption">
+        <p>
+          <span class="lead">{{bridge.name}}</span>
+          <span class="btn-group pull-right">
+            <button type="button" class="btn btn-primary" ng-click="showBridgeDeleteConfirmation(bridge)">
+              <span class="glyphicon glyphicon-pencil"/>
+            </button>
+            <button type="button" class="btn btn-danger" ng-click="showBridgeDeleteConfirmation(bridge)">
+              <span class="glyphicon glyphicon-trash"/>
+            </button>
+          </span>
+        </p>
+
+        <p>
+          <strong>Bridge ID:</strong> <pre>{{bridge.id}}</pre>
+          <strong>Bridge Secret:</strong> <pre>{{bridge.bridgeSecret}}</pre>
+          <bridge-sensors bridge="bridge"></bridge-sensors>
+        </p>
+      </div>
+    </div>
   </div>
 </div>
 
