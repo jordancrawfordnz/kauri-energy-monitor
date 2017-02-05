@@ -61,4 +61,22 @@
   </div>
 </div>
 
-<!-- TODO: Delete bridge -->
+<!-- Delete bridge -->
+<div class="modal fade" id="deleteBridgeConfirmationModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Delete Bridge "{{deleteConfirmationBridge.name}}"?</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the bridge "{{deleteConfirmationBridge.name}}"?</p>
+        <p>This will permanently delete all data for this bridge and the bridge client will no longer be able to upload data.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No way!</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="deleteBridge(deleteConfirmationBridge)">Yes, do it!</button>
+      </div>
+    </div>
+  </div>
+</div>

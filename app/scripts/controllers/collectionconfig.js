@@ -17,17 +17,40 @@ angular.module('offgridmonitoringApp').controller('CollectionConfigCtrl', functi
     });
   };
 
-  $scope.loadBridgesWithSensors();
+  $scope.onBridgeChange = function() {
+    $scope.loadBridgesWithSensors();
+  };
 
   $scope.createNewBridge = function() {
     Building.bridges.create({
       id: $scope.building.id
     }, $scope.newBridge).$promise.then(function() {
       $scope.showSuccess({ title: "Bridge created successfully." });
-      $scope.loadBridgesWithSensors();
+      $scope.onBridgeChange();
       $scope.newBridge = {};
     }, function() {
       $scope.showError({ title: "An error occured while creating a new bridge.", body: "Please try again." })
     });
   };
+
+  $scope.showBridgeDeleteConfirmation = function(bridge) {
+    $scope.deleteConfirmationBridge = bridge;
+
+    $("#deleteBridgeConfirmationModal").modal().show();
+  };
+
+  $scope.deleteBridge = function(bridge) {
+    Building.bridges.destroyById({
+      id: $scope.building.id,
+      fk: bridge.id
+    }).$promise.then(function(result) {
+      $scope.showSuccess({ title: "Bridge deleted successfully." });
+      $scope.onBridgeChange();
+    }, function() {
+      $scope.showError({ title: "An error occured while deleting a bridge.", body: "Please try again." })
+    });
+  };
+
+  // Initial load.
+  $scope.loadBridgesWithSensors();
 });
