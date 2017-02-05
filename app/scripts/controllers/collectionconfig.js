@@ -39,6 +39,21 @@ angular.module('offgridmonitoringApp').controller('CollectionConfigCtrl', functi
     $("#deleteBridgeConfirmationModal").modal().show();
   };
 
+  $scope.editBridge = function(bridge) {
+    $scope.editBridgeCopy = angular.copy(bridge);
+
+    $("#editBridgeModal").modal().show();
+  };
+
+  $scope.updateBridge = function(bridge) {
+    bridge.$save().then(function() {
+      $scope.showSuccess({ title: "Bridge saved successfully." });
+      $scope.onBridgeChange();
+    }, function() {
+      $scope.showError({ title: "An error occured while saving the bridge.", body: "Please try again." })
+    });
+  };
+
   $scope.deleteBridge = function(bridge) {
     Building.bridges.destroyById({
       id: $scope.building.id,
