@@ -8,17 +8,14 @@
  * A tab for the building configuration page to allow users to set data collection options.
  */
 angular.module('offgridmonitoringApp').controller('CollectionConfigCtrl', function ($scope, Building) {
-  $scope.loadBridgesWithSensors = function() {
-    $scope.bridgesWithSensors = Building.bridges({
-      id: $scope.building.id,
-      filter : {
-        include : ['sensors']
-      }
+  $scope.loadBridges = function() {
+    $scope.bridges = Building.bridges({
+      id: $scope.building.id
     });
   };
 
   $scope.onBridgeChange = function() {
-    $scope.loadBridgesWithSensors();
+    $scope.loadBridges();
   };
 
   $scope.createNewBridge = function() {
@@ -67,5 +64,5 @@ angular.module('offgridmonitoringApp').controller('CollectionConfigCtrl', functi
   };
 
   // Initial load.
-  $scope.loadBridgesWithSensors();
+  $scope.loadBridges();
 });

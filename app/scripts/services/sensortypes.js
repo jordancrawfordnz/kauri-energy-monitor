@@ -1,7 +1,7 @@
 'use strict';
 
 var app = angular.module('offgridmonitoringApp');
-    
+
 // Metadata on the types of sensors.
 app.factory('SensorTypes', function() {
     return {

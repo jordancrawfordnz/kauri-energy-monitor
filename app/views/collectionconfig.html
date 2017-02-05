@@ -12,12 +12,11 @@
 </p>
 
 <div ng-if="bridges.length === 0">
-  No bridges. Add one?
-  <!-- TODO: Allow bridge adding -->
+  No bridges.
 </div>
 
 <div class="row">
-  <div class="col-md-6" ng-repeat="bridge in bridgesWithSensors">
+  <div class="col-md-6" ng-repeat="bridge in bridges">
     <div class="thumbnail">
       <div class="caption">
         <p>
@@ -35,7 +34,7 @@
         <p>
           <strong>Bridge ID:</strong> <pre>{{bridge.id}}</pre>
           <strong>Bridge Secret:</strong> <pre>{{bridge.bridgeSecret}}</pre>
-          <bridge-sensors bridge="bridge"></bridge-sensors>
+          <bridge-sensors show-error="showError({title: title, body: body})" show-success="showSuccess({title: title, body: body})" bridge="bridge"></bridge-sensors>
         </p>
       </div>
     </div>
