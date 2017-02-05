@@ -8,27 +8,6 @@
   <p>Your profile has been changed successfully.</p>
 </div>
 
-<div class="box box-primary">
-	<div class="box-header with-border">
-		<h3 class="box-title">Email address and name</h3>
-	</div>
-	<form role="form" name="emailAddressNameForm" novalidate>
-  		<div class="box-body">
-    		<div class="form-group has-feedback" ng-class="{ 'has-error' : emailAddressNameForm.emailAddress.$dirty && emailAddressNameForm.emailAddress.$invalid}">
-      			<label for="emailAddress">Email address</label>
-      			<input type="email" ng-model="user.email" class="form-control" name="emailAddress" id="emailAddress" placeholder="Your email address" required>
-    		</div>
-	    	<div class="form-group has-feedback" ng-class="{ 'has-error' : emailAddressNameForm.name.$dirty && emailAddressNameForm.name.$invalid}">
-	      		<label for="name">Name</label>
-	      		<input type="text" ng-model="user.name" class="form-control" name="name" id="name" placeholder="Your name" required>
-	    	</div>
-    	</div>
-   		<div class="box-footer">
-    		<button ng-disabled="emailAddressNameForm.$invalid" type="submit" ng-click="saveUserDetails()" class="btn btn-primary">Save</button>
-  		</div>
-	</form>
-</div>
-
 <div class="callout callout-danger" ng-if="hasSavePasswordFailed">
   <h4>Password change failed</h4>
   <p>There was a problem while changing your password. Please try again.</p>
@@ -39,23 +18,50 @@
   <p>Your password has been changed successfully.</p>
 </div>
 
-<div class="box box-primary">
-	<div class="box-header with-border">
-		<h3 class="box-title">Password</h3>
-	</div>
-	<form role="form" name="passwordForm" novalidate>
-  		<div class="box-body">
-    		<div class="form-group">
-      			<label for="password">New password</label>
-      			<input ng-model="password1" type="password" class="form-control" id="password" placeholder="Your new password" required>
-    		</div>
-	    	<div class="form-group">
-	      		<label for="passwordConfirm">New password (again)</label>
-	      		<input ng-model="password2" type="password" class="form-control" id="passwordConfirm" placeholder="Your new password (again)" required>
-	    	</div>
-    	</div>
-   		<div class="box-footer">
-    		<button ng-disabled="passwordForm.$invalid || password1 !== password2" ng-click="changePassword()" type="submit" class="btn btn-primary">Change password</button>
-  		</div>
-	</form>
-</div>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">My Details</h3>
+      </div>
+      <form role="form" name="emailAddressNameForm" novalidate>
+          <div class="box-body">
+            <div class="form-group has-feedback" ng-class="{ 'has-error' : emailAddressNameForm.emailAddress.$dirty && emailAddressNameForm.emailAddress.$invalid}">
+                <label for="emailAddress">Email address</label>
+                <input type="email" ng-model="user.email" class="form-control" name="emailAddress" id="emailAddress" placeholder="Your email address" required>
+            </div>
+            <div class="form-group has-feedback" ng-class="{ 'has-error' : emailAddressNameForm.name.$dirty && emailAddressNameForm.name.$invalid}">
+                <label for="name">Name</label>
+                <input type="text" ng-model="user.name" class="form-control" name="name" id="name" placeholder="Your name" required>
+            </div>
+          </div>
+          <div class="box-footer">
+            <button ng-disabled="emailAddressNameForm.$invalid" type="submit" ng-click="saveUserDetails()" class="btn btn-primary">Save</button>
+          </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-sm-6">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Security</h3>
+      </div>
+      <div class="box-body">
+        <p class="lead">Password</p>
+
+        <form role="form" name="passwordForm" novalidate>
+          <div class="form-group">
+              <label for="password">New password</label>
+              <input ng-model="password1" type="password" class="form-control" id="password" placeholder="Your new password" required>
+          </div>
+          <div class="form-group">
+              <label for="passwordConfirm">New password (again)</label>
+              <input ng-model="password2" type="password" class="form-control" id="passwordConfirm" placeholder="Your new password (again)" required>
+          </div>
+
+          <button ng-disabled="passwordForm.$invalid || password1 !== password2" ng-click="changePassword()" type="submit" class="btn btn-primary">Change password</button>
+        </form>
+      </div>
+    </div>
+  </div>
