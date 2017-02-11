@@ -1,1 +1,25 @@
-People
+<p>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPersonModal">
+    <span class="glyphicon glyphicon-plus"/> New Person
+  </button>
+</p>
+
+<!-- Add person modal -->
+<div class="modal fade" id="addPersonModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">New Person</h4>
+      </div>
+      <div class="modal-body">
+        <person-details-form person="person" is-valid="personDetailsValid"></person-details-form>
+        <password-form password="person.password" is-valid="passwordValid"></password-form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" ng-disabled="!personDetailsValid || !passwordValid" data-dismiss="modal" class="btn btn-primary" ng-click="addPerson()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>

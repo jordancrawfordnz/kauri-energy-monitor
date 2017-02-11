@@ -1,10 +1,10 @@
 <form role="form" name="personDetailsForm" novalidate>
   <div class="form-group has-feedback" ng-class="{ 'has-error' : personDetailsForm.emailAddress.$dirty && personDetailsForm.emailAddress.$invalid}">
     <label for="emailAddress">Email address</label>
-    <input type="email" ng-model="user.email" class="form-control" name="emailAddress" id="emailAddress" placeholder="Email address" required>
+    <input type="email" ng-model="person.email" class="form-control" name="emailAddress" id="emailAddress" placeholder="Email address" required>
   </div>
   <div class="form-group has-feedback" ng-class="{ 'has-error' : personDetailsForm.name.$dirty && personDetailsForm.name.$invalid}">
     <label for="name">Name</label>
-    <input type="text" ng-model="user.name" class="form-control" name="name" id="name" placeholder="Name" required>
+    <input type="text" ng-model="person.name" class="form-control" name="name" id="name" placeholder="Name" required>
   </div>
 </form>

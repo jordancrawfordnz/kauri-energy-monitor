@@ -18,7 +18,7 @@ angular.module('offgridmonitoringApp')
       });
     }],
     scope: {
-      user : '=user',
+      person : '=person',
       isValid : '=isValid'
     },
     templateUrl: 'views/persondetailsform.html'
