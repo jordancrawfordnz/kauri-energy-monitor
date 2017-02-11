@@ -37,7 +37,7 @@ angular.module('offgridmonitoringApp')
     $scope.changePassword = function() {
       // Had to do a manual $http put because the Loopback logic only seems to work on the put method with the ID as a param.
       $http.put(Environment.baseUrl + '/people/' + $scope.user.id, {
-        password : $scope.password1
+        password : $scope.password
       }).then(function(user) {
         $scope.hasSavePasswordFailed = false;
         $scope.hasSavePasswordSucceeded = true;

@@ -1,0 +1,30 @@
+'use strict';
+
+/**
+* @ngdoc function
+* @name offgridmonitoringApp.directive:passwordForm
+* @description
+* # passwordForm
+* Allows a user to enter a password and confirm it, requiring that the passwords match.
+*/
+
+angular.module('offgridmonitoringApp')
+.directive('passwordForm', function() {
+  return {
+    restrict: 'E', // to be used via an element
+    controller: ['$scope', function($scope) {
+      $scope.$watch([''])
+      $scope.$watchGroup(['password1', 'password2'], function() {
+        $scope.isValid = $scope.password1 && $scope.password1 === $scope.password2;
+        if ($scope.isValid) {
+          $scope.password = $scope.password1;
+        }
+      });
+    }],
+    scope: {
+      password : '=password',
+      isValid : '=isValid'
+    },
+    templateUrl: 'views/passwordform.html'
+  };
+});

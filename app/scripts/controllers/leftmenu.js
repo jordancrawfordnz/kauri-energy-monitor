@@ -24,6 +24,11 @@ angular.module('offgridmonitoringApp')
         name : 'Buildings',
         icon : 'building',
         path : ''
+      },
+      {
+        name : 'People',
+        icon : 'users',
+        path : 'people'
       }
     ];
 

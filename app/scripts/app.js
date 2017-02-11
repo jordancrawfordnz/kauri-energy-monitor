@@ -25,6 +25,10 @@ angular
       .when('/', {
         templateUrl: 'views/buildings.html'
       })
+      .when('/people', {
+        templateUrl: 'views/people.html',
+        controller: 'PeopleCtrl'
+      })
       .when('/login', {
         templateUrl: 'views/login.html',
         controller: 'LoginCtrl',
