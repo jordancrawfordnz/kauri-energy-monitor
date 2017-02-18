@@ -1,3 +1,23 @@
+<div class="callout callout-danger" ng-if="hasCreateFailed">
+  <h4>Adding a person failed</h4>
+  <p>There was a problem while adding a new person. Please try again.</p>
+</div>
+
+<div class="callout callout-success" ng-if="hasCreateSucceeded">
+  <h4>Adding a person was successful</h4>
+  <p>The new person has been added successfully.</p>
+</div>
+
+<div class="callout callout-danger" ng-if="hasDeleteFailed">
+  <h4>Deleting a person failed</h4>
+  <p>There was a problem while deleting a person. Please try again.</p>
+</div>
+
+<div class="callout callout-success" ng-if="hasDeleteSucceeded">
+  <h4>Deleting a person was successful</h4>
+  <p>The new person has been deleted successfully.</p>
+</div>
+
 <p>
   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPersonModal">
     <span class="glyphicon glyphicon-plus"/> New Person
@@ -14,11 +34,55 @@
       </div>
       <div class="modal-body">
         <person-details-form person="person" is-valid="personDetailsValid"></person-details-form>
-        <password-form password="person.password" is-valid="passwordValid"></password-form>
+        <password-form password="person.password" is-valid="passwordValid" field-name="'Password'"></password-form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="button" ng-disabled="!personDetailsValid || !passwordValid" data-dismiss="modal" class="btn btn-primary" ng-click="addPerson()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- List people. -->
+<div ng-if="people.length === 0">
+  No people.
+</div>
+
+<div class="row">
+  <div class="col-md-6" ng-repeat="person in people">
+    <div class="thumbnail">
+      <div class="caption">
+        <p>
+          <span class="lead">{{person.name}}</span>
+          <button type="button" class="btn btn-danger pull-right" ng-click="showPersonDeleteConfirmation(person)">
+            <span class="glyphicon glyphicon-trash"/>
+          </button>
+        </p>
+
+        <p>
+          <strong>Email Address:</strong> {{person.email}}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete person -->
+<div class="modal fade" id="deletePersonConfirmationModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Delete "{{deleteConfirmationPerson.name}}"?</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete "{{deleteConfirmationPerson.name}}"?</p>
+        <p>They will be unable to access the system.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No way!</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="deletePerson(deleteConfirmationPerson)">Yes, do it!</button>
       </div>
     </div>
   </div>

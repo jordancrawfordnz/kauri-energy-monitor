@@ -23,7 +23,8 @@ angular.module('offgridmonitoringApp')
     }],
     scope: {
       password : '=password',
-      isValid : '=isValid'
+      isValid : '=isValid',
+      fieldName : '=fieldName'
     },
     templateUrl: 'views/passwordform.html'
   };
