@@ -1,4 +1,23 @@
-<building-form is-valid="isValid" building="building"></building-form>
-<button type="button" ng-disabled="!isValid" class="btn btn-primary" ng-click="saveBuilding()">Save</button>
+<div class="row">
+  <div class="col-md-6">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Building</h3>
+      </div>
+      <div class="box-body">
+        <building-form is-valid="isValid" building="building"></building-form>
+        <button type="button" ng-disabled="!isValid" class="btn btn-primary" ng-click="saveBuilding()">Save</button>
+      </div>
+    </div>
+  </div>
 
-<!-- TODO: User options -->
+  <div class="col-md-6">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">People</h3>
+      </div>
+      <div class="box-body table-responsive no-padding" building-people building="building"
+      show-success="showSuccess({title: title, body: body})" show-error="showError({title: title, body: body})"></div>
+    </div>
+  </div>
+</div>

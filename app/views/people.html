@@ -55,7 +55,7 @@
       <div class="caption">
         <p>
           <span class="lead">{{person.name}}</span>
-          <button type="button" class="btn btn-danger pull-right" ng-click="showPersonDeleteConfirmation(person)">
+          <button ng-disabled="isCurrentUser(person)" type="button" class="btn btn-danger pull-right" ng-click="showPersonDeleteConfirmation(person)">
             <span class="glyphicon glyphicon-trash"/>
           </button>
         </p>

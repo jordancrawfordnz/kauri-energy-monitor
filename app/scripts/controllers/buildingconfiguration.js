@@ -13,7 +13,7 @@ angular.module('offgridmonitoringApp').controller('BuildingConfigurationCtrl',
   var buildingId = $routeParams.buildingId;
 
   $scope.detailTabs = {
-    'building' : 'Building',
+    'building' : 'Building and People',
     'collection' : 'Data Collection',
     'processing' : 'Data Processing'
   };

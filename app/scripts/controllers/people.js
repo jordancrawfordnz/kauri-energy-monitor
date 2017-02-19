@@ -8,11 +8,15 @@
  * Allows users to create and edit people within the system.
  */
 angular.module('offgridmonitoringApp')
-  .controller('PeopleCtrl', function ($scope, $timeout, People, Breadcrumbs, Breadcrumb) {
+  .controller('PeopleCtrl', function ($scope, $rootScope, $timeout, People, Breadcrumbs, Breadcrumb) {
     Breadcrumbs.add(new Breadcrumb('People', 'people', 'Add and remove people.'));
 
     $scope.loadPeople = function() {
       $scope.people = People.find();
+    };
+
+    $scope.isCurrentUser = function(person) {
+      return person.id === $rootScope.user.id;
     };
 
     $scope.addPerson = function() {
