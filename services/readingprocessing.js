@@ -145,7 +145,7 @@ ReadingProcessing.processAllReadings = function(building) {
 							numberOfFailedReadings: processResult.numberOfFailedReadings
 						};
 						if (readings.length === 0) {
-							// If this is a blank page, we are at the end  so just return this page's result.
+							// If this is a blank page, we are at the end so just return this page's result.
 							resolve(pageResult);
 						} else {
 							// Provide details from this page to the next page.
@@ -294,6 +294,11 @@ ReadingProcessing.processReadingsSerially = function(building, readings, initial
 				updateFutureStatesPromise = ReadingProcessing.updateFutureStates(processReadingResult.futureStates);
 			} else {
 				updateFutureStatesPromise = Promise.resolve();
+			}
+
+			if (numberOfFailedReadings == readings.length) {
+				reject('All readings failed.');
+				return;
 			}
 
 			updateFutureStatesPromise.then(function() {

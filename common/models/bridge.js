@@ -116,7 +116,7 @@ module.exports = function(Bridge) {
                         cb('Error updating the building.');
                         return;
                       } else {
-                          cb(null, { count : createReadingResults.length});
+                        cb(null, { count : createReadingResults.length});
                       }
                     });
                     }
@@ -126,7 +126,8 @@ module.exports = function(Bridge) {
                   return;
                 });
               }, function() {
-                cb('Error processing readings.');
+                // Processing is optional. If it the processing attempt didn't work, still return positively.
+                cb(null, { count : createReadingResults.length});
               });
             }, function() {
               cb('Failed to get the current state.');
