@@ -34,8 +34,7 @@ angular.module('offgridmonitoringApp')
     $scope.building.$promise.then(function(building) {
       $scope.bridge = building.bridges[0];
         // TODO: Multi bridge support!
-      $scope.recountSearch();
-      $scope.refreshSearch();
+      $scope.refresh();
     });
 
     // Setup breadcrumbs.
@@ -76,6 +75,11 @@ angular.module('offgridmonitoringApp')
         });
       }
     };
+
     $scope.$watchGroup(['currentPage', 'filter.sortOrder', 'filter.from', 'filter.until', 'filter.amountPerPage', 'filter.displayEvery'], $scope.refreshSearch);
 
+    $scope.refresh = function() {
+      $scope.refreshSearch();
+      $scope.recountSearch();
+    };
   });
