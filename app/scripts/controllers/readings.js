@@ -28,11 +28,12 @@ angular.module('offgridmonitoringApp')
   	$scope.building = Building.findById({
       id : $routeParams.buildingId,
       filter : {
-        include : {'bridges' : 'sensors'} 
+        include : {'bridges' : 'sensors'}
       }
     });
     $scope.building.$promise.then(function(building) {
       $scope.bridge = building.bridges[0];
+        // TODO: Multi bridge support!
       $scope.recountSearch();
       $scope.refreshSearch();
     });
@@ -47,27 +48,33 @@ angular.module('offgridmonitoringApp')
     // Re-counts the number of results in the search when the filters change.
     $scope.recountSearch = function() {
       if (!$scope.building.id) return;
-      Bridge.readings.count({
-        id : $scope.bridge.id,
-        where : Timestamp.getRangeWhereFilter($scope.filter.from, $scope.filter.until, $scope.filter.displayEvery)
-      }).$promise.then(function(count) {
-        $scope.totalReadings = count.count;
-      });
+
+      if ($scope.bridge) {
+        Bridge.readings.count({
+          id : $scope.bridge.id,
+          where : Timestamp.getRangeWhereFilter($scope.filter.from, $scope.filter.until, $scope.filter.displayEvery)
+        }).$promise.then(function(count) {
+          $scope.totalReadings = count.count;
+        });
+      }
     };
     $scope.$watchGroup(['filter.from', 'filter.until', 'filter.displayEvery'], $scope.recountSearch);
 
     // Refresh the search results.
     $scope.refreshSearch = function() {
       if (!$scope.building.id) return;
-      $scope.readings = Bridge.readings({
-        id : $scope.bridge.id,
-        filter : {
-          skip : ($scope.currentPage - 1) * $scope.filter.amountPerPage,
-          limit : $scope.filter.amountPerPage,
-          order : 'timestamp ' + $scope.filter.sortOrder,
-          where : Timestamp.getRangeWhereFilter($scope.filter.from, $scope.filter.until, $scope.filter.displayEvery)
-        }
-      });
+
+      if ($scope.bridge) {
+        $scope.readings = Bridge.readings({
+          id : $scope.bridge.id,
+          filter : {
+            skip : ($scope.currentPage - 1) * $scope.filter.amountPerPage,
+            limit : $scope.filter.amountPerPage,
+            order : 'timestamp ' + $scope.filter.sortOrder,
+            where : Timestamp.getRangeWhereFilter($scope.filter.from, $scope.filter.until, $scope.filter.displayEvery)
+          }
+        });
+      }
     };
     $scope.$watchGroup(['currentPage', 'filter.sortOrder', 'filter.from', 'filter.until', 'filter.amountPerPage', 'filter.displayEvery'], $scope.refreshSearch);
 

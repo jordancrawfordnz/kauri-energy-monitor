@@ -1,4 +1,12 @@
-<div class="row">
+<div ng-if="!building">
+	Loading building...
+</div>
+
+<div ng-if="building && building.bridges.length < 1">
+	No bridges. To collect data, a Bridge is required. See Configuration to add one.
+</div>
+
+<div class="row" ng-if="building && building.bridges.length >= 1">
 	<div class="col-xs-12 col-md-4 col-lg-3">
 		<page-filter filter="filter" number-of-results="totalReadings" current-page="currentPage" display-every-levels="displayEveryLevels" refresh="refreshSearch()"></page-filter>
 	</div>
