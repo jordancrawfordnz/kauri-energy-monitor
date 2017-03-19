@@ -52,7 +52,7 @@
 
         <span class="input-group-addon">Page</span>
         <input type="text" class="form-control" ng-model="currentPageText">
-        <span class="input-group-addon ng-binding" ng-if="numberOfPages">of {{numberOfPages | number}}</span>
+        <span class="input-group-addon ng-binding" ng-if="numberOfPages !== undefined">of {{numberOfPages | number}}</span>
         <span class="input-group-btn">
           <button ng-disabled="currentPage >= numberOfPages" ng-click="currentPage = currentPage + 1"
             type="button" class="btn btn-default" aria-label="Next Page">

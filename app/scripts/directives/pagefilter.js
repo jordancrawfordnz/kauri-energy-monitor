@@ -49,6 +49,9 @@ angular.module('offgridmonitoringApp')
       // Recalculate the number of pages and reset the current page.
       $scope.resetPage = function() {
         $scope.numberOfPages = Math.ceil($scope.numberOfResults / $scope.filter.amountPerPage);
+        if ($scope.numberOfPages === 0) {
+          $scope.numberOfPages = 1;
+        }
         $scope.currentPage = 1;
       };
       $scope.$watchGroup(['numberOfResults', 'filter.amountPerPage', 'filter.displayEvery'], $scope.resetPage);
