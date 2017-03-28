@@ -361,7 +361,7 @@ ReadingProcessing.analyseVoltage = function(building, currentState, timestamp, s
 ReadingProcessing.buildingHasProcessingParams = function(building) {
 	var hasRequiredFields = true;
 
-	[
+	var fieldsToCheck = [
 		"lowVoltageTriggerTime",
 		"lowVoltageLevel",
 		"dailyAgingPercentage",
@@ -369,15 +369,19 @@ ReadingProcessing.buildingHasProcessingParams = function(building) {
 		"highPowerThreshold",
 		"recalculateChargeEfficiencyCapacityMultiplier",
 		"houseConsumptionColour",
-		"batteryVoltageSensor",
-		"batteryCurrentSensor",
-		"buildingPowerSensor",
-		"loadCurrentSensor"
-	].forEach(function(fieldName) {
-		if (!building[fieldName]) {
+		"batteryVoltageSensorId",
+		"batteryCurrentSensorId",
+		"buildingPowerSensorId",
+		"loadCurrentSensorId"
+	];
+
+	for (var i = 0; i < fieldsToCheck.length; i++) {
+		var fieldValue = building[fieldsToCheck[i]];
+		if (fieldValue === undefined || fieldValue === null) {
 			hasRequiredFields = false;
+			break;
 		}
-	});
+	}
 
 	return hasRequiredFields;
 };

@@ -88,19 +88,20 @@ EnergyFlow.getRawPredictedEnergy = function(predictionPattern, dayIndex, hourInd
 	var data = predictionPattern.data;
 	switch (predictionPattern.type) {
 		case 'weekly': {
-			var day = data.days[dayIndex];
+			var day = data.days ? data.days[dayIndex] : undefined;
 			if (!day) {
 				return 0;
-			}
-			var hourTotal = day[hourIndex];
-			if (hourTotal === undefined) {
-				return 0;
 			} else {
-				return hourTotal;
+				var hourTotal = day[hourIndex];
+				if (hourTotal === undefined) {
+					return 0;
+				} else {
+					return hourTotal;
+				}
 			}
 		}
 		case 'daily': {
-			var hourTotal = data.hours[hourIndex];
+			var hourTotal = data.hours ? data.hours[hourIndex] : undefined;
 			if (hourTotal === undefined) {
 				return 0;
 			} else {
