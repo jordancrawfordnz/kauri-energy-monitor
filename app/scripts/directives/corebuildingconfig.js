@@ -18,9 +18,6 @@ angular.module('offgridmonitoringApp')
         showSuccess : '&showSuccess',
         saveBuilding : '&saveBuilding'
       },
-      controller: ['$scope', function($scope) {
-
-      }],
       templateUrl: 'views/corebuildingconfig.html'
     };
   });

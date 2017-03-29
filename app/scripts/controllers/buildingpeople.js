@@ -7,7 +7,7 @@
  * # BuildingPeopleCtrl
  * Allows a user to add or remove people from a building.
  */
-angular.module('offgridmonitoringApp').controller('BuildingPeopleCtrl', function ($scope, $rootScope, People, Building) {
+angular.module('offgridmonitoringApp').controller('BuildingPeopleCtrl', function ($scope, $rootScope, People, Building, $interval) {
   $scope.getBuildingPeople = function() {
     return Building.people({
       id: $scope.building.id
@@ -77,5 +77,10 @@ angular.module('offgridmonitoringApp').controller('BuildingPeopleCtrl', function
     });
   };
 
-  $scope.loadAllPeople();
+  $scope.waitForBuildingInterval = $interval(function() {
+    if ($scope.building.id) {
+      $scope.loadAllPeople();
+      $interval.cancel($scope.waitForBuildingInterval);
+    }
+  }, 10);
 });
