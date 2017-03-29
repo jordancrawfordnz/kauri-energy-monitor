@@ -80,55 +80,60 @@ module.exports = function(Bridge) {
               }
 
               // Process the readings.
-              ReadingProcessing.processReadingsSerially(building, createReadingResults, latestReading, currentState)
-              .then(function(processReadingResult) {
-                var saveCurrentStatePromise = new Promise(function(resolve, reject) {
-                  if (currentStateNeedsCreating) {
-                    // Create the current state.
-                    State.create(currentState, function(createCurrentStateError, createdCurrentState) {
-                      if (createCurrentStateError) {
-                        reject(createCurrentStateError);
-                      } else {
-                        resolve(createdCurrentState);
-                      }
-                    });
-                  } else {
-                    // Update the current state.
-                    currentState.save(function(saveStateError, savedStateResult) {
-                      if (saveStateError) {
-                        reject(saveStateError);
-                      } else {
-                        resolve(savedStateResult);
-                      }
-                    });
-                  }
-                });
-
-                saveCurrentStatePromise.then(function(savedCurrentState) {
-                  // Get a full instance of the building.
-                  Building.findById(building.id, function(getBuildingError, buildingInstance) {
-                    if (getBuildingError) {
-                      cb('Error getting the building.');
+              if (ReadingProcessing.buildingHasProcessingParams(building)) {
+                ReadingProcessing.processReadingsSerially(building, createReadingResults, latestReading, currentState)
+                .then(function(processReadingResult) {
+                  var saveCurrentStatePromise = new Promise(function(resolve, reject) {
+                    if (currentStateNeedsCreating) {
+                      // Create the current state.
+                      State.create(currentState, function(createCurrentStateError, createdCurrentState) {
+                        if (createCurrentStateError) {
+                          reject(createCurrentStateError);
+                        } else {
+                          resolve(createdCurrentState);
+                        }
+                      });
                     } else {
-                      // Update the building to use the new state.
-                    buildingInstance.updateAttribute('currentStateId', savedCurrentState.id, function(updateBuildingError, updatedBuilding) {
-                      if (updateBuildingError) {
-                        cb('Error updating the building.');
-                        return;
-                      } else {
-                        cb(null, { count : createReadingResults.length});
-                      }
-                    });
+                      // Update the current state.
+                      currentState.save(function(saveStateError, savedStateResult) {
+                        if (saveStateError) {
+                          reject(saveStateError);
+                        } else {
+                          resolve(savedStateResult);
+                        }
+                      });
                     }
                   });
+
+                  saveCurrentStatePromise.then(function(savedCurrentState) {
+                    // Get a full instance of the building.
+                    Building.findById(building.id, function(getBuildingError, buildingInstance) {
+                      if (getBuildingError) {
+                        cb('Error getting the building.');
+                      } else {
+                        // Update the building to use the new state.
+                      buildingInstance.updateAttribute('currentStateId', savedCurrentState.id, function(updateBuildingError, updatedBuilding) {
+                        if (updateBuildingError) {
+                          cb('Error updating the building.');
+                          return;
+                        } else {
+                          cb(null, { count : createReadingResults.length});
+                        }
+                      });
+                      }
+                    });
+                  }, function() {
+                    cb('Error saving state.');
+                    return;
+                  });
                 }, function() {
-                  cb('Error saving state.');
-                  return;
+                  // Processing is optional. If it the processing attempt didn't work, still return positively.
+                  cb(null, { count : createReadingResults.length});
                 });
-              }, function() {
-                // Processing is optional. If it the processing attempt didn't work, still return positively.
+              } else {
+                // If the building doesn't have sufficient config to process, no worries! Still return positively.
                 cb(null, { count : createReadingResults.length});
-              });
+              }
             }, function() {
               cb('Failed to get the current state.');
             });

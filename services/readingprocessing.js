@@ -296,11 +296,6 @@ ReadingProcessing.processReadingsSerially = function(building, readings, initial
 				updateFutureStatesPromise = Promise.resolve();
 			}
 
-			if (numberOfFailedReadings == readings.length) {
-				reject('All readings failed.');
-				return;
-			}
-
 			updateFutureStatesPromise.then(function() {
 				ReadingProcessing.updateFullBuildingIfNeeded(building).then(function(updatedBuilding) {
 					toReturn.building = updatedBuilding;
