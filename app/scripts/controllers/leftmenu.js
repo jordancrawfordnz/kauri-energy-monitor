@@ -39,19 +39,9 @@ angular.module('offgridmonitoringApp')
         path : ''
       },
       {
-        name : 'Battery State',
-        icon : 'battery-three-quarters',
-        path : 'states'
-      },
-      {
-        name : 'Future State',
-        icon : 'magic',
-        path : 'future'
-      },
-      {
-        name : 'Prediction Patterns',
-        icon : 'clock-o',
-        path : 'patterns'
+        name : 'Configuration',
+        icon : 'cogs',
+        path : 'configuration'
       },
       {
         name : 'Sensor Readings',
@@ -59,19 +49,29 @@ angular.module('offgridmonitoringApp')
         path : 'reading'
       },
       {
-        name : 'Calibration Points',
-        icon : 'table',
-        path : 'calibrations'
-      },
-      {
         name : 'Export',
         icon : 'file-o',
         path : 'export'
       },
       {
-        name : 'Configuration',
-        icon : 'cogs',
-        path : 'configuration'
+        name : 'Battery State',
+        icon : 'battery-three-quarters',
+        path : 'states'
+      },
+      {
+        name : 'Calibration Points',
+        icon : 'table',
+        path : 'calibrations'
+      },
+      {
+        name : 'Prediction Patterns',
+        icon : 'clock-o',
+        path : 'patterns'
+      },
+      {
+        name : 'Future State',
+        icon : 'magic',
+        path : 'future'
       }
     ];
 
