@@ -15,6 +15,9 @@
       <br><span class="text-muted">Refreshes automatically every minute.</span>
     </div>
   </div>
+
+  <span ng-include="'views/nostateinformation.html'" ng-if="!summary.state"></span>
+
   <br>
 
   <div class="row">

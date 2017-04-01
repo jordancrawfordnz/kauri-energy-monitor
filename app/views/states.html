@@ -1,4 +1,6 @@
-<div class="states">
+<span ng-include="'views/nostateinformation.html'" ng-show="totalStates === 0"></span>
+
+<div class="states" ng-show="totalStates > 0">
   <div class="row">
     <div class="col-xs-12 col-md-4 col-lg-3">
       <page-filter filter="filter" number-of-results="totalStates" current-page="currentPage" display-every-levels="displayEveryLevels" refresh="refreshSearch()"></page-filter>

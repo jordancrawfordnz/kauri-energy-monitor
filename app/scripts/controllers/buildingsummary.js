@@ -116,22 +116,24 @@ angular.module('offgridmonitoringApp')
       Building.currentState({
         id : $routeParams.buildingId
       }).$promise.then(function(currentState) {
-        _this.state = currentState;
-        _this.chargeLevel = currentState.currentChargeLevel / currentState.batteryCapacity;
-        if (_this.chargeLevel > 1) {
-          _this.chargeLevel = 1;
-        } else if (_this.chargeLevel < 0) {
-          _this.chargeLevel = 0;
-        }
-        setupEnergyFlowGraph();
+        if (currentState.currentChargeLevel) {
+          _this.state = currentState;
+          _this.chargeLevel = currentState.currentChargeLevel / currentState.batteryCapacity;
+          if (_this.chargeLevel > 1) {
+            _this.chargeLevel = 1;
+          } else if (_this.chargeLevel < 0) {
+            _this.chargeLevel = 0;
+          }
+          setupEnergyFlowGraph();
 
-        // If don't have any data on the last 24 hour's states.
-        if (!_this.last24HourStates) {
-          // Get the current 24 hour data and refresh this every 10 minutes.
-          _this.get24HourData();
-          _this.last24HourStates = $interval(function() {
+          // If don't have any data on the last 24 hour's states.
+          if (!_this.last24HourStates) {
+            // Get the current 24 hour data and refresh this every 10 minutes.
             _this.get24HourData();
-          }, 10*60*1000);
+            _this.last24HourStates = $interval(function() {
+              _this.get24HourData();
+            }, 10*60*1000);
+          }
         }
       });
     };
