@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <span ng-include="'views/nostateinformation.html'" ng-if="!summary.state"></span>
+  <span ng-include="'views/nostateinformation.html'" ng-if="summary.state === null"></span>
 
   <br>
 

@@ -8,7 +8,7 @@
  * Allows building data to be exported.
  */
 angular.module('offgridmonitoringApp')
-  .controller('ExportCtrl', function ($interval, $scope, Breadcrumb, Breadcrumbs, $routeParams, Building, Environment, People, LoopBackAuth, $rootScope) {
+  .controller('ExportCtrl', function ($interval, $scope, Breadcrumb, Breadcrumbs, $routeParams, Building, Environment, People, LoopBackAuth, $rootScope, Bridge) {
   	$scope.dateTimeFormat = $rootScope.dateTimeFormat;
 
     $scope.until = null;
@@ -17,13 +17,33 @@ angular.module('offgridmonitoringApp')
     $scope.baseUrl = Environment.baseUrl; // the base token to use in an export URL.
     $scope.authToken = LoopBackAuth.accessTokenId;
 
-    $scope.building = Building.findById({id : $routeParams.buildingId});
+    $scope.building = Building.findById({
+      id : $routeParams.buildingId,
+      filter: {
+        include: 'bridges'
+      }
+    });
 
     // Setup breadcrumbs.
     Breadcrumbs.addPlaceholder('Building', $scope.building.$promise, function(building) {
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
     });
     Breadcrumbs.add(new Breadcrumb('Export', '/' + $routeParams.buildingId + '/export', 'Export data for a building.'));
+
+    $scope.building.$promise.then(function(building) {
+      if (building.bridges) {
+        // TODO: Multi-bridge support?
+        var bridge = building.bridges[0];
+
+        Bridge.readings.count({
+          id : bridge.id
+        }).$promise.then(function(count) {
+          $scope.totalReadings = count.count;
+        });
+      } else {
+        $scope.totalReadings = 0;
+      }
+    });
 
     $scope.exports = [];
 

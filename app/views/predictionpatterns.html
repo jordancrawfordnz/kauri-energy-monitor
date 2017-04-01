@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-md-12" ng-if="building.predictionPattern">
+  <div class="col-md-12">
     <div class="box box-solid">
       <div class="box-header with-border">
         <h3 class="box-title">
@@ -7,20 +7,42 @@
         </h3>
       </div>
       <div class="box-body">
-        <div weekly-prediction-data height="100" colour="building.houseConsumptionColour" prediction-pattern="building.predictionPattern"></div>
+        <div ng-if="!building.predictionPattern">
+          <p class="lead">
+            House consumption has no prediction pattern yet.
+          </p>
+        </div>
+
+        <div ng-if="building.predictionPattern" weekly-prediction-data height="100" colour="building.houseConsumptionColour" prediction-pattern="building.predictionPattern"></div>
       </div>
     </div>
   </div>
 
   <div ng-if="building.energySources">
+    <div ng-if="building.energySources.length === 0" class="col-md-12">
+      <p class="lead">
+        This building has no energy sources.
+        <br>
+        <small>Configure energy sources under "Configuration" <i class="fa fa-fw fa-arrow-right"></i> "Data Processing" <i class="fa fa-fw fa-arrow-right"></i> "Energy Sources".</small>
+      </p>
+    </div>
+
     <div class="col-md-12" ng-repeat="energySource in building.energySources" ng-if="energySource.predictionPatternType !== 'none'">
       <div class="box box-solid">
         <div class="box-header with-border">
           <h3 class="box-title">Average {{energySource.name}} Generation</h3>
         </div>
         <div class="box-body">
-          <div ng-if="energySource.predictionPatternType === 'daily'" daily-prediction-data height="100" colour="energySource.chartColour" prediction-pattern="energySource.predictionPattern"></div>
-          <div ng-if="energySource.predictionPatternType === 'hourly'" hourly-prediction-data prediction-pattern="energySource.predictionPattern"></div>
+          <div ng-if="!energySource.predictionPattern">
+            <p class="lead">
+              This energy source has no prediction pattern yet.
+            </p>
+          </div>
+
+          <div ng-if="energySource.predictionPattern">
+            <div ng-if="energySource.predictionPatternType === 'daily'" daily-prediction-data height="100" colour="energySource.chartColour" prediction-pattern="energySource.predictionPattern"></div>
+            <div ng-if="energySource.predictionPatternType === 'hourly'" hourly-prediction-data prediction-pattern="energySource.predictionPattern"></div>
+          </div>
         </div>
       </div>
     </div>

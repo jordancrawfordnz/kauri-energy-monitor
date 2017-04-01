@@ -52,6 +52,13 @@ angular.module('offgridmonitoringApp')
       // Initialise the count and the search.
       $scope.recountSearch();
       $scope.refreshSearch();
+
+      // Count all states (no filters at all).
+      Building.states.count({
+        id : $scope.building.id
+      }).$promise.then(function(count) {
+        $scope.allStatesCount = count.count;
+      });
     });
 
     Breadcrumbs.add(new Breadcrumb('Battery State', '/' + $routeParams.buildingId + '/states', 'See a paginated view of states for a date range.'));

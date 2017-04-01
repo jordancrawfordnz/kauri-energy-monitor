@@ -22,9 +22,9 @@ angular.module('offgridmonitoringApp')
     $scope.debounceTime = 500;
     $scope.currentPage = 1;
     $scope.displayEveryLevels = $rootScope.displayEveryLevels;
-    
+
     $scope.SensorTypes = SensorTypes;
-    
+
   	$scope.building = Building.findById({
       id : $routeParams.buildingId,
       filter : {
@@ -35,6 +35,12 @@ angular.module('offgridmonitoringApp')
       $scope.bridge = building.bridges[0];
         // TODO: Multi bridge support!
       $scope.refresh();
+
+      Bridge.readings.count({
+        id : $scope.bridge.id
+      }).$promise.then(function(count) {
+        $scope.allReadingsCount = count.count;
+      });
     });
 
     // Setup breadcrumbs.

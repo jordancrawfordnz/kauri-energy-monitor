@@ -1,5 +1,13 @@
 <div class="row">
-	<!-- State of charge graph section -->
+  <div class="col-md-12" ng-if="futureStates.length === 0">
+    <p class="lead">
+      This building has no future states processed yet.
+      <br>
+      <small>Configure state processing and energy sources under "Configuration" <i class="fa fa-fw fa-arrow-right"></i> "Data Processing".</small>
+    </p>
+  </div>
+
+  <!-- State of charge graph section -->
     <div class="col-md-6" ng-if="futureStates.length > 0">
         <div class="box box-solid">
             <div class="box-header with-border">

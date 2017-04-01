@@ -25,6 +25,13 @@ angular.module('offgridmonitoringApp')
     $scope.building.$promise.then(function() {
       $scope.recountSearch();
       $scope.refreshSearch();
+
+      // Count all re-calibrations (no filters at all).
+      Building.recalibrations.count({
+        id : $scope.building.id
+      }).$promise.then(function(count) {
+        $scope.allRecalibrationsCount = count.count;
+      });
     });
 
     // Setup breadcrumbs.

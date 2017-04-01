@@ -12,32 +12,36 @@
 
       <form role="form">
         <div class="box-body">
-          <p>
-            Generate a CSV file of data collected for this building. To reduce the size of the export, set a from or until filter.
-          </p>
-          <div class="form-group">
-            <label for="from">From</label>
-            <input type="text" class="form-control"
-             datetimepicker
-             options="datePickerOptions"
-             placeholder="The start of collection."
-             name="from"
-             date="from">
-          </div>
+          <span ng-include="'views/noreadings.html'" ng-show="totalReadings === 0"></span>
 
-          <div class="form-group">
-            <label for="until">Until</label>
-            <input type="text" class="form-control"
-             datetimepicker
-             options="datePickerOptions"
-             placeholder="The request was submitted."
-             name="until"
-             date="until">
-          </div>
+          <span ng-show="totalReadings > 0">
+            <p>
+              Generate a CSV file of data collected for this building. To reduce the size of the export, set a from or until filter.
+            </p>
+            <div class="form-group">
+              <label for="from">From</label>
+              <input type="text" class="form-control"
+               datetimepicker
+               options="datePickerOptions"
+               placeholder="The start of collection."
+               name="from"
+               date="from">
+            </div>
 
-          <div class="box-footer">
-            <button type="submit" class="btn btn-primary" ng-click="startExport()">Start Exporting</button>
-          </div>
+            <div class="form-group">
+              <label for="until">Until</label>
+              <input type="text" class="form-control"
+               datetimepicker
+               options="datePickerOptions"
+               placeholder="The request was submitted."
+               name="until"
+               date="until">
+            </div>
+
+            <div class="box-footer">
+              <button type="submit" class="btn btn-primary" ng-click="startExport()">Start Exporting</button>
+            </div>
+          </span>
         </div>
       </form>
     </div>

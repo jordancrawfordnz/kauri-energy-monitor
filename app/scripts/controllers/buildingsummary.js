@@ -134,6 +134,8 @@ angular.module('offgridmonitoringApp')
               _this.get24HourData();
             }, 10*60*1000);
           }
+        } else {
+          _this.state = null;
         }
       });
     };
