@@ -31,7 +31,7 @@ angular.module('offgridmonitoringApp')
     Breadcrumbs.add(new Breadcrumb('Export', '/' + $routeParams.buildingId + '/export', 'Export data for a building.'));
 
     $scope.building.$promise.then(function(building) {
-      if (building.bridges) {
+      if (building.bridges && building.bridges.length > 0) {
         // TODO: Multi-bridge support?
         var bridge = building.bridges[0];
 

@@ -126,10 +126,6 @@ angular.module('offgridmonitoringApp').controller('ProcessingConfigCtrl', functi
     $scope.saveBuilding();
   };
 
-  $scope.saveEnergyFlowOptions = function() {
-    $scope.saveBuilding();
-  };
-
   // Creates an empty energy source.
   $scope.newEnergySource = function() {
     $scope.energySources.push({

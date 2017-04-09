@@ -36,11 +36,15 @@ angular.module('offgridmonitoringApp')
         // TODO: Multi bridge support!
       $scope.refresh();
 
-      Bridge.readings.count({
-        id : $scope.bridge.id
-      }).$promise.then(function(count) {
-        $scope.allReadingsCount = count.count;
-      });
+      if ($scope.bridge) {
+        Bridge.readings.count({
+          id : $scope.bridge.id
+        }).$promise.then(function(count) {
+          $scope.allReadingsCount = count.count;
+        });
+      } else {
+        $scope.allReadingsCount = 0;
+      }
     });
 
     // Setup breadcrumbs.
