@@ -69,13 +69,11 @@ EnergyFlow.getPredictionDayIndexFromEndOfLastHalfHour = function(timestampBeingP
 
 // Gets the hour of the day from 0 to 23, 0 represents 0000 to 0100, 23 represents 2300 to 0000
 EnergyFlow.getPredictionHourIndex = function(timestamp) {
-	// TODO: Support timezones and DST.
 	return moment.unix(timestamp).hour();
 };
 
 // Gets the day of the week, 0 represents Sunday, 6 represents Saturday.
 EnergyFlow.getPredictionDayIndex = function(timestamp) {
-	// TODO: Support timezones and DST.
 	return moment.unix(timestamp).day();
 };
 

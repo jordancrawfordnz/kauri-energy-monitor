@@ -1,6 +1,5 @@
 var Promise = require('promise');
 var app = require('../server/server');
-var moment = require('moment');
 var StateOfCharge = require('./stateofcharge.js');
 var EnergyFlow = require('./energyflow.js');
 var ProcessingHelper = require('./processinghelper.js');

@@ -1,3 +1,5 @@
+var moment = require('moment');
+
 var ProcessingHelper = {};
 module.exports = ProcessingHelper;
 
@@ -41,8 +43,9 @@ ProcessingHelper.shouldRunEndOfDayJobs = function(timeSinceLastReading, timestam
 	if (oneReadingAfter) {
 		timestamp--;
 	}
-	// TODO: Support building defined timezones and DST.
-	var outBy = (timestamp - 60*60*12) % (60*60*24); // match on midday GMT which is midnight in +12 NZ.
+
+	var outBy = timestamp - moment.unix(timestamp).startOf('day').unix();
+
 	// Either the timestamp is perfectly on midnight or midnight was missed.
 	return outBy === 0 || outBy < timeSinceLastReading;
 };
