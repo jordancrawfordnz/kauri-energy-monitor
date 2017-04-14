@@ -123,3 +123,34 @@ body, .login-box-body {
 	margin: 0px;
 	padding: 0px;
 }
+
+@import url('https://fonts.googleapis.com/css?family=Londrina+Solid');
+
+.skin-blue .main-header .logo {
+	background-color: #3c8dbc;
+}
+
+.logo-lg .maintext {
+	font-family: 'Londrina Solid', cursive;
+	font-size: 40px;
+}
+
+.logo-lg .leaf {
+	height: 50px;
+}
+
+.login-logo .main {
+  font-family: 'Londrina Solid', cursive;
+  font-size: 70px;
+}
+
+.login-logo .leaf {
+  height: 70px;
+}
+
+.login-logo .tagline {
+	font-size: 22px;
+	top: -40px; // better way to do this?
+	position: relative;
+	left: 18px;
+}
