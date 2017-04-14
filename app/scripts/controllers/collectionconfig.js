@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:CollectionConfigCtrl
+ * @name kauriApp.controller:CollectionConfigCtrl
  * @description
  * # CollectionConfigCtrl
  * A tab for the building configuration page to allow users to set data collection options.
  */
-angular.module('offgridmonitoringApp').controller('CollectionConfigCtrl', function ($scope, Building) {
+angular.module('kauriApp').controller('CollectionConfigCtrl', function ($scope, Building) {
   $scope.loadBridges = function() {
     $scope.bridges = Building.bridges({
       id: $scope.building.id

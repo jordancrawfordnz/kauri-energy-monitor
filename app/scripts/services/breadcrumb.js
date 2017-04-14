@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('offgridmonitoringApp');
+var app = angular.module('kauriApp');
     
 // A single Breadcrumb object.
 app.factory('Breadcrumb', function($rootScope) {

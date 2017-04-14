@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:ExportCtrl
+ * @name kauriApp.controller:ExportCtrl
  * @description
  * # ExportCtrl
  * Allows building data to be exported.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('ExportCtrl', function ($interval, $scope, Breadcrumb, Breadcrumbs, $routeParams, Building, Environment, People, LoopBackAuth, $rootScope, Bridge) {
   	$scope.dateTimeFormat = $rootScope.dateTimeFormat;
 

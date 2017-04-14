@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc overview
- * @name offgridmonitoringApp
+ * @name kauriApp
  * @description
- * # offgridmonitoringApp
+ * # kauriApp
  *
  * Main module of the application.
  */
 angular
-  .module('offgridmonitoringApp', [
+  .module('kauriApp', [
     'ngResource',
     'ngRoute',
     'ngSanitize',

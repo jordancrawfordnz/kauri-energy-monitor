@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:stateOfChargeOnlyGraph
+ * @name kauriApp.directive:stateOfChargeOnlyGraph
  * @description
  * # stateOfChargeOnlyGraph
  * Shows a graph of state of charge.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
 	.directive('stateOfChargeOnlyGraph', function() {
 	  return {
 	    restrict: 'A', // to be used via an attribute

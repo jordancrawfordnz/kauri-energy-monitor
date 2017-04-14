@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('offgridmonitoringApp');
+var app = angular.module('kauriApp');
 
 // Metadata on the types of sensors.
 app.factory('SensorTypes', function() {

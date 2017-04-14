@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:buildingForm
+ * @name kauriApp.directive:buildingForm
  * @description
  * # buildingForm
  * Provides a form for core building options. e.g.: the name of the building and graph display parameters.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .directive('buildingForm', function() {
     return {
       restrict: 'E', // to be used via an element only.

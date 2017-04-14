@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:totalEnergyGraph
+ * @name kauriApp.directive:totalEnergyGraph
  * @description
  * # totalEnergyGraph
  * Shows a graph of the total energy.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
 	.directive('totalEnergyGraph', function() {
 	  return {
 	    restrict: 'A', // to be used via an attribute

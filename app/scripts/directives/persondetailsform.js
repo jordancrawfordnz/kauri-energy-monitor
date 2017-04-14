@@ -2,13 +2,13 @@
 
 /**
 * @ngdoc function
-* @name offgridmonitoringApp.directive:personDetailsForm
+* @name kauriApp.directive:personDetailsForm
 * @description
 * # personDetailsForm
 * Allows a user to enter the name and email address for a person.
 */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
 .directive('personDetailsForm', function() {
   return {
     restrict: 'E', // to be used via an element

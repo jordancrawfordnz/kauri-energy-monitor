@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:sensorTypesSelector
+ * @name kauriApp.directive:sensorTypesSelector
  * @description
  * # sensorTypesSelector
  * Allows a user to select a sensor type from a dropdown list.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .directive('sensorTypesSelector', function() {
     return {
       restrict: 'A', // to be used via attributes

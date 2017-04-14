@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:ProfileCtrl
+ * @name kauriApp.controller:ProfileCtrl
  * @description
  * # ProfileCtrl
  * Allows a user to change their profile.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('ProfileCtrl', function (Breadcrumb, Breadcrumbs, People, $http, $scope, $rootScope, $timeout, Environment) {
     Breadcrumbs.add(new Breadcrumb('Edit Profile', 'profile', 'Change your email address, password or name.'));
 

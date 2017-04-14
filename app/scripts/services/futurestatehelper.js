@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('offgridmonitoringApp');
+var app = angular.module('kauriApp');
     
 // Provides functions that helps with the future state estimations.
 app.factory('FutureStateHelper', function(ChartColours, $rootScope) {

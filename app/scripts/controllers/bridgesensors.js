@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:BridgeSensorsCtrl
+ * @name kauriApp.controller:BridgeSensorsCtrl
  * @description
  * # BridgeSensorsCtrl
  * The interface to view and edit a bridges sensors.
  */
-angular.module('offgridmonitoringApp').controller('BridgeSensorsCtrl', function ($scope, Bridge, SensorTypes, $q) {
+angular.module('kauriApp').controller('BridgeSensorsCtrl', function ($scope, Bridge, SensorTypes, $q) {
   $scope.sensors = [];
   $scope.sensorTypes = SensorTypes;
 

@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('offgridmonitoringApp');
+var app = angular.module('kauriApp');
     
 //  Maintains the set of breadcrumbs.
 app.factory('Breadcrumbs', function($rootScope, Breadcrumb) {

@@ -2,13 +2,13 @@
 
 /**
 * @ngdoc function
-* @name offgridmonitoringApp.directive:passwordForm
+* @name kauriApp.directive:passwordForm
 * @description
 * # passwordForm
 * Allows a user to enter a password and confirm it, requiring that the passwords match.
 */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
 .directive('passwordForm', function() {
   return {
     restrict: 'E', // to be used via an element

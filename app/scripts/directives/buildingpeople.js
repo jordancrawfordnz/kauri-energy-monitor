@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:buildingPeople
+ * @name kauriApp.directive:buildingPeople
  * @description
  * # buildingPeople
  * Allows a user to add or remove people from a building.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .directive('buildingPeople', function() {
     return {
       restrict: 'A', // to be used via an attribute only.

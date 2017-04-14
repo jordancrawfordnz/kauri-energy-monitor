@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:BuildingConfigurationCtrl
+ * @name kauriApp.controller:BuildingConfigurationCtrl
  * @description
  * # BuildingConfigurationCtrl
  * Allows a user to edit config options related to a building.
  */
-angular.module('offgridmonitoringApp').controller('BuildingConfigurationCtrl',
+angular.module('kauriApp').controller('BuildingConfigurationCtrl',
   function ($routeParams, $rootScope, $scope, Building, Breadcrumbs, Breadcrumb, $timeout) {
 
   var buildingId = $routeParams.buildingId;

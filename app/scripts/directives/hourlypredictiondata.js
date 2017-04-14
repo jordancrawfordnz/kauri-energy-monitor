@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:hourlyPredictionData
+ * @name kauriApp.directive:hourlyPredictionData
  * @description
  * # hourlyPredictionData
  * Displays the hourly average prediction.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
 	.directive('hourlyPredictionData', function() {
 	  return {
 	    restrict: 'A', // to be used via an attribute

@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:colourSelector
+ * @name kauriApp.directive:colourSelector
  * @description
  * # colourSelector
  * Allows a user to select a chart colour from a dropdown list.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .directive('colourSelector', function() {
     return {
       restrict: 'A', // to be used via attributes

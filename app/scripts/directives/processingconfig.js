@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:processingConfig
+ * @name kauriApp.directive:processingConfig
  * @description
  * # processingConfig
  * A tab for the building configuration page to allow users to set data processing options.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .directive('processingConfig', function() {
     return {
       restrict: 'E', // to be used via an element only.

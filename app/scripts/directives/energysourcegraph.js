@@ -2,13 +2,13 @@
 
 /**
 * @ngdoc function
-* @name offgridmonitoringApp.directive:energySourceGraph
+* @name kauriApp.directive:energySourceGraph
 * @description
 * # energySourceGraph
 * Shows a graph of the energy sources.
 */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
 .directive('energySourceGraph', function() {
   return {
     restrict: 'A', // to be used via an attribute

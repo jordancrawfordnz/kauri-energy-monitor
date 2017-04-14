@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:bridgeSensors
+ * @name kauriApp.directive:bridgeSensors
  * @description
  * # bridgeSensors
  * The interface to view and edit a bridges sensors.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .directive('bridgeSensors', function() {
     return {
       restrict: 'E', // to be used via an element only.

@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:PredictionPatternCtrl
+ * @name kauriApp.controller:PredictionPatternCtrl
  * @description
  * # PredictionPatternCtrl
  * Displays the source data used for future state predictions.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('PredictionPatternCtrl', function ($scope, Building, $routeParams, Breadcrumbs, Breadcrumb, ChartColours, FutureStateHelper, FutureState) {
   	var _this = this;
 

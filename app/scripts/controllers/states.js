@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:StatesCtrl
+ * @name kauriApp.controller:StatesCtrl
  * @description
  * # StatesCtrl
  * Provides a paginated view of states and a graph of state over time.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('StatesCtrl', function ($rootScope, $scope, $routeParams, Building, Breadcrumb, Breadcrumbs, State, Timestamp, ChartColours, FutureStateHelper) {
     /*
       Allows:

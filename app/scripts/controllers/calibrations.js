@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:CalibrationsCtrl
+ * @name kauriApp.controller:CalibrationsCtrl
  * @description
  * # CalibrationsCtrl
  * Provides a paginated view of recalibrations.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('CalibrationsCtrl', function ($rootScope, $scope, $routeParams, Building, Breadcrumb, Breadcrumbs, Timestamp) {
     /*
       Allows:

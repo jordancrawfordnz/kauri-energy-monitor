@@ -2,13 +2,13 @@
 
 /**
 * @ngdoc function
-* @name offgridmonitoringApp.directive:pageFilter
+* @name kauriApp.directive:pageFilter
 * @description
 * # pageFilter
 * Allows a user to define a daterange, sort order, page and amount per page.
 */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
 .directive('pageFilter', function() {
   return {
     restrict: 'E', // to be used via an element

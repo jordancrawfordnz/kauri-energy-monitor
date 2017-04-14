@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:FutureStateCtrl
+ * @name kauriApp.controller:FutureStateCtrl
  * @description
  * # FutureStateCtrl
  * Displays estimations of the future state of the system.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('FutureStateCtrl', function ($scope, Building, $routeParams, Breadcrumbs, Breadcrumb, ChartColours, FutureStateHelper, FutureState) {
   	var _this = this;
 

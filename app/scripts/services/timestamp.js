@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('offgridmonitoringApp');
+var app = angular.module('kauriApp');
     
 // Provides helpers to work with timestamps.
 app.factory('Timestamp', function($rootScope) {

@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:LoginCtrl
+ * @name kauriApp.controller:LoginCtrl
  * @description
  * # LoginCtrl
  * Allows a user to login.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('LoginCtrl', function ($scope, People, $rootScope, $location) {
     if (People.isAuthenticated()) {
       $location.path('/');

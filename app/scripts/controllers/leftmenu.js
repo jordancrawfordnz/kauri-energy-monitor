@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:LeftMenuCtrl
+ * @name kauriApp.controller:LeftMenuCtrl
  * @description
  * # LeftMenuCtrl
  * Controller for the left navigation menu.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('LeftMenuCtrl', function (People, $location, $scope) {
     var _this = this;
     function initialiseBuildings() {

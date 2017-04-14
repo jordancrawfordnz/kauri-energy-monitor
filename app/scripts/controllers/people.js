@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:PeopleCtrl
+ * @name kauriApp.controller:PeopleCtrl
  * @description
  * # PeopleCtrl
  * Allows users to create and edit people within the system.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('PeopleCtrl', function ($scope, $rootScope, $timeout, People, Breadcrumbs, Breadcrumb) {
     Breadcrumbs.add(new Breadcrumb('People', 'people', 'Add and remove people.'));
 

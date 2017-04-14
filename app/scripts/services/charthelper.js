@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('offgridmonitoringApp');
+var app = angular.module('kauriApp');
     
 // Provides functions that help with the generation of charts.
 app.factory('ChartHelper', function(ChartColours, $rootScope) {

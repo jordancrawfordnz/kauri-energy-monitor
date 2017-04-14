@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:BuildingPeopleCtrl
+ * @name kauriApp.controller:BuildingPeopleCtrl
  * @description
  * # BuildingPeopleCtrl
  * Allows a user to add or remove people from a building.
  */
-angular.module('offgridmonitoringApp').controller('BuildingPeopleCtrl', function ($scope, $rootScope, People, Building, $interval) {
+angular.module('kauriApp').controller('BuildingPeopleCtrl', function ($scope, $rootScope, People, Building, $interval) {
   $scope.getBuildingPeople = function() {
     return Building.people({
       id: $scope.building.id

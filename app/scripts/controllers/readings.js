@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:ReadingsCtrl
+ * @name kauriApp.controller:ReadingsCtrl
  * @description
  * # ReadingsCtrl
  * Provides a paginated view of readings.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('ReadingsCtrl', function ($rootScope, $scope, $routeParams, Building, Bridge, Breadcrumb, Breadcrumbs, Reading, SensorTypes, Timestamp) {
     /*
       Allows:

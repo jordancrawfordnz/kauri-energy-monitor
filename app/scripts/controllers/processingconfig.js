@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:ProcessingConfigCtrl
+ * @name kauriApp.controller:ProcessingConfigCtrl
  * @description
  * # ProcessingConfigCtrl
  * A tab for the building configuration page to allow users to set data processing options.
  */
-angular.module('offgridmonitoringApp').controller('ProcessingConfigCtrl', function ($rootScope, $scope, Building, SensorTypes, $interval, $q) {
+angular.module('kauriApp').controller('ProcessingConfigCtrl', function ($rootScope, $scope, Building, SensorTypes, $interval, $q) {
   $scope.dateTimeFormat = $rootScope.dateTimeFormat;
 
   $scope.datePickerOptions = {

@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:collectionConfig
+ * @name kauriApp.directive:collectionConfig
  * @description
  * # collectionConfig
  * A tab for the building configuration page to allow users to set data collection options.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .directive('collectionConfig', function() {
     return {
       restrict: 'E', // to be used via an element only.

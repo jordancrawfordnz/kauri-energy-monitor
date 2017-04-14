@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('offgridmonitoringApp');
+var app = angular.module('kauriApp');
     
 // Maintains the set of avaliable colours and turns them into real colours.
 app.factory('ChartColours', function() {

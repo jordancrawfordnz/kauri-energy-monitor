@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:BuildingSummaryCtrl
+ * @name kauriApp.controller:BuildingSummaryCtrl
  * @description
  * # BuildingSummaryCtrl
  * Displays a summary of key indicators about a building.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('BuildingSummaryCtrl',
     function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours, ChartHelper, FutureStateHelper) {
 

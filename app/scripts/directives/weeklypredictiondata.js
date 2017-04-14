@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:weeklyPredictionData
+ * @name kauriApp.directive:weeklyPredictionData
  * @description
  * # weeklyPredictionData
  * Shows the data and a graph for a weekly prediction.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
 	.directive('weeklyPredictionData', function() {
 	  return {
 	    restrict: 'A', // to be used via an attribute

@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.controller:BuildingsCtrl
+ * @name kauriApp.controller:BuildingsCtrl
  * @description
  * # BuildingsCtrl
  * Displays buildings.
  */
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .controller('BuildingsCtrl', function (Breadcrumb, Breadcrumbs, People, Building, $timeout, $rootScope) {
     Breadcrumbs.add(new Breadcrumb('Buildings', '/', 'Manage your existing buildings or add a new building.'));
 

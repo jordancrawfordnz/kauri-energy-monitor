@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:sensorSelector
+ * @name kauriApp.directive:sensorSelector
  * @description
  * # sensorSelector
  * Allows a user to select a sensor from a dropdown list.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .directive('sensorSelector', function() {
     return {
       restrict: 'A', // to be used via attributes

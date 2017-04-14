@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name offgridmonitoringApp.directive:bridgeForm
+ * @name kauriApp.directive:bridgeForm
  * @description
  * # bridgeForm
  * Provides a form for core bridge options. e.g.: the name of the bridge.
  */
 
-angular.module('offgridmonitoringApp')
+angular.module('kauriApp')
   .directive('bridgeForm', function() {
     return {
       restrict: 'E', // to be used via an element only.
