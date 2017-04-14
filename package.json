@@ -1,5 +1,5 @@
 {
-  "name": "OffGridMonitoringAPI",
+  "name": "KauriEnergyMonitorAPI",
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
@@ -36,5 +36,5 @@
     "url": ""
   },
   "license": "UNLICENSED",
-  "description": "OffGridMonitoringAPI"
+  "description": "The API for Kauri Energy Monitor."
 }
