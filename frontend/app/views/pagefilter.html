@@ -1,0 +1,79 @@
+<div class="box">
+  <div class="box-header with-border">
+    <h3 class="box-title">
+      Filter and Sort
+    </h3>
+  </div>
+
+  <div class="box-body table-responsive">
+    <div class="form-group">
+      <label for="from">From</label>
+      <input type="text" class="form-control"
+        datetimepicker
+        options="datePickerOptions"
+        placeholder="The start of collection."
+        name="from"
+        date="filter.from">
+    </div>
+
+    <div class="form-group">
+      <label for="until">Until</label>
+      <input type="text" class="form-control"
+        datetimepicker
+        options="datePickerOptions"
+        placeholder="Now."
+        name="until"
+        date="filter.until">
+    </div>
+
+    <div class="form-group">
+      <label>Sort by</label>
+      <select class="form-control" ng-model="filter.sortOrder">
+        <option value="desc">Most recent first</option>
+        <option value="asc">Oldest first</option>
+      </select>
+    </div>
+
+    <div class="form-group" ng-if="displayEveryLevels">
+      <label>Frequency</label>
+      <select class="form-control" ng-model="$parent.filter.displayEvery"
+        ng-options="level.period as level.name for level in displayEveryLevels"></select>
+    </div>
+
+    <div class="form-group">
+      <label>Current page</label>
+      <div class="input-group" ng-class="{'has-error' : isCurrentPageError}">
+        <span class="input-group-btn">
+          <button ng-disabled="currentPage <= 1" ng-click="currentPage = currentPage - 1"
+            type="button" class="btn btn-default" aria-label="Previous Page">
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+          </button>
+        </span>
+
+        <span class="input-group-addon">Page</span>
+        <input type="text" class="form-control" ng-model="currentPageText">
+        <span class="input-group-addon ng-binding" ng-if="numberOfPages !== undefined">of {{numberOfPages | number}}</span>
+        <span class="input-group-btn">
+          <button ng-disabled="currentPage >= numberOfPages" ng-click="currentPage = currentPage + 1"
+            type="button" class="btn btn-default" aria-label="Next Page">
+            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+          </button>
+        </span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Amount per page</label>
+        <select class="form-control" ng-model="filter.amountPerPage">
+          <option value="10">10</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="500">500</option>
+        </select>
+    </div>
+
+    <button ng-click="refresh()" class="btn btn-default">
+      <span class="fa fa-refresh"></span> Refresh data
+    </button>
+  </div>
+</div>

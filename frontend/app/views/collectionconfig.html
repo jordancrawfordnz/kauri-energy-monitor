@@ -1,0 +1,100 @@
+<!-- Bridges -->
+<h4>Bridges</h4>
+<p>A bridge is a computer at the renewable energy system that collects data from sensor devices and sends it to this application.</p>
+<!-- TODO: Instructions on bridge configuration. -->
+<!-- TODO: Diagram of the bridge and app? -->
+<p>Below you can configure bridges and their sensors. This will give you the bridge ID, secret and sensor ID's which are used to configure the bridge.</p>
+
+<p>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createBridgeModal">
+    <span class="glyphicon glyphicon-plus"></span> New Bridge
+  </button>
+</p>
+
+<div ng-if="bridges.length === 0">
+  No bridges.
+</div>
+
+<div class="row">
+  <div class="col-md-6" ng-repeat="bridge in bridges">
+    <div class="thumbnail">
+      <div class="caption">
+        <p>
+          <span class="lead">{{bridge.name}}</span>
+          <span class="btn-group pull-right">
+            <button type="button" class="btn btn-primary" ng-click="editBridge(bridge)">
+              <span class="glyphicon glyphicon-pencil"/>
+            </button>
+            <button type="button" class="btn btn-danger" ng-click="showBridgeDeleteConfirmation(bridge)">
+              <span class="glyphicon glyphicon-trash"/>
+            </button>
+          </span>
+        </p>
+
+        <p>
+          <strong>Bridge ID:</strong> <pre>{{bridge.id}}</pre>
+          <strong>Bridge Secret:</strong> <pre>{{bridge.bridgeSecret}}</pre>
+          <bridge-sensors show-error="showError({title: title, body: body})" show-success="showSuccess({title: title, body: body})" bridge="bridge"></bridge-sensors>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create bridge -->
+<div class="modal fade" id="createBridgeModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">New Bridge</h4>
+      </div>
+      <div class="modal-body">
+        <bridge-form is-valid="newBridgeValid" bridge="newBridge"></bridge-form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" ng-disabled="!newBridgeValid" data-dismiss="modal" class="btn btn-primary" ng-click="createNewBridge()">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete bridge -->
+<div class="modal fade" id="deleteBridgeConfirmationModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Delete Bridge "{{deleteConfirmationBridge.name}}"?</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the bridge "{{deleteConfirmationBridge.name}}"?</p>
+        <p>This will permanently delete all data for this bridge and the bridge client will no longer be able to upload data.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">No way!</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="deleteBridge(deleteConfirmationBridge)">Yes, do it!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit bridge -->
+<div class="modal fade" id="editBridgeModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Edit Bridge</h4>
+      </div>
+      <div class="modal-body">
+        <bridge-form is-valid="editBridgeValid" bridge="editBridgeCopy"></bridge-form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" ng-disabled="!editBridgeValid" class="btn btn-primary" data-dismiss="modal" ng-click="updateBridge(editBridgeCopy)">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

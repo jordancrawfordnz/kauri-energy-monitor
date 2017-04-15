@@ -1,0 +1,39 @@
+<h4>Sensors:</h4>
+
+<!-- Button to create a new sensor -->
+<p>
+  <button ng-click="newSensor()" class="btn btn-primary"><span class="fa fa-plus"></span> New sensor</button>
+</p>
+
+<div class="row">
+  <div class="col-md-6" ng-repeat="sensor in sensors">
+    <div class="thumbnail">
+      <div class="caption">
+        <form role="form" name="sensorForm" novalidate>
+          <div class="form-group" ng-class="{ 'has-error' : sensorForm.name.$dirty && sensorForm.name.$invalid}">
+            <label for="name">Name</label>
+            <p>The name given to the energy sensor. Used to identify the sensor in configuration and sensor readings.</p>
+            <input class="form-control" ng-model="sensor.data.name" name="name" id="name" required>
+          </div>
+
+          <div ng-if="sensor.data.id">
+            <label>Sensor ID</label>
+            <pre>{{sensor.data.id}}</pre>
+          </div>
+
+          <div class="form-group">
+            <label for="sensorType">Sensor Type</label>
+            <p>This defines the type of power used (i.e.: AC or DC) and the type of the reading (i.e.: current or voltage). This is shown on the sensor readings page to add context to the reading.</p>
+            <div sensor-types-selector model="sensor.data.type"></div>
+          </div>
+
+          <br>
+          <button ng-if="sensor.hasBeenSaved" ng-disabled="sensorForm.$invalid" type="submit" ng-click="saveSensor(sensor)" class="btn btn-primary">Save</button>
+          <button ng-if="!sensor.hasBeenSaved" ng-disabled="sensorForm.$invalid" type="submit" ng-click="createSensor(sensor)" class="btn btn-primary">Create</button>
+
+          <button ng-click="deleteSensor(sensor)" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

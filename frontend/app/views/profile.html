@@ -1,0 +1,48 @@
+<div class="callout callout-danger" ng-if="hasSaveFailed">
+  <h4>Profile change failed</h4>
+  <p>There was a problem while saving your profile. Please try again.</p>
+</div>
+
+<div class="callout callout-success" ng-if="hasSaveSucceeded">
+  <h4>Profile change successful</h4>
+  <p>Your profile has been changed successfully.</p>
+</div>
+
+<div class="callout callout-danger" ng-if="hasSavePasswordFailed">
+  <h4>Password change failed</h4>
+  <p>There was a problem while changing your password. Please try again.</p>
+</div>
+
+<div class="callout callout-success" ng-if="hasSavePasswordSucceeded">
+  <h4>Password change successful</h4>
+  <p>Your password has been changed successfully.</p>
+</div>
+
+<div class="row">
+  <div class="col-sm-6">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">My Details</h3>
+      </div>
+      <div class="box-body">
+        <person-details-form is-valid="personDetailsValid" person="user"></person-details-form>
+      </div>
+      <div class="box-footer">
+        <button ng-disabled="!personDetailsValid" type="submit" ng-click="saveUserDetails()" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Security</h3>
+      </div>
+      <div class="box-body">
+        <p class="lead">Password</p>
+        <password-form is-valid="passwordValid" password="password" field-name="'New password'"></password-form>
+        <button ng-disabled="!passwordValid" ng-click="changePassword()" type="submit" class="btn btn-primary">Change password</button>
+      </div>
+    </div>
+  </div>
+</div>

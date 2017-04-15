@@ -1,0 +1,293 @@
+<div class="row">
+  <div class="col-sm-4 col-lg-3">
+    <!-- State generation status. -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Re-process Existing Data</h3>
+      </div>
+      <div class="box-body">
+        <p>This option clears all calibration points and states. This may take several minutes to complete.</p>
+        <p>This should be used if a key processing parameter changes and you want the change to be reflected in existing data.</p>
+
+        <span ng-if="regenerationStatus.statesAreRegenerating">
+          <h4><span class="fa fa-circle-o-notch fa-spin fa-fw"></span> Re-processing existing data.</h4>
+          The processing status will update automatically.
+        </span>
+
+        <span ng-if="!regenerationStatus.statesAreRegenerating">
+          <h4><span class="fa fa-check"></span> Processing live data.</h4>
+          <!-- TODO: Reflect what its actually doing based on the configuration provided. -->
+
+          <button ng-disabled="regenerationStatus.statesAreRegenerating" ng-click="regenerateStates()" class="btn btn-primary">
+            <span class="fa fa-refresh"></span> Re-process data
+          </button>
+
+          <!-- Show details about the last re-process job's status. -->
+          <span ng-if="regenerationStatus.lastRegeneration">
+            <h4>Last re-process status</h4>
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td>Started at</td>
+                  <td>{{regenerationStatus.lastRegeneration.startTime | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+                </tr>
+                <tr>
+                  <td>Finished at</td>
+                  <td>{{regenerationStatus.lastRegeneration.finishTime | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+                </tr>
+                <tr>
+                  <td>Time taken</td>
+                  <td>{{regenerationStatus.lastRegeneration.totalTime | number}} seconds</td>
+                </tr>
+                <tr>
+                  <td>Successful readings</td>
+                  <td>{{regenerationStatus.lastRegeneration.numberOfSuccessfulReadings | number}} readings.</td>
+                </tr>
+                <tr>
+                  <td>Failed readings</td>
+                  <td>{{regenerationStatus.lastRegeneration.numberOfFailedReadings | number}} readings.</td>
+                </tr>
+              </tbody>
+            </table>
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Processing options -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Processing Options</h3>
+      </div>
+      <div class="box-body">
+        <form role="form" name="processingOptionsForm" novalidate>
+          <div class="form-group">
+            <label for="onlyProcessAfter">Process data after (optional)</label>
+            <p>
+              Processes data starting at the defined date and time. If not defined, all data up to "Process data until" is processed.
+            </p>
+            <input type="text" class="form-control"
+              datetimepicker
+              options="datePickerOptions"
+              placeholder="The start of collection."
+              name="onlyProcessAfter"
+              date="onlyProcessAfterObject">
+          </div>
+
+          <div class="form-group">
+            <label for="onlyProcessUntil">Process data until (optional)</label>
+            <p>
+              Stops processing data after the defined date and time. If not defined, all data up to the latest reading is processed.
+            </p>
+            <input type="text" class="form-control"
+              datetimepicker
+              options="datePickerOptions"
+              placeholder="Forever"
+              name="onlyProcessUntil"
+              date="onlyProcessUntilObject">
+          </div>
+
+          <div class="form-group" ng-class="{ 'has-error' : processingOptionsForm.minutesBetweenReadingsToIgnore.$dirty && processingOptionsForm.minutesBetweenReadingsToIgnore.$invalid}">
+            <label for="minutesBetweenReadingsToIgnore">Size of reading gaps to ignore (optional)</label>
+            <p>
+              When there are large gaps between readings, this can cause incorrect data while processing. This allows the threshold for a reading to be ignored to be defined. This is defined in minutes. If not defined, there is no limit for the size of gaps. The recommended value is 5 minutes.
+            </p>
+            <div class="input-group" ng-if="building.minutesBetweenReadingsToIgnore">
+              <input class="form-control" type="number" ng-model="building.minutesBetweenReadingsToIgnore" name="minutesBetweenReadingsToIgnore" id="minutesBetweenReadingsToIgnore">
+              <span class="input-group-addon">Minute(s) gap</span>
+            </div>
+            <div ng-if="!building.minutesBetweenReadingsToIgnore">
+              <input class="form-control" type="number" ng-model="building.minutesBetweenReadingsToIgnore" name="minutesBetweenReadingsToIgnore" id="minutesBetweenReadingsToIgnore"
+              placeholder="Don't ignore gaps">
+            </div>
+          </div>
+
+          <button ng-disabled="processingOptionsForm.$invalid" type="submit" ng-click="saveProcessingOptions()" class="btn btn-primary">Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-8 col-lg-9">
+    <!-- Battery State Options -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Battery State Options</h3>
+      </div>
+      <div class="box-body">
+        <form role="form" name="batteryStateOptionsForm" novalidate>
+          <div class="col-sm-6 col-lg-4">
+            <div class="form-group" ng-class="{ 'has-error' : batteryStateOptionsForm.lowVoltageLevel.$dirty && batteryStateOptionsForm.lowVoltageLevel.$invalid}">
+              <label for="lowVoltageLevel">Critical low voltage level</label>
+              <p>This is the voltage considered low. This is used to adjust the battery state of charge and automatically activate the generator. This is typically the LVSD trigger voltage.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="building.lowVoltageLevel" name="lowVoltageLevel" id="lowVoltageLevel" required>
+                <span class="input-group-addon">Volts</span>
+              </div>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-error' : batteryStateOptionsForm.lowVoltageTriggerTime.$dirty && batteryStateOptionsForm.lowVoltageTriggerTime.$invalid}">
+              <label for="lowVoltageTriggerTime">Low voltage trigger time</label>
+              <p>The battery is considered empty once its voltage is at or below the critical low voltage level for this amount of time. Used to adjust the battery state of charge. Typically around half the time until LVSD.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="building.lowVoltageTriggerTime" name="lowVoltageTriggerTime" id="lowVoltageTriggerTime" required>
+                <span class="input-group-addon">seconds</span>
+              </div>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-error' : batteryStateOptionsForm.dailyAgingPercentage.$dirty && batteryStateOptionsForm.dailyAgingPercentage.$invalid}">
+              <label for="dailyAgingPercentage">Daily Aging Percentage</label>
+              <p>The amount the battery level will decrease by each day. This is used to ensure the battery capacity is correct (the battery capacity will be re-calibrated if set too low). The recommended amount is 2% per day.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="building.dailyAgingPercentage" name="dailyAgingPercentage" id="dailyAgingPercentage" required>
+                <span class="input-group-addon">% per day</span>
+              </div>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-error' : batteryStateOptionsForm.tolerancePercentage.$dirty && batteryStateOptionsForm.tolerancePercentage.$invalid}">
+              <label for="tolerancePercentage">Tolerance Percentage</label>
+              <p>The tolerance percentage defines when re-calibration events will occur. The recommended amount is &plusmn;5%. This means the battery capacity will be adjusted upwards once it reaches 105%, and state of charge won't be re-calculated until it reaches -5%.</p>
+              <div class="input-group">
+                <span class="input-group-addon">&plusmn;</span>
+                <input class="form-control" type="number" ng-model="building.tolerancePercentage" name="tolerancePercentage" id="tolerancePercentage" required>
+                <span class="input-group-addon">%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-lg-4">
+            <div class="form-group" ng-class="{ 'has-error' : batteryStateOptionsForm.highPowerThreshold.$dirty && batteryStateOptionsForm.highPowerThreshold.$invalid}">
+              <label for="highPowerThreshold">High power threshold</label>
+              <p>This is the power in watts that is considered high and out of the ordinary. LVSD events caused by high power loads don't represent low battery levels so do not contribute to the state of the system. Can be used for generator automation.</p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="building.highPowerThreshold" name="highPowerThreshold" id="highPowerThreshold" required>
+                <span class="input-group-addon">Watts</span>
+              </div>
+            </div>
+
+            <div class="form-group" ng-class="{ 'has-error' : batteryStateOptionsForm.recalculateChargeEfficiencyCapacityMultiplier.$dirty && batteryStateOptionsForm.recalculateChargeEfficiencyCapacityMultiplier.$invalid}">
+              <label for="recalculateChargeEfficiencyCapacityMultiplier">Re-calculate charge efficiency multiplier</label>
+              <p>
+                For the charge efficiency to be calculated, their must be sufficient energy in/out since the last time the battery was empty. The level required for this is a multiple of the current battery capacity. The recommended value is 2 x the current battery capacity.
+              </p>
+              <div class="input-group">
+                <input class="form-control" type="number" ng-model="building.recalculateChargeEfficiencyCapacityMultiplier" name="recalculateChargeEfficiencyCapacityMultiplier" id="recalculateChargeEfficiencyCapacityMultiplier" required>
+                <span class="input-group-addon">times the charge capacity</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="batteryCurrentSensor">Battery current sensor</label>
+              <p>This is the sensor that is used to measure the battery current used in state of charge calculations. Assumes positive means charging.</p>
+              <div sensor-selector bridges-with-sensors="bridgesWithSensors" model="building.batteryCurrentSensorId"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="houseConsumptionColour">House consumption colour</label>
+              <p>This is the colour to display house consumption as in graphs.</p>
+              <div colour-selector model="building.houseConsumptionColour"></div>
+            </div>
+          </div>
+
+          <div class="col-sm-6 col-lg-4">
+            <div class="form-group">
+              <label for="batteryVoltageSensor">Battery voltage sensor</label>
+              <p>This is the sensor that is used to measure the battery voltage used in state of charge calculations. This is also used to detect a likey LVSD state with the LVSD voltage.</p>
+              <div sensor-selector bridges-with-sensors="bridgesWithSensors" model="building.batteryVoltageSensorId"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="buildingPowerSensor">Building power sensor</label>
+              <p>This is the sensor for the building's total power usage. This is used with the high power threshold to detect situations where LVSD may occur but not due to low battery level.</p>
+              <div sensor-selector bridges-with-sensors="bridgesWithSensors" model="building.buildingPowerSensorId"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="loadCurrentSensor">Load current sensor</label>
+              <p>This is the sensor that records the current through the inverter/charger. If this is above zero, then the system is being charged by an external source. This allows the incoming charge to be measured.</p>
+              <div sensor-selector bridges-with-sensors="bridgesWithSensors" model="building.loadCurrentSensorId"></div>
+            </div>
+          </div>
+
+          <div class="col-md-12">
+            <button ng-disabled="batteryStateOptionsForm.$invalid" type="submit" ng-click="saveBatteryOptions()" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-12">
+    <!-- Energy sources -->
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Energy Sources</h3>
+      </div>
+      <div class="box-body">
+        <!-- Button to create a new energy source -->
+        <p>
+          <button ng-click="newEnergySource()" class="btn btn-primary"><span class="fa fa-plus"></span> New energy source</button>
+        </p>
+
+        <div class="row">
+          <div class="col-lg-4 col-sm-6" ng-repeat="energySource in energySources | orderBy: 'hasBeenSaved'">
+            <div class="thumbnail">
+              <div class="caption">
+                <form role="form" name="energySourceForm" novalidate>
+                  <div class="form-group" ng-class="{ 'has-error' : energySourceForm.name.$dirty && energySourceForm.name.$invalid}">
+                    <label for="name">Name</label>
+                    <p>The name given to the energy source. Used to identify the source in charts or tables.</p>
+                    <input class="form-control" ng-model="energySource.data.name" name="name" id="name" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="currentSensor">Source Current Sensor</label>
+                    <p>This is the current sensor that provides the current for this source. Expects values above zero mean charging, and any value below zero is ignored.</p>
+                    <div sensor-selector charger-allowed="true" other-allowed="true" bridges-with-sensors="bridgesWithSensors" model="energySource.data.currentSensorId"></div>
+                  </div>
+
+                  <div class="form-group" ng-class="{ 'has-error' : energySourceForm.sortIndex.$dirty && energySourceForm.sortIndex.$invalid}">
+                    <label for="sortIndex">
+                      Graph sort index
+                    </label>
+                    <p>A number that defines the position in the sort order of energy sources. A low number means at the front of the sensor order, a high number means at the button of the sensor order. This is used to define the position of energy sources within graphs.</p>
+                    <input class="form-control" type="number" ng-model="energySource.data.sortIndex" name="sortIndex" id="sortIndex" required>
+                  </div>
+
+                  <div class="form-group">
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" ng-model="energySource.data.isRenewable">
+                        Is a renewable energy source
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="chartColour">Chart colour</label>
+                    <p>This is the colour to display the source with in graphs.</p>
+                    <div colour-selector model="energySource.data.chartColour"></div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="chartColour">Prediction Type</label>
+                    <p>This defines the type of prediction model to use. This is used in future state estimations.</p>
+                    <div prediction-type-selector model="energySource.data.predictionPatternType"></div>
+                  </div>
+
+                  <br>
+                  <button ng-if="energySource.hasBeenSaved" ng-disabled="energySourceForm.$invalid" type="submit" ng-click="saveEnergySource(energySource)" class="btn btn-primary">Save</button>
+                  <button ng-if="!energySource.hasBeenSaved" ng-disabled="energySourceForm.$invalid" type="submit" ng-click="createEnergySource(energySource)" class="btn btn-primary">Create</button>
+
+                  <button ng-click="deleteEnergySource(energySource)" class="btn btn-danger">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

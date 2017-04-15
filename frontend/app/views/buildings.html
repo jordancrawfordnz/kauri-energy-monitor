@@ -1,0 +1,89 @@
+<div class="buildings" ng-controller="BuildingsCtrl as buildings">
+  <div class="callout callout-danger" ng-if="buildings.buildingCreateError">
+    <h4>Building creation failed</h4>
+    <p>There was a problem while creating the building. Please try again.</p>
+  </div>
+
+  <div class="callout callout-success" ng-if="buildings.buildingCreateSuccess">
+    <h4>Building created successfully</h4>
+    <p>The building has been created successfully.</p>
+  </div>
+
+  <div class="callout callout-danger" ng-if="buildings.buildingDeleteError">
+    <h4>Building deletion failed</h4>
+    <p>There was a problem while deleting the building. Please try again.</p>
+  </div>
+
+  <div class="callout callout-success" ng-if="buildings.buildingDeleteSuccess">
+    <h4>Building deleted successfully</h4>
+    <p>The building has been deleed successfully.</p>
+  </div>
+
+  <p>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createBuildingModal">
+      <span class="glyphicon glyphicon-plus"></span> New
+    </button>
+  </p>
+
+  <div class="row">
+    <!-- TODO: Visually improve this and include a link to each building's edit page. -->
+    <div ng-repeat="building in buildings.buildings" class="col-sm-6 col-md-4">
+      <div class="thumbnail">
+        <div class="caption">
+          <h3 class="name"><a ng-href="/{{building.id}}">{{building.name}}</a></h3>
+
+          <!-- TODO: Show some snippets from the building summary page, e.g.: the battery percentage, time until full, etc. -->
+
+          <!-- TODO: Just show the count of building owners? -->
+          Building owners:
+          <ul>
+          	<li ng-repeat="owner in building.people">{{owner.name}}</li>
+          </ul>
+
+          <button type="button" class="btn btn-danger" ng-click="buildings.showBuildingDeleteConfirmation(building)">
+            <span class="glyphicon glyphicon-trash"/>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create building -->
+  <div class="modal fade" id="createBuildingModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">New Building</h4>
+        </div>
+        <div class="modal-body">
+          <building-form is-valid="buildings.newBuildingValid" building="buildings.newBuilding"></building-form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" ng-disabled="!buildings.newBuildingValid" data-dismiss="modal" class="btn btn-primary" ng-click="buildings.createNewBuilding()">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete building -->
+  <div class="modal fade" id="deleteBuildingConfirmationModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Delete Building "{{buildings.deleteConfirmationBuilding.name}}"?</h4>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete the building "{{buildings.deleteConfirmationBuilding.name}}"?</p>
+          <p>This will permanently delete all data for this building.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">No way!</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="buildings.deleteBuilding(buildings.deleteConfirmationBuilding)">Yes, do it!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

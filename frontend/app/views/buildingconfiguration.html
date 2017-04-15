@@ -1,0 +1,30 @@
+<div ng-repeat="message in messages">
+  <div class="alert alert-dismissible" ng-class="{'alert-danger': !message.isSuccess, 'alert-success': message.isSuccess}">
+    <button type="button" ng-click="message.remove()" class="close" aria-hidden="true">×</button>
+    <h4><i class="icon fa" ng-class="{'fa-warning': !message.isSuccess, 'fa-check': message.isSuccess}"></i> {{message.title}}</h4>
+    {{message.body}}
+  </div>
+</div>
+
+<div class="nav-tabs-custom" ng-if="building">
+  <ul class="nav nav-tabs">
+    <li ng-class="{'active' : tabId === activeDetailTab}" ng-repeat="(tabId, tabName) in detailTabs">
+      <a ng-click="$parent.activeDetailTab = tabId">{{tabName}}</a>
+    </li>
+  </ul>
+  <div class="tab-content" ng-switch="activeDetailTab">
+    <div ng-switch-when="building" class="tab-pane active">
+      <core-building-config building="building" save-building="saveBuilding()" show-success="showSuccess(title, body)" show-error="showError(title, body)"></core-building-config>
+    </div>
+    <div ng-switch-when="collection" class="tab-pane active">
+      <collection-config building="building" save-building="saveBuilding()" show-success="showSuccess(title, body)" show-error="showError(title, body)"></collection-config>
+    </div>
+    <div ng-switch-when="processing" class="tab-pane active">
+      <processing-config building="building" save-building="saveBuilding()" show-success="showSuccess(title, body)" show-error="showError(title, body)"></processing-config>
+    </div>
+  </div>
+</div>
+
+<div ng-if="!building">
+  Loading building...
+</div>

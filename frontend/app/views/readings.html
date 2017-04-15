@@ -1,0 +1,61 @@
+<div ng-if="!building">
+	Loading building...
+</div>
+
+<span ng-include="'views/noreadings.html'" ng-show="allReadingsCount === 0"></span>
+
+<div ng-show="allReadingsCount > 0">
+	<div ng-if="building && building.bridges.length < 1">
+		No bridges. To collect data, a Bridge is required. See Configuration to add one.
+	</div>
+
+	<div class="row" ng-show="building && building.bridges.length >= 1">
+		<div class="col-xs-12 col-md-4 col-lg-3">
+			<page-filter filter="filter" number-of-results="totalReadings" current-page="currentPage" display-every-levels="displayEveryLevels" refresh="refresh()"></page-filter>
+		</div>
+
+		<div class="col-xs-12 col-md-8 col-lg-9">
+			<div class="box" ng-if="bridge">
+			  	<div class="box-header with-border">
+			    	<h3 class="box-title">
+			    		Results
+			    		<small>{{readings.length | number}} readings<span ng-if="totalReadings"> of {{totalReadings | number}}</span></small>
+			    	</h3>
+			  	</div>
+			  	<div class="box-body table-responsive no-padding">
+				    <table class="table table-hover">
+				    	<thead>
+				    		<tr>
+					        	<th>Index</th>
+					        	<th>Time</th>
+					        	<th ng-repeat="sensor in bridge.sensors">
+					        		{{sensor.name}}
+					        		<br>
+					        		<span class="label label-primary">{{SensorTypes[sensor.type].electricity}}</span>
+				        			<span class="label label-primary">{{SensorTypes[sensor.type].type}}</span>
+					        	</th>
+					      	</tr>
+				    	</thead>
+			    		<tbody>
+				    	  	<!-- Each reading -->
+					      	<tr ng-repeat="reading in readings">
+					      		<td>
+					      			{{(currentPage - 1) * filter.amountPerPage + $index + 1}}
+					      		</td>
+					      		<td>
+					      			{{reading.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}
+					      		</td>
+					      		<!-- Each sensor -->
+					      		<td ng-repeat="sensor in bridge.sensors">
+					      			<span ng-if="reading.values[sensor.id] !== undefined">
+					      				{{reading.values[sensor.id] | number}} {{SensorTypes[sensor.type].unitShort}}
+					      			</span>
+					      		</td>
+					      	</tr>
+					    </tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

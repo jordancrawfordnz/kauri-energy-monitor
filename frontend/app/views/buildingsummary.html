@@ -1,0 +1,102 @@
+<div class="building-summary">
+  <div class="row">
+    <div class="col-xs-6">
+      <h1 class="building-name">
+        {{summary.building.name}}
+        <small>
+          <div ng-if="summary.state.timestamp">
+            <span am-time-ago="summary.state.timestamp | amFromUnix"></span>
+          </div>
+        </small>
+      </h1>
+    </div>
+    <div class="col-xs-6 refresh-section">
+      <button class="btn btn-default" ng-click="summary.refreshPage()"><span class="fa fa-refresh"></span> Refresh</button>
+      <br><span class="text-muted">Refreshes automatically every minute.</span>
+    </div>
+  </div>
+
+  <span ng-include="'views/nostateinformation.html'" ng-if="summary.state === null"></span>
+
+  <br>
+
+  <div class="row">
+    <div class="col-md-6 no-padding-margin">
+      <!-- Battery status section -->
+      <div class="col-md-12" ng-if="summary.state && summary.state.timestamp">
+        <div class="box box-solid">
+          <div class="box-header with-border">
+            <h3 class="box-title">Battery</h3>
+          </div>
+          <div class="box-body">
+            <!-- Battery level diagram -->
+            <div class="battery-container" style="height: {{summary.batteryDiagramHeight}}px;">
+              <!--  Filled in section -->
+              <div class="level" ng-class="{low : summary.chargeLevel < 0.2, charging : summary.state.isBatteryCharging}"
+              style="height: {{summary.getBatteryLevelHeight()}}px;"></div>
+            </div>
+
+            <!-- Battery level information -->
+            <div class="battery-info">
+              <span class="percentage">{{summary.chargeLevel * 100 | number : 0}}%</span>
+
+              <h3 class="charging-state">
+                <i class="fa" ng-class="{'fa-arrow-up' : summary.state.isBatteryCharging, 'fa-arrow-down' : !summary.state.isBatteryCharging}"></i>
+                {{summary.state.isBatteryCharging ? 'Charging' : 'Discharging'}}
+              </h3>
+            </div>
+
+            <!-- Fututure state information -->
+            <div class="future-state" ng-if="summary.state.nextEvent">
+              <span class="prediction-headline">{{summary.predictionEvents[summary.state.nextEvent.type].name}} <span am-time-ago="summary.state.nextEvent.timestamp | amFromUnix"></span></span>
+              <h4>({{summary.state.nextEvent.timestamp | amFromUnix | amDateFormat:dateTimeFormat}})</h4>
+            </div>
+
+            <div class="clear"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- State of charge graph section -->
+      <div class="col-md-12" ng-if="summary.last24HourStates && summary.last24HourStates.length > 0">
+        <div class="box box-solid">
+          <div class="box-header with-border">
+            <h3 class="box-title">State of Charge<small><br>Last 24 hours</small></h3>
+          </div>
+          <div class="box-body">
+            <div state-of-charge-only-graph height="200" states="summary.last24HourStates"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 no-padding-margin">
+      <!-- Energy flow section -->
+      <div class="col-md-12" ng-if="summary.state && summary.state.timestamp">
+        <div class="box box-solid">
+          <div class="box-header with-border">
+            <h3 class="box-title">Energy Flow<br><small>Average Power</small></h3>
+          </div>
+          <div class="box-body">
+            <canvas class="chart chart-bar" height="200px" chart-data="summary.energyFlowData"
+              chart-labels="summary.energyFlowLabels" chart-options="summary.energyFlowOptions"
+              chart-series="summary.energyFlowSeries" chart-dataset-override="summary.energyFlowDatasetOverride">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total energy graph section -->
+      <div class="col-md-12" ng-if="summary.last24HourStates && summary.last24HourStates.length > 0">
+        <div class="box box-solid">
+          <div class="box-header with-border">
+            <h3 class="box-title">Daily Total Energy<small><br>Last 24 hours</small></h3>
+          </div>
+          <div class="box-body">
+            <div total-energy-graph states="summary.last24HourStates" capToPercentRange="true" building="summary.building" is-reverse-order="true" height="200"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

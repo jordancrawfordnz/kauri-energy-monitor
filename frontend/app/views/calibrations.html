@@ -1,0 +1,45 @@
+<span ng-if="allRecalibrationsCount === 0">
+  <p class="lead">
+    This building has no calibration points available.
+    <br>
+    <small>You may need to tweak your battery processing configuration under "Configuration" <i class="fa fa-fw fa-arrow-right"></i> "Data Processing" <i class="fa fa-fw fa-arrow-right"></i> "Battery State Options".</small>
+  </p>
+</span>
+
+<div class="row" ng-show="allRecalibrationsCount > 0">
+  <div class="col-xs-12 col-md-4 col-lg-3">
+    <page-filter filter="filter" number-of-results="totalStates" current-page="currentPage" refresh="refreshSearch()"></page-filter>
+  </div>
+
+  <div class="col-xs-12 col-md-8 col-lg-9">
+    <div class="box" ng-if="building">
+      <div class="box-header with-border">
+        <h3 class="box-title">
+          Results
+          <small>{{recalibrations.length | number}} recalibrations<span ng-if="totalStates"> of {{totalStates | number}}</span></small>
+        </h3>
+      </div>
+      <div class="box-body table-responsive no-padding">
+        <table class="table table-hover">
+          <tbody>
+            <tr>
+              <th>Index</th>
+              <th>Time</th>
+              <th>Reason</th>
+            </tr>
+            <!-- Each reading -->
+            <tr ng-repeat="recalibration in recalibrations">
+              <td>
+                {{(currentPage - 1) * filter.amountPerPage + $index + 1}}
+              </td>
+              <td>
+                {{recalibration.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}
+              </td>
+              <td>{{recalibration.reason}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

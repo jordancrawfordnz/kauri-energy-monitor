@@ -1,0 +1,73 @@
+<div class="row">
+  <div class="col-md-12" ng-if="futureStates.length === 0">
+    <p class="lead">
+      This building has no future states processed yet.
+      <br>
+      <small>Configure state processing and energy sources under "Configuration" <i class="fa fa-fw fa-arrow-right"></i> "Data Processing".</small>
+    </p>
+  </div>
+
+  <!-- State of charge graph section -->
+    <div class="col-md-6" ng-if="futureStates.length > 0">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title">State of Charge<small><br>Next 24 hours</small></h3>
+            </div>
+            <div class="box-body">
+                <div state-of-charge-only-graph height="200" states="futureStates"></div>
+            </div>
+        </div>
+    </div>
+
+	<!-- Total energy graph section -->
+    <div class="col-md-6" ng-if="futureStates.length > 0 && building.id">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title">Total Energy<small><br>Next 24 hours</small></h3>
+            </div>
+            <div class="box-body">
+                <div total-energy-graph height="200" states="futureStates" building="building"></div>
+            </div>
+        </div>
+    </div>
+
+	<div class="col-md-12" ng-if="futureStates.length > 0 && building.id">
+		<div class="box box-solid">
+			<div class="box-header with-border">
+				<h3 class="box-title">
+					State Detail
+				</h3>
+			</div>
+			<div class="box-body">
+				<div class="scroll-table-container">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>Time</th>
+								<th>State of Charge</th>
+								<th>Current Charge Level</th>
+								<th>Daily consumption</th>
+								<th>Hourly consumption</th>
+								<th ng-repeat="energySource in building.energySources">Daily {{energySource.name}} charge</th>
+								<th ng-repeat="energySource in building.energySources">Hourly {{energySource.name}} charge</th>
+									<!-- TODO: Values for consumption and generation throughout the hour / day. -->
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="futureState in futureStates">
+			    				<td>{{futureState.timestamp | amFromUnix | amDateFormat:dateTimeFormat}}</td>
+								<td>{{(futureState.currentChargeLevel / futureState.batteryCapacity * 100) | number:2}}%</td>
+								<td>{{futureState.currentChargeLevel | number:2}} Wh</td>
+								<td>{{futureState.consumption.dailyTotal | number:2}} Wh</td>
+								<td>{{futureState.consumption.hourlyTotal | number:2}} Wh</td>
+								<td ng-repeat="energySource in building.energySources">{{futureState.sources[energySource.id].dailyCharge | number:2}} Wh</td>
+								<td ng-repeat="energySource in building.energySources">{{futureState.sources[energySource.id].hourlyCharge | number:2}} Wh</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
