@@ -33,8 +33,15 @@ module.exports = function (grunt) {
   function getConstants(target)
   {
     var environments = grunt.file.readJSON('environments.json');
+
+    // Setup a default local environment.
+    if (!environments.local) {
+      environments.local = {
+        baseUrl : "http://localhost:3000/api"
+      };
+    }
     var constants = environments[target];
-    
+
     return {
       Environment : constants
     };
@@ -90,7 +97,7 @@ module.exports = function (grunt) {
         files: [
           '<%= yeoman.app %>/{,*/}*.html',
           '.tmp/styles/{,*/}*.css',
-          '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+          '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg,ico}'
         ]
       }
     },
@@ -109,7 +116,7 @@ module.exports = function (grunt) {
           middleware: function (connect) {
             return [
               // support Angular's HTML5 URL's by sending anything that doesn't have a proper extension to the index.
-              modRewrite (['!\\.html|\\.js|\\.svg|\\.css|\\.png|\\.jpg|\\.woff2|\\.woff|\\.woff2$ /index.html [L]']),
+              modRewrite (['!\\.html|\\.js|\\.svg|\\.css|\\.png|\\.jpg|\\.woff2|\\.woff|\\.woff2|\\.ico$ /index.html [L]']),
               connect.static('.tmp'),
               connect().use(
                 '/bower_components',
@@ -291,7 +298,7 @@ module.exports = function (grunt) {
         src: [
           '<%= yeoman.dist %>/scripts/{,*/}*.js',
           '<%= yeoman.dist %>/styles/{,*/}*.css',
-          '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+          '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg,ico}',
           '<%= yeoman.dist %>/styles/fonts/*'
         ]
       }
@@ -328,7 +335,7 @@ module.exports = function (grunt) {
           '<%= yeoman.dist %>/styles'
         ],
         patterns: {
-          js: [[/(images\/[^''""]*\.(png|jpg|jpeg|gif|webp|svg))/g, 'Replacing references to images']]
+          js: [[/(images\/[^''""]*\.(png|jpg|jpeg|gif|webp|svg|ico))/g, 'Replacing references to images']]
         }
       }
     },
@@ -364,7 +371,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>/images',
-          src: '{,*/}*.{png,jpg,jpeg,gif}',
+          src: '{,*/}*.{png,jpg,jpeg,gif,ico}',
           dest: '<%= yeoman.dist %>/images'
         }]
       }
