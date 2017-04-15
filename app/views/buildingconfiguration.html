@@ -1,5 +1,5 @@
 <div ng-repeat="message in messages">
-  <div class="alert alert-dismissible", ng-class="{'alert-danger': !message.isSuccess, 'alert-success': message.isSuccess}">
+  <div class="alert alert-dismissible" ng-class="{'alert-danger': !message.isSuccess, 'alert-success': message.isSuccess}">
     <button type="button" ng-click="message.remove()" class="close" aria-hidden="true">×</button>
     <h4><i class="icon fa" ng-class="{'fa-warning': !message.isSuccess, 'fa-check': message.isSuccess}"></i> {{message.title}}</h4>
     {{message.body}}
