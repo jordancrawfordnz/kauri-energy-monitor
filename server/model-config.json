@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins"
+    ]
+  },
+  "AccessToken": {
+    "dataSource": "db",
+    "public": false
+  },
+  "ACL": {
+    "dataSource": "db",
+    "public": false
+  },
+  "RoleMapping": {
+    "dataSource": "db",
+    "public": false
+  },
+  "Role": {
+    "dataSource": "db",
+    "public": false
+  },
+  "Building": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Bridge": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Sensor": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Reading": {
+    "dataSource": "db",
+    "public": true
+  },
+  "People": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Export": {
+    "dataSource": "db",
+    "public": true
+  },
+  "State": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Recalibration": {
+    "dataSource": "db",
+    "public": true
+  },
+  "EnergySource": {
+    "dataSource": "db",
+    "public": true
+  },
+  "FutureState": {
+    "dataSource": "db",
+    "public": true
+  }
+}

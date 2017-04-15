@@ -1,0 +1,8 @@
+{
+  "db": {
+    "host": "localhost",
+    "database": "kauri",
+    "name": "db",
+    "connector": "mongodb"
+  }
+}
