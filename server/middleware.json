@@ -40,9 +40,13 @@
       ]
     }
   },
-  "files": {},
+  "files": {
+    "loopback#static": {
+      "params": "$!../client"
+    }
+  },
   "final": {
-    "loopback#urlNotFound": {}
+    "./middleware/singlepagefrontend.js": {}
   },
   "final:after": {
     "loopback#errorHandler": {}
