@@ -32,14 +32,23 @@ module.exports = function (grunt) {
    // Sets up the constants for a given target.
   function getConstants(target)
   {
-    var environments = grunt.file.readJSON('environments.json');
+    var filePath = 'environments.json';
+    var environments = grunt.file.exists(filePath) ? grunt.file.readJSON(filePath) : {};
 
-    // Setup a default local environment.
+    // By default, expects the development API to be on the same machine at port 3000.
     if (!environments.local) {
       environments.local = {
         baseUrl : "http://localhost:3000/api"
       };
     }
+
+    // By default expects the production API to be on the same server.
+    if (!environments.production) {
+      environments.production = {
+        baseUrl : "/api"
+      };
+    }
+
     var constants = environments[target];
 
     return {
