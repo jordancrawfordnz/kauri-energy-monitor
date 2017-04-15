@@ -42,7 +42,7 @@
   },
   "files": {
     "loopback#static": {
-      "params": "$!../client"
+      "params": "$!../frontend/dist"
     }
   },
   "final": {

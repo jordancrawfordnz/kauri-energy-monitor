@@ -32,7 +32,7 @@ module.exports = function(config) {
       'bower_components/angular-moment/angular-moment.js',
       'bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
       'bower_components/angular-eonasdan-datetimepicker/dist/angular-eonasdan-datetimepicker.js',
-      'bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020.js',
+      'bower_components/moment-timezone/builds/moment-timezone-with-data-2012-2022.js',
       'bower_components/chart.js/dist/Chart.bundle.min.js',
       'bower_components/angular-chart.js/dist/angular-chart.js',
       'bower_components/angular-mocks/angular-mocks.js',
