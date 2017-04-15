@@ -1,0 +1,9 @@
+{
+  "apps" : [{
+    "name"        : "Kauri",
+    "script"      : "./server/server.js",
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }]
+}

@@ -1,0 +1,10 @@
+{
+  "command": "server/server.js",
+  "watch": ["*"],
+  "ignore": [
+    "export/",
+    "frontend",
+    ".git",
+    "node_modules/**/node_modules"
+  ]
+}
