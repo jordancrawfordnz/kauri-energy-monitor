@@ -11,11 +11,13 @@
 
 ### Setting up the environment
 1. [Install NodeJS](https://nodejs.org/en/download/) on your system. This comes with `npm`, the Node package manager.
-2. [Install MongoDB](https://docs.mongodb.com/manual/installation/) on your system. On macOS, [installation with Homebrew](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/#install-mongodb-community-edition-with-homebrew) is recommended.
-3. Clone this repository to your system.
-4. Run `npm install -g pm2 nodemon bower grunt`. This installs several required npm packages globally on your system.
-5. Run `npm run setup` to setup dependencies for the API.
-6. Run `npm --prefix frontend run setup` to setup dependencies for the frontend.
+2. [Install Ruby](https://www.ruby-lang.org/en/documentation/installation/) This is required for Compass. You may already have this - macOS comes with Ruby.
+3. [Install MongoDB](https://docs.mongodb.com/manual/installation/) on your system. On macOS, [installation with Homebrew](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/#install-mongodb-community-edition-with-homebrew) is recommended.
+4. Clone this repository to your system.
+5. Run `gem install compass`.
+6. Run `npm install -g pm2 nodemon bower grunt`. This installs several required npm packages globally on your system.
+7. Run `npm run setup` to setup dependencies for the API.
+8. Run `npm --prefix frontend run setup` to setup dependencies for the frontend.
 
 <!-- TODO: Any more dependencies especially to do with the frontend? -->
 
@@ -60,6 +62,9 @@ By default, the server will run at port 3000. Running an [NGINX proxy which prov
 
 If you wish to change settings like the database hostname or the server port, define a custom `server/datasources.production.json` or `server/config.production.json` file as per [Loopback's environment specific configuration documentation](https://loopback.io/doc/en/lb2/Environment-specific-configuration.html).
 
+## API Documentation
+When you have an instance of the API running you can access the StrongLoop API Explorer at `http://localhost:3000/explorer` to experiment with the API.
+
 ## Contributing
 I am not actively developing this project but if you find a bug or anything that could make the system better, please raise an issue on GitHub.
 
@@ -67,16 +72,3 @@ Even better, if you have a chance, feel free to fork the repository, make your c
 
 ## Licence
 <!-- TODO: Decide on this. -->
-
-
-<!-- # API
-The API is a LoopBack app.
-
-## Setting up local development environment
-### NPM
-Setup npm then run ``npm install``.
-
-## Running
-Run with ``npm start``.
-
-To run in the same environment as production, use ``NODE_ENV=production npm start``. You must ensure MongoDB is installed and running for this. -->

@@ -1,5 +1,0 @@
-{
-  "production" : {
-    "baseUrl" : "https://api.kauri.example.com"
-  }
-}
