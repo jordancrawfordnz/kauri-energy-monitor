@@ -10,16 +10,14 @@
 ## Usage
 
 ### Setting up the environment
-1. [Install NodeJS](https://nodejs.org/en/download/) on your system. This comes with `npm`, the Node package manager.
-2. [Install Ruby](https://www.ruby-lang.org/en/documentation/installation/) This is required for Compass. You may already have this - macOS comes with Ruby.
-3. [Install and start MongoDB](https://docs.mongodb.com/manual/installation/) on your system. On macOS, [installation with Homebrew](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/#install-mongodb-community-edition-with-homebrew) is recommended.
-4. Clone this repository to your system.
+1. Clone this repository to your system.
+2. [Install NodeJS](https://nodejs.org/en/download/) on your system. This comes with `npm`, the Node package manager.
+3. [Install Ruby](https://www.ruby-lang.org/en/documentation/installation/) This is required for Compass. You may already have this - macOS comes with Ruby.
+4. [Install and start MongoDB](https://docs.mongodb.com/manual/installation/) on your system. On macOS, [installation with Homebrew](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/#install-mongodb-community-edition-with-homebrew) is recommended.
 5. Run `gem install compass`. If you get errors on Ubuntu, [try this](http://stackoverflow.com/a/29317694).
 6. Run `npm install -g pm2 nodemon bower grunt`. This installs several required npm packages globally on your system.
 7. Run `npm run setup` to setup dependencies for the API.
 8. Run `npm --prefix frontend run setup` to setup dependencies for the frontend.
-
-<!-- TODO: Any more dependencies especially to do with the frontend? -->
 
 ### Running in Development
 When running in development, it's easiest to run the frontend and API separately.
