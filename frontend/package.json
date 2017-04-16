@@ -32,8 +32,7 @@
     "jasmine-core": "^2.4.1",
     "jit-grunt": "^0.9.1",
     "jshint-stylish": "^1.0.0",
-    "time-grunt": "^1.0.0",
-    "optipng-bin": "^3.1.4"
+    "time-grunt": "^1.0.0"
   },
   "engines": {
     "node": ">=0.10.0"

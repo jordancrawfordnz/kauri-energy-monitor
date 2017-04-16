@@ -19,6 +19,10 @@
 7. Run `npm run setup` to setup dependencies for the API.
 8. Run `npm --prefix frontend run setup` to setup dependencies for the frontend.
 
+**If you just want a production instance on an Ubuntu VM, see "Installing Production on Ubuntu" below.**
+
+*Note:* If you have trouble building the frontend on a system with low memory (~1gb), it may be that Step 8 above is running out of memory and not installing all the npm dependencies properly. Try installing `gifsicle` and `optipng-bin` before calling `run setup`.
+
 ### Running in Development
 When running in development, it's easiest to run the frontend and API separately.
 
@@ -59,6 +63,9 @@ By default, the server will run at port 3000. Running an [NGINX proxy which prov
 `pm2.json` sets `NODE_ENV` to `production`. In production, the StrongLoop API Explorer is disabled and stack traces are not shown in errors.
 
 If you wish to change settings like the database hostname or the server port, define a custom `server/datasources.production.json` or `server/config.production.json` file as per [Loopback's environment specific configuration documentation](https://loopback.io/doc/en/lb2/Environment-specific-configuration.html).
+
+#### Installing Production on Ubuntu
+There is already a handy Ubuntu install script which you can use. Clone the repo, `cd` into the repo and run `./ubuntu-install.sh`.
 
 ## API Documentation
 When you have an instance of the API running you can access the StrongLoop API Explorer at `http://localhost:3000/explorer` to experiment with the API.

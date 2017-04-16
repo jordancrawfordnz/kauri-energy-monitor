@@ -26,6 +26,9 @@ echo Install API dependencies.
 npm run setup
 
 echo Install frontend dependencies.
+# Install these seperately to try prevent 'npm install' from crashing on low-memory systems.
+npm --prefix frontend install gifsicle
+npm --prefix frontend install optipng-bin
 npm --prefix frontend run setup
 
 echo Build the frontend.
