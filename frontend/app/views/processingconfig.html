@@ -183,19 +183,13 @@
             </div>
 
             <div class="form-group">
-              <label for="houseConsumptionColour">House consumption colour</label>
-              <p>This is the colour to display house consumption as in graphs.</p>
-              <div colour-selector model="building.houseConsumptionColour"></div>
-            </div>
-          </div>
-
-          <div class="col-sm-6 col-lg-4">
-            <div class="form-group">
               <label for="batteryVoltageSensor">Battery voltage sensor</label>
               <p>This is the sensor that is used to measure the battery voltage used in state of charge calculations. This is also used to detect a likey LVSD state with the LVSD voltage.</p>
               <div sensor-selector bridges-with-sensors="bridgesWithSensors" model="building.batteryVoltageSensorId"></div>
             </div>
+          </div>
 
+          <div class="col-sm-6 col-lg-4">
             <div class="form-group">
               <label for="buildingPowerSensor">Building power sensor</label>
               <p>This is the sensor for the building's total power usage. This is used with the high power threshold to detect situations where LVSD may occur but not due to low battery level.</p>
@@ -206,6 +200,12 @@
               <label for="loadCurrentSensor">Load current sensor</label>
               <p>This is the sensor that records the current through the inverter/charger. If this is above zero, then the system is being charged by an external source. This allows the incoming charge to be measured.</p>
               <div sensor-selector bridges-with-sensors="bridgesWithSensors" model="building.loadCurrentSensorId"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="houseConsumptionColour">House consumption colour</label>
+              <p>This is the colour to display house consumption as in graphs.</p>
+              <div colour-selector model="building.houseConsumptionColour"></div>
             </div>
           </div>
 

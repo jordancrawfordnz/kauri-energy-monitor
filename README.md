@@ -12,9 +12,9 @@
 ### Setting up the environment
 1. [Install NodeJS](https://nodejs.org/en/download/) on your system. This comes with `npm`, the Node package manager.
 2. [Install Ruby](https://www.ruby-lang.org/en/documentation/installation/) This is required for Compass. You may already have this - macOS comes with Ruby.
-3. [Install MongoDB](https://docs.mongodb.com/manual/installation/) on your system. On macOS, [installation with Homebrew](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/#install-mongodb-community-edition-with-homebrew) is recommended.
+3. [Install and start MongoDB](https://docs.mongodb.com/manual/installation/) on your system. On macOS, [installation with Homebrew](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/#install-mongodb-community-edition-with-homebrew) is recommended.
 4. Clone this repository to your system.
-5. Run `gem install compass`.
+5. Run `gem install compass`. If you get errors on Ubuntu, [try this](http://stackoverflow.com/a/29317694).
 6. Run `npm install -g pm2 nodemon bower grunt`. This installs several required npm packages globally on your system.
 7. Run `npm run setup` to setup dependencies for the API.
 8. Run `npm --prefix frontend run setup` to setup dependencies for the frontend.
@@ -33,9 +33,9 @@ When running in development, it's easiest to run the frontend and API separately
 **Frontend**
 - Port: 9000
 - By default this uses the API prefix `http://localhost:3000/api`.
-- Uses [connect-reload](https://github.com/intesso/connect-livereload) to reload the page automatically when a change is made.
+- The page will refresh when changes are made.
 
-[See the frontend README for more details about running the frontend in development mode.](/frontend)
+[See the frontend README for more details about running the frontend in development mode.](/frontend#readme)
 
 **API**
 - Port: 3000
@@ -56,7 +56,7 @@ The recommended way to run the server in production is through PM2, as if the se
 By default, the server will run at port 3000. Running an [NGINX proxy which provides connectivity via HTTPS](https://www.nginx.com/resources/admin-guide/nginx-https-upstreams/) is recommended. [LetsEncrypt](https://letsencrypt.org/) allows you to obtain a free SSL certificate for this purpose.
 
 #### About running in production
-[See the frontend README for more details about building the frontend.](/frontend)
+[See the frontend README for more details about building the frontend.](/frontend#readme)
 
 `pm2.json` sets `NODE_ENV` to `production`. In production, the StrongLoop API Explorer is disabled and stack traces are not shown in errors.
 

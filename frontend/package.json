@@ -1,7 +1,7 @@
 {
   "name": "kauri-energy-monitor-frontend",
   "scripts": {
-    "setup": "npm install && bower install"
+    "setup": "npm install && bower install --allow-root"
   },
   "devDependencies": {
     "autoprefixer-core": "^5.2.1",
@@ -36,7 +36,8 @@
     "karma-jasmine": "^0.3.8",
     "karma-phantomjs-launcher": "^1.0.0",
     "phantomjs-prebuilt": "^2.1.7",
-    "time-grunt": "^1.0.0"
+    "time-grunt": "^1.0.0",
+    "optipng-bin": "^3.1.4"
   },
   "engines": {
     "node": ">=0.10.0"
