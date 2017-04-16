@@ -34,6 +34,11 @@
         <p>
           <strong>Bridge ID:</strong> <pre>{{bridge.id}}</pre>
           <strong>Bridge Secret:</strong> <pre>{{bridge.bridgeSecret}}</pre>
+
+          <p>
+            Put these in your bridge configuration file along with your sensor ID's below. <a href="https://github.com/jordancrawfordnz/kauri-bridge#configuration" target="_blank">See the Bridge configuration documentation to learn how.</a>
+          </p>
+
           <bridge-sensors show-error="showError({title: title, body: body})" show-success="showSuccess({title: title, body: body})" bridge="bridge"></bridge-sensors>
         </p>
       </div>
