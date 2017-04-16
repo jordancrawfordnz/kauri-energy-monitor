@@ -1,7 +1,7 @@
 {
   "name": "kauri-energy-monitor-frontend",
   "scripts": {
-    "setup": "npm install && bower install --allow-root"
+    "setup": "npm install; bower install --allow-root"
   },
   "devDependencies": {
     "autoprefixer-core": "^5.2.1",
