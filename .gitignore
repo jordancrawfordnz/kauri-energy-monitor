@@ -20,4 +20,5 @@ npm-debug.log
 data.json
 db.json
 exports
-*.production.json
+server/config.production.json
+server/datasources.production.json
