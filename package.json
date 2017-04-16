@@ -1,8 +1,9 @@
 {
-  "name": "KauriEnergyMonitorAPI",
+  "name": "kauri-energy-monitor",
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
+    "setup": "npm install",
     "console": "loopback-console"
   },
   "dependencies": {

@@ -1,6 +1,8 @@
 {
-  "name": "kauri",
-  "private": true,
+  "name": "kauri-energy-monitor-frontend",
+  "scripts": {
+    "setup": "npm install && bower install"
+  },
   "devDependencies": {
     "autoprefixer-core": "^5.2.1",
     "grunt": "^0.4.5",
