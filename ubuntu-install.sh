@@ -58,3 +58,4 @@ echo Start Kauri!
 pm2 start pm2.json
 
 pm2 startup
+pm2 save
