@@ -22,7 +22,7 @@ angular.module('kauriApp')
     this.generalNavigation = [
       {
         name : 'Buildings',
-        icon : 'building',
+        icon : 'home',
         path : ''
       },
       {
