@@ -1,0 +1,42 @@
+{
+	"name" : "My Configuration",
+	"apiInteraction" : {
+		"apiEndpoint" : "http://localhost:3000/api",
+		"bridgeId" : "5a77bd3295ca6e1f27f9b6e0",
+		"bridgeSecret" : "dqtUZg6qdtfUb9OMlIb6NGNqBiSuoI"
+	},
+  "fillFrom": "00:00:00 01/01/2018",
+  "fillUntil": "00:00:00 01/02/2018",
+	"readingInterval": 10,
+	"readingDelay": 5,
+	"devices" : [
+    {
+			"name" : "CSV Sensor",
+			"type" : "csvfake",
+			"filePath" : "test/datasets/offgrid_1week_10secintervals/data.csv",
+			"startingReadingIndex" : 200,
+			"sensors" : [
+				{
+					"id" : "5a77cf9795ca6e1f27f9b6e1",
+					"column" : "system_load_current"
+				},
+				{
+					"id" : "5a77cfa695ca6e1f27f9b6e2",
+					"column" : "solar_current"
+				},
+				{
+					"id" : "5a77cfb195ca6e1f27f9b6e3",
+					"column" : "battery_current"
+				},
+				{
+					"id" : "5a77cfd595ca6e1f27f9b6e4",
+					"column" : "battery_voltage"
+				},
+				{
+					"id" : "5a77cfe495ca6e1f27f9b6e5",
+					"column" : "ac_power"
+				}
+			]
+		}
+	]
+}
