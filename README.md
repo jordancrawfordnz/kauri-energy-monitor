@@ -122,4 +122,4 @@ I am not actively developing this project but if you find a bug or anything that
 Even better, if you have a chance, feel free to fork the repository, make your change and open a merge request to have it merged in.
 
 ## Licence
-<!-- TODO: Decide on this. -->
+[MIT](LICENSE)
