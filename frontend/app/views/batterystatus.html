@@ -2,7 +2,7 @@
   <!-- Battery level diagram -->
   <div class="battery-container" style="height: {{batteryDiagramHeight}}px;">
     <!--  Filled in section -->
-    <div class="level" ng-class="{low : summary.chargeLevel < 0.2, charging : summary.state.isBatteryCharging}"
+    <div class="level" ng-class="{low : chargeLevel < 0.2, charging : state.isBatteryCharging}"
     style="height: {{getBatteryLevelHeight()}}px;"></div>
   </div>
 

@@ -35,9 +35,9 @@ body, .login-box-body {
       width: 100%;
       transition: height .5s, background-color .5s;
 
-      .charging { background-color: #6BED00; }
+      &.charging { background-color: #6BED00; }
 
-      .low { background-color: #ED3B00; }
+      &.low { background-color: #ED3B00; }
     }
   }
 
@@ -47,7 +47,6 @@ body, .login-box-body {
     margin: 30px;
 
     .percentage { font-size: 50px; }
-
     .charging-state { margin-top: 0px; }
   }
 
@@ -70,9 +69,9 @@ body, .login-box-body {
 }
 
 @media (min-width: 992px) {
-    .pull-right-md {
-        float: right;
-    }
+  .pull-right-md {
+      float: right;
+  }
 }
 
 .states .row-selected {

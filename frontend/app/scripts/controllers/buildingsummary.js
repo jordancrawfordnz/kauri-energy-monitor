@@ -9,11 +9,9 @@
  */
 angular.module('kauriApp')
   .controller('BuildingSummaryCtrl',
-    function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours, ChartHelper, FutureStateHelper) {
+    function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours, ChartHelper) {
 
     var _this = this;
-
-    this.predictionEvents = FutureStateHelper.predictionEvents;
 
     this.building = Building.findById({
       id : $routeParams.buildingId,

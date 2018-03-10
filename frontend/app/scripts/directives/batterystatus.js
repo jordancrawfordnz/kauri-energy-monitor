@@ -16,7 +16,9 @@ angular.module('kauriApp')
         batteryLevel : '=batteryLevel',
         state : '=state'
       },
-      controller: ['$scope', '$rootScope', function($scope, $rootScope) {
+      controller: ['$scope', '$rootScope', 'FutureStateHelper', function($scope, $rootScope, FutureStateHelper) {
+        $scope.predictionEvents = FutureStateHelper.predictionEvents;
+
         $scope.dateTimeFormat = $rootScope.dateTimeFormat;
 
         $scope.$watch('state', function(state) {
