@@ -1,22 +1,24 @@
-<!-- Battery level diagram -->
-<div class="battery-container" style="height: {{batteryDiagramHeight}}px;">
-  <!--  Filled in section -->
-  <div class="level" ng-class="{low : summary.chargeLevel < 0.2, charging : summary.state.isBatteryCharging}"
-  style="height: {{getBatteryLevelHeight()}}px;"></div>
-</div>
+<div class="battery-status">
+  <!-- Battery level diagram -->
+  <div class="battery-container" style="height: {{batteryDiagramHeight}}px;">
+    <!--  Filled in section -->
+    <div class="level" ng-class="{low : summary.chargeLevel < 0.2, charging : summary.state.isBatteryCharging}"
+    style="height: {{getBatteryLevelHeight()}}px;"></div>
+  </div>
 
-<!-- Battery level information -->
-<div class="battery-info">
-  <span class="percentage">{{chargeLevel * 100 | number : 0}}%</span>
+  <!-- Battery level information -->
+  <div class="battery-info">
+    <span class="percentage">{{chargeLevel * 100 | number : 0}}%</span>
 
-  <h3 class="charging-state">
-    <i class="fa" ng-class="{'fa-arrow-up' : state.isBatteryCharging, 'fa-arrow-down' : !state.isBatteryCharging}"></i>
-    {{state.isBatteryCharging ? 'Charging' : 'Discharging'}}
-  </h3>
-</div>
+    <h3 class="charging-state">
+      <i class="fa" ng-class="{'fa-arrow-up' : state.isBatteryCharging, 'fa-arrow-down' : !state.isBatteryCharging}"></i>
+      {{state.isBatteryCharging ? 'Charging' : 'Discharging'}}
+    </h3>
+  </div>
 
-<!-- Future state information -->
-<div class="future-state" ng-if="state.nextEvent">
-  <span class="prediction-headline">{{predictionEvents[state.nextEvent.type].name}} <span am-time-ago="state.nextEvent.timestamp | amFromUnix"></span></span>
-  <h4>({{state.nextEvent.timestamp | amFromUnix | amDateFormat:dateTimeFormat}})</h4>
+  <!-- Future state information -->
+  <div class="future-state" ng-if="state.nextEvent">
+    <span class="prediction-headline">{{predictionEvents[state.nextEvent.type].name}} <span am-time-ago="state.nextEvent.timestamp | amFromUnix"></span></span>
+    <h4>({{state.nextEvent.timestamp | amFromUnix | amDateFormat:dateTimeFormat}})</h4>
+  </div>
 </div>
