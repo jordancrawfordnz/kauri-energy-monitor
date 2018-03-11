@@ -18,7 +18,7 @@
     "loopback-connector-mongodb": "^1.13.3",
     "loopback-console": "^1.1.0",
     "loopback-datasource-juggler": "^2.39.0",
-    "moment": "^2.13.0",
+    "moment": "^2.19.3",
     "promise": "^7.1.1",
     "randomstring": "^1.1.4",
     "serve-favicon": "^2.0.1"

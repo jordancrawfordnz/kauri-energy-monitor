@@ -10,61 +10,54 @@ body, .login-box-body {
 	color: black !important;
 }
 
-.building-summary .building-name {
-	margin-top: 0px;
+.building-summary {
+  .building-name {
+    margin-top: 0px;
+  }
 }
 
-.building-summary .battery-container {
-	width: 90px;
-	background-color: #2E2E2E;
-	position: relative;
-	border-radius: 5px;
-	overflow: hidden;
-	border: 3px solid #525252;
-	box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.5);
-	float: left;
-	margin: 10px;
-}
+.battery-status {
+  .battery-container {
+    width: 90px;
+    background-color: #2E2E2E;
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 3px solid #525252;
+    box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.5);
+    float: left;
+    margin: 10px;
 
-.building-summary .battery-container .level {
-	position: absolute;
-	bottom: 0px;
-	background-color: #00B2ED;
-	width: 100%;
-	transition: height .5s, background-color .5s;
-}
+    .level {
+      position: absolute;
+      bottom: 0px;
+      background-color: #00B2ED;
+      width: 100%;
+      transition: height .5s, background-color .5s;
 
-.building-summary .battery-container .level.charging {
-	background-color: #6BED00;
-}
+      &.charging { background-color: #6BED00; }
 
-.building-summary .battery-container .level.low {
-	background-color: #ED3B00;
-}
+      &.low { background-color: #ED3B00; }
+    }
+  }
 
-.building-summary .battery-info {
-	text-align: center;
-	float: left;
-	margin: 30px;
-}
+  .battery-info {
+    text-align: center;
+    float: left;
+    margin: 30px;
 
-.building-summary .battery-info .percentage {
-	font-size: 50px;
-}
+    .percentage { font-size: 50px; }
+    .charging-state { margin-top: 0px; }
+  }
 
-.building-summary .battery-info .charging-state {
-	margin-top: 0px;
-}
+  .future-state {
+    text-align: center;
+    float: left;
+    margin: 30px;
+    margin-top: 50px;
 
-.building-summary .future-state {
-	text-align: center;
-	float: left;
-	margin: 30px;
-	margin-top: 50px;
-}
-
-.building-summary .future-state .prediction-headline {
-	font-size: 30px;
+    .prediction-headline { font-size: 30px; }
+  }
 }
 
 .clear {
@@ -76,9 +69,9 @@ body, .login-box-body {
 }
 
 @media (min-width: 992px) {
-    .pull-right-md {
-        float: right;
-    }
+  .pull-right-md {
+      float: right;
+  }
 }
 
 .states .row-selected {

@@ -8,16 +8,27 @@
  * Displays buildings.
  */
 angular.module('kauriApp')
-  .controller('BuildingsCtrl', function (Breadcrumb, Breadcrumbs, People, Building, $timeout, $rootScope) {
+  .controller('BuildingsCtrl', function ($scope, Breadcrumb, Breadcrumbs, People, Building, $timeout, $rootScope) {
     Breadcrumbs.add(new Breadcrumb('Buildings', '/', 'Manage your existing buildings or add a new building.'));
 
     this.loadBuildings = function() {
       // Get buildings for this person.
       this.buildings = People.buildings({
-        id : People.getCurrentId(),
-        filter : {
-          include : ['people']
-        }
+        id : People.getCurrentId()
+      });
+
+      this.buildings.$promise.then(function(buildings) {
+        $scope.currentBuildingStates = {};
+
+        angular.forEach(buildings, function(building) {
+          Building.currentState({
+            id : building.id
+          }).$promise.then(function(buildingState) {
+            if (buildingState.currentChargeLevel) {
+              $scope.currentBuildingStates[building.id] = buildingState;
+            }
+          });
+        });
       });
     };
 

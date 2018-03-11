@@ -9,11 +9,9 @@
  */
 angular.module('kauriApp')
   .controller('BuildingSummaryCtrl',
-    function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours, ChartHelper, FutureStateHelper) {
+    function (Breadcrumb, Breadcrumbs, $routeParams, Building, Bridge, SensorTypes, State, $scope, $interval, ChartColours, ChartHelper) {
 
     var _this = this;
-
-    this.predictionEvents = FutureStateHelper.predictionEvents;
 
     this.building = Building.findById({
       id : $routeParams.buildingId,
@@ -65,22 +63,6 @@ angular.module('kauriApp')
       }
     };
 
-    this.batteryDiagramHeight = 200;
-
-    // Gets the height for the battery level indicator.
-    this.getBatteryLevelHeight = function() {
-      var level = this.chargeLevel * this.batteryDiagramHeight;
-      if (level > this.batteryDiagramHeight) {
-        return this.batteryDiagramHeight;
-      }
-      if (level < 0) {
-        return 0;
-      }
-
-      return level;
-    };
-
-
     // Setup breadcrumbs.
     Breadcrumbs.addPlaceholder('Building', this.building.$promise, function(building) {
       return new Breadcrumb(building.name, '/' + $routeParams.buildingId);
@@ -118,12 +100,7 @@ angular.module('kauriApp')
       }).$promise.then(function(currentState) {
         if (currentState.currentChargeLevel) {
           _this.state = currentState;
-          _this.chargeLevel = currentState.currentChargeLevel / currentState.batteryCapacity;
-          if (_this.chargeLevel > 1) {
-            _this.chargeLevel = 1;
-          } else if (_this.chargeLevel < 0) {
-            _this.chargeLevel = 0;
-          }
+
           setupEnergyFlowGraph();
 
           // If don't have any data on the last 24 hour's states.

@@ -39,7 +39,11 @@
         </div>
 
         <div class="box-body">
-          <span ng-include="'views/nostateinformation.html'" ng-if="true"></span>
+          <span ng-include="'views/nostateinformation.html'" ng-if="!currentBuildingStates[building.id]"></span>
+
+          <span ng-if="currentBuildingStates[building.id]">
+            <div battery-status state="currentBuildingStates[building.id]"></div>
+          </span>
         </div>
       </div>
     </div>
