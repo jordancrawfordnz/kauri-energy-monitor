@@ -34,6 +34,10 @@ Kauri is a cloud based system for monitoring your off-grid energy systems. It co
 ### Components of Kauri
 ![A diagram of the components of Kauri.](docs/resources/system-components.png)
 
+This project contains the frontend and backend components of Kauri.
+
+**[The Kauri Bridge project is also available on GitHub.](https://github.com/jordancrawfordnz/kauri-bridge)**
+
 ## [What do I need?](docs/what-do-i-need.md)
 There are quite a few moving parts involved in Kauri. Before you get started, be sure to check you have everything you need.
 
