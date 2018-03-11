@@ -123,3 +123,7 @@ Many of the screens shown above are really useful for when you want to drill int
 This provides a quick summary of the essential information about the state of your system.
 
 <a href="resources/summary-page.png?raw=true"><img src="resources/summary-page.png" width="800"/></a>
+
+The building page also shows the battery state of all your buildings:
+
+<a href="resources/buildings-page-with-two-buildings.png?raw=true"><img src="resources/buildings-page-with-two-buildings.png" width="800"/></a>
