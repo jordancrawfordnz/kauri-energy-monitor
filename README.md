@@ -38,6 +38,8 @@ This project contains the frontend and backend components of Kauri.
 
 **[The Kauri Bridge project is also available on GitHub.](https://github.com/jordancrawfordnz/kauri-bridge)**
 
+**[Read more about the development of Kauri in "Monitoring an off-grid system with Kauri"](https://jordancrawford.kiwi/kauri-energy-monitor/)**
+
 ## [What do I need?](docs/what-do-i-need.md)
 There are quite a few moving parts involved in Kauri. Before you get started, be sure to check you have everything you need.
 
