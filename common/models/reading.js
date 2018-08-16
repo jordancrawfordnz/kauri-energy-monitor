@@ -1,7 +1,7 @@
 module.exports = function(Reading) {
 	// Don't allow upserting! Updates are fine, but all creates should go through the bridge's processReadings route.
-	Reading.disableRemoteMethod('upsert', true);
-	Reading.disableRemoteMethod('create', true);
+	Reading.disableRemoteMethodByName('upsert', true);
+	Reading.disableRemoteMethodByName('create', true);
 
 	Reading.observe('before save', function(context, callback) {
 		var data;

@@ -49,6 +49,11 @@
     "./middleware/singlepagefrontend.js": {}
   },
   "final:after": {
-    "loopback#errorHandler": {}
+    "strong-error-handler": {
+      "params": {
+         "debug": true,
+         "log": true
+       }
+    }
   }
 }

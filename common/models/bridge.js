@@ -3,7 +3,7 @@ var Promise = require('promise');
 var ReadingProcessing = require('../../services/readingprocessing.js');
 
 module.exports = function(Bridge) {
-  Bridge.disableRemoteMethod('__create__readings');
+  Bridge.disableRemoteMethodByName('__create__readings');
 
   Bridge.recordReadings = function(id, data, cb) {
     var Reading = Bridge.app.models.Reading;

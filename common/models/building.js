@@ -3,7 +3,7 @@ var Promise = require('promise');
 module.exports = function(Building) {
 	var ReadingProcessing = require('../../services/readingprocessing.js');
 
-	Building.disableRemoteMethod('__updateById__exports');
+	Building.disableRemoteMethodByName('__updateById__exports');
 
 	function removeProcessingState(updatedBuilding, regenerationState) {
 		var toUpdate = {
