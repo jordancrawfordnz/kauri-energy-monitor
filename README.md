@@ -2,6 +2,12 @@
   <img src="docs/resources/logo-white.png">
 </p>
 
+---
+
+**Please note:** This project is not actively maintained, it may no longer work and may depend on out of date dependencies.
+
+---
+
 ## What is this?
 Kauri is a cloud based system for monitoring your off-grid energy systems. It consists of several components including the software which interacts with your energy sensors, the server that collects and processes your data, and the frontend which lets you view all your data from any internet connected device.
 
@@ -38,7 +44,7 @@ This project contains the frontend and backend components of Kauri.
 
 **[The Kauri Bridge project is also available on GitHub.](https://github.com/jordancrawfordnz/kauri-bridge)**
 
-**[Read more about the development of Kauri in "Monitoring an off-grid system with Kauri"](https://jordancrawford.kiwi/kauri-energy-monitor/)**
+**[Read more about the development of Kauri in "Monitoring an off-grid system with Kauri"](https://jc.kiwi/kauri-energy-monitor/)**
 
 ## [What do I need?](docs/what-do-i-need.md)
 There are quite a few moving parts involved in Kauri. Before you get started, be sure to check you have everything you need.
